@@ -58,7 +58,7 @@ module Importu::Dsl
       block = fields.pop if fields.last.kind_of?(Method)
       options = fields.extract_options!.symbolize_keys!
 
-      @definitions ||= {}
+      @definitions ||= definitions.deep_dup
       fields.compact.each do |field_name|
         orig_def = @definitions[field_name]
         definition = orig_def ? orig_def.merge(options) : options.dup
