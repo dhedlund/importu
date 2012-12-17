@@ -31,10 +31,12 @@ class Importu::Record
     options = definition.merge(options)
 
     begin
-      instance_exec(name, options, &converter)
+      value = instance_exec(name, options, &converter)
+      value.nil? ? options[:default] : value
 
     rescue Importu::MissingField => e
       raise e if options[:required]
+      options[:default]
 
     rescue ArgumentError => e
       # conversion of field value most likely failed
