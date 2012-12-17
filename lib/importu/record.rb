@@ -1,7 +1,7 @@
 require 'active_support/core_ext/module/delegation'
 
 class Importu::Record
-  attr_reader :importer, :data, :raw_data, :definitions
+  attr_reader :importer, :data, :raw_data
 
   include Enumerable
 
@@ -11,7 +11,6 @@ class Importu::Record
 
   def initialize(importer, data, raw_data)
     @importer, @data, @raw_data = importer, data, raw_data
-    @definitions = importer.definitions
   end
 
   def record_hash
@@ -20,6 +19,34 @@ class Importu::Record
 
   def to_hash
     record_hash
+  end
+
+  def convert(name, type, options = {})
+    type, options = type[:to], type if type.kind_of?(Hash)
+    converter = type ? converters[type] : options[:converter] \
+      or raise "converter not found: #{type}"
+
+    # TODO: defining options in field definition is deprecated
+    definition = definitions[name] || {}
+    options = definition.merge(options)
+
+    begin
+      instance_exec(name, options, &converter)
+
+    rescue Importu::MissingField => e
+      raise e if options[:required]
+
+    rescue ArgumentError => e
+      # conversion of field value most likely failed
+      raise Importu::FieldParseError, "#{name}: #{e.message}"
+    end
+  end
+
+  def field_value(name, options = {})
+    definition = definitions[name] \
+      or raise "importer field not defined: #{name}"
+
+    convert(name, nil, definition.merge(options))
   end
 
   def assign_to(object, action, &block)
@@ -58,35 +85,15 @@ class Importu::Record
   alias_method :record, :record_hash
 
   def generate_record_hash
-    record_hash = definitions.inject({}) do |hash,(name,definition)|
-      begin
-        converter = definition[:converter] || importer.converters[:clean]
-        hash[name.to_sym] = case converter.arity
-          when 2 then converter.call(data, definition)
-          when 1 then instance_exec(name, &converter)
-          when 0 then instance_exec(&converter)
-        end
-        hash
-
-      rescue Importu::MissingField => e
-        raise e if definition[:required]
-        hash
-
-      rescue ArgumentError => e
-        # conversion of field value most likely failed
-        raise Importu::FieldParseError, "#{name}: #{e.message}"
-      end
+    definitions.inject({}) do |hash,(name,definition)|
+      hash[name.to_sym] = field_value(name)
+      hash
     end
-
-    record_hash
   end
 
   def method_missing(meth, *args, &block)
-    if converter = importer.converters[meth]
-      case args.count
-        when 2 then converter.call(*args)
-        when 1 then instance_exec(data, definitions[args[0]], &converter)
-      end
+    if converters[meth]
+      convert(args[0], meth, args[1]||{}) # convert(name, type, options)
     else
       super
     end

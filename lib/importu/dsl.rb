@@ -55,19 +55,22 @@ module Importu::Dsl
     end
 
     def fields(*fields, &block)
-      block = fields.pop if fields.last.kind_of?(Method)
+      block = fields.pop if fields.last.kind_of?(Proc)
       options = fields.extract_options!.symbolize_keys!
 
       @definitions ||= definitions.deep_dup
       fields.compact.each do |field_name|
-        orig_def = @definitions[field_name]
-        definition = orig_def ? orig_def.merge(options) : options.dup
+        definition = (@definitions[field_name]||{}).merge(options)
+
         definition[:name] = field_name
-        definition[:converter] = block if block
         definition[:label] ||= (options['label'] || field_name).to_s
         definition[:required] = true unless definition.key?(:required)
         definition[:create] = true unless definition.key?(:create)
         definition[:update] = true unless definition.key?(:update)
+
+        definition[:converter] = block if block
+        definition[:converter] ||= converters[:clean]
+
         @definitions[field_name] = definition
       end
 
@@ -88,14 +91,10 @@ module Importu::Dsl
 
     def converter(name, &block)
       @converters = converters.merge(name => block)
-      singleton_class.send(:define_method, name, &block)
-      send(:define_method, name) do |field_name|
-        self.class.send(name, data, definitions[field_name])
-      end
     end
 
-    def convert_to(type)
-      method(type)
+    def convert_to(type, options = {})
+      converters[type] # FIXME: raise error if not found?
     end
 
     def config_dsl(*methods)

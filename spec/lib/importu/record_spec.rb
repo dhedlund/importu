@@ -27,7 +27,7 @@ describe Importu::Record do
     end
 
     it "is delegated from #converters" do
-      record.should delegate(:definitions).to(:importer)
+      record.should delegate(:converters).to(:importer)
     end
   end
 

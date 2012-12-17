@@ -8,35 +8,38 @@ module Importu::Converters
   extend ActiveSupport::Concern
 
   included do
-    converter :raw do |data,definition|
+    converter :raw do |name,options|
+      definition = definitions[name] \
+        or raise "importer field not defined: #{name}"
+
       label = definition[:label]
       raise Importu::MissingField, label unless data.key?(label)
       data[label]
     end
 
-    converter :clean do |data,definition|
-      value = raw(data, definition)
+    converter :clean do |name,options|
+      value = convert(name, :raw, options)
       value.is_a?(String) \
         ? (value.blank? ? nil : value.strip)
         : value
     end
 
-    converter :string do |data,definition|
-      clean(data, definition).try(:to_s)
+    converter :string do |name,options|
+      convert(name, :clean, options).try(:to_s)
     end
 
-    converter :integer do |data,definition|
-      value = clean(data, definition)
+    converter :integer do |name,options|
+      value = convert(name, :clean, options)
       value.nil? ? nil : Integer(value)
     end
 
-    converter :float do |data,definition|
-      value = clean(data, definition)
+    converter :float do |name,options|
+      value = convert(name, :clean, options)
       value.nil? ? nil : Float(value)
     end
 
-    converter :decimal do |data,definition|
-      value = clean(data, definition)
+    converter :decimal do |name,options|
+      value = convert(name, :clean, options)
       case value
         when nil then nil
         when BigDecimal then value
@@ -45,8 +48,8 @@ module Importu::Converters
       end
     end
 
-    converter :boolean do |data,definition|
-      value = clean(data, definition)
+    converter :boolean do |name,options|
+      value = convert(name, :clean, options)
       case value
         when nil then nil
         when true, 'true', 'yes', '1', 1 then true
@@ -55,36 +58,25 @@ module Importu::Converters
       end
     end
 
-    converter :date do |data,definition|
-      if value = clean(data, definition)
-        date_format = definition[:date_format]
+    converter :date do |name,options|
+      if value = convert(name, :clean, options)
+        # TODO: options[:date_format] is deprecated
+        date_format = options[:date_format] || options[:format]
         date_format \
           ? Date.strptime(value, date_format)
           : Date.parse(value)
       end
     end
 
-    converter :datetime do |data,definition|
-      if value = clean(data, definition)
-        date_format = definition[:date_format]
+    converter :datetime do |name,options|
+      if value = convert(name, :clean, options)
+        # TODO: options[:date_format] is deprecated
+        date_format = options[:date_format] || options[:format]
         date_format \
           ? DateTime.strptime(value, date_format).utc
           : DateTime.parse(value).utc
       end
     end
 
-    converter :field_value do |data,definition|
-      # looks up the the converted value of another field
-      begin
-        converter = definition[:converter]
-        converter \
-          ? instance_exec(*[data,definition].take(converter.arity), &converter)
-          : clean(data, definition)
-      rescue ArgumentError => e
-        # conversion of field value most likely failed
-        raise Importu::FieldParseError, "#{definition[:label]}: #{e.message}"
-      end
-    end
   end
-
 end
