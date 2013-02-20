@@ -9,7 +9,18 @@ module Importu
   class InvalidRecord < ImportuException; end
 
   class FieldParseError < InvalidRecord; end
-  class MissingField < InvalidRecord; end
   class DuplicateRecord < InvalidRecord; end
 
+  class MissingField < InvalidRecord
+    attr_reader :definition
+
+    def initialize(definition)
+      @definition = definition
+    end
+
+    def message
+      field = definition[:label] || definition[:name]
+      "missing field \"#{field}\" from source data"
+    end
+  end
 end

@@ -13,7 +13,7 @@ module Importu::Converters
         or raise "importer field not defined: #{name}"
 
       label = definition[:label]
-      raise Importu::MissingField, label unless data.key?(label)
+      raise Importu::MissingField, definition unless data.key?(label)
       data[label]
     end
 
