@@ -37,6 +37,7 @@ module Importu::Dsl
   extend ActiveSupport::Concern
 
   included do
+    config_dsl :record_class, :default => Importu::Record
     config_dsl :model, :description
     config_dsl :allowed_actions, :default => [:create]
     config_dsl :finder_fields, :default => [[:id]]

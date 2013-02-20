@@ -18,7 +18,7 @@ class Importu::Importer::Csv < Importu::Importer
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
       @reader.each do |row|
-        yielder.yield Importu::Record.new(self, row.to_hash, row)
+        yielder.yield record_class.new(self, row.to_hash, row)
       end
     end
   end
