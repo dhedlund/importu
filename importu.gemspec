@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   
   s.add_dependency 'activesupport', ['>= 3.0.0']
   s.add_dependency 'activerecord',  ['>= 3.0.0']
+  s.add_dependency 'multi_json',    ['~> 1.0']
   s.add_dependency 'nokogiri'
 
   s.add_development_dependency 'bundler',      ['>= 1.0.0']

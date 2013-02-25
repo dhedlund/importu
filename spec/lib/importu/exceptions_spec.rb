@@ -67,7 +67,7 @@ describe Importu::ImportuException do
       context "field definition has a label" do
         let(:definition) { { :label => "Field 2" } }
         it "mentions missing field's label" do
-          exception.mesage.should match(/Field 2/)
+          exception.message.should match(/Field 2/)
         end
       end
 
