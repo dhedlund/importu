@@ -68,36 +68,23 @@ class Importu::Importer
 
       record.assign_to(object, action, &block)
 
-      if object.changed?
-        object.save!
-        case action
-          when :create then @created += 1
-          when :update then @updated += 1
-        end
-      else
-        @unchanged += 1
+      case record.save!
+        when :created   then @created   += 1
+        when :updated   then @updated   += 1
+        when :unchanged then @unchanged += 1
       end
 
-    rescue ActiveRecord::RecordInvalid => e
-      #convention:  assume data-specific error messages put data inside parens, e.g. 'Dupe record found (sysnum 5489x)'
-      object.errors.full_messages.each {|e| @validation_errors[e.gsub(/ *\([^)]+\)/,'')] += 1 }  
-      @invalid += 1
-
-      errors = object.errors.map do |name,message|
-        if name=="base"
-          message
-        else
-          name = definitions[name][:label] if definitions[name]
-          "#{name} #{message}"
-        end
-      end.join(', ')
-
-      raise Importu::InvalidRecord, errors
-
     rescue Importu::InvalidRecord => e
-      @validation_errors["#{e.name}: #{e.message}"] += 1
+      if errors = e.validation_errors
+        # convention: assume data-specific error messages put data inside parens, e.g. 'Dupe record found (sysnum 5489x)'
+        errors.each {|error| @validation_errors[error.gsub(/ *\([^)]+\)/,'')] += 1 }     
+      else
+        @validation_errors["#{e.name}: #{e.message}"] += 1
+      end
+
       @invalid += 1
-      raise e
+      raise
+
     ensure
       @total += 1
     end

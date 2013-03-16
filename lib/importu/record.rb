@@ -79,6 +79,26 @@ class Importu::Record
     object
   end
 
+  def save!
+    return :unchanged unless @object.changed?
+
+    begin
+      @object.save!
+      case @action
+        when :create then :created
+        when :update then :updated
+      end
+
+    rescue ActiveRecord::RecordInvalid => e
+      error_msgs = @object.errors.map do |name,message|
+        name = definitions[name][:label] if definitions[name]
+        name == 'base' ? message : "#{name} #{message}"
+      end.join(', ')
+
+      raise Importu::InvalidRecord, error_msgs, @object.errors.full_messages
+    end
+  end
+
 
   private
 

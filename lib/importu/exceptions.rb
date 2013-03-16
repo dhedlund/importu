@@ -6,7 +6,15 @@ module Importu
   end
 
   class InvalidInput < ImportuException; end
-  class InvalidRecord < ImportuException; end
+
+  class InvalidRecord < ImportuException
+    attr_reader :validation_errors
+
+    def initialize(message = nil, validation_errors = nil)
+      @validation_errors = validation_errors
+      super(message)
+    end
+  end
 
   class FieldParseError < InvalidRecord; end
   class DuplicateRecord < InvalidRecord; end
