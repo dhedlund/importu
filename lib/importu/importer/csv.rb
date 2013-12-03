@@ -1,3 +1,5 @@
+require 'csv'
+
 class Importu::Importer::Csv < Importu::Importer
   def initialize(infile, options = {})
     super
