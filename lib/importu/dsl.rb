@@ -1,5 +1,5 @@
 require 'active_support/core_ext/module/delegation'
-require 'active_support/core_ext/hash/deep_dup'
+require 'active_support/core_ext/object/deep_dup'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/concern'
 
@@ -33,6 +33,7 @@ require 'importu/core_ext/deep_freeze'
 #   :required - must be present in input file (values can be blank, default: true)
 
 require 'active_support/concern'
+require 'active_support/core_ext/array/extract_options'
 
 module Importu::Dsl
   extend ActiveSupport::Concern

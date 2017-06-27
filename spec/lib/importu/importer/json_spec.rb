@@ -23,7 +23,7 @@ describe Importu::Importer::Json do
     let(:data) { "[]" }
 
     it "treats file as having 0 records" do
-      importer.records.should have(0).items
+      expect(importer.records.count).to eq 0
     end
   end
 
@@ -31,7 +31,7 @@ describe Importu::Importer::Json do
     let(:data) { "[{},{}]" }
 
     it "treats file as having 2 records" do
-      importer.records.should have(2).items
+      expect(importer.records.count).to eq 2
     end
   end
 end

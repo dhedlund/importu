@@ -7,7 +7,9 @@ class Importu::Importer::Xml < Importu::Importer
     super
 
     xml_options = {}.merge(options[:xml_options]||{})
-    if reader.errors.any?
+    if reader.root.nil?
+      raise Importu::InvalidInput, 'Empty document'
+    elsif reader.errors.any?
       raise Importu::InvalidInput, reader.errors.join("\n")
     end
   end

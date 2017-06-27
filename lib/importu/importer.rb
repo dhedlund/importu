@@ -1,5 +1,3 @@
-require 'active_record/errors'
-
 class Importu::Importer
   attr_reader :options, :infile, :outfile, :validation_errors
   attr_reader :total, :invalid, :created, :updated, :unchanged
