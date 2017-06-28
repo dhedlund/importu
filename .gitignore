@@ -1,3 +1,4 @@
 Gemfile.lock
 .bundle/
+spec/examples.txt
 vendor/bundle

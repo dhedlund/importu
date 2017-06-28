@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Importu::Importer::Xml do
+RSpec.describe Importu::Importer::Xml do
   subject(:importer) { build(:xml_importer, :infile => infile) }
 
   context "input file is blank" do

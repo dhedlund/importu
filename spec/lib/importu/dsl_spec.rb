@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Importu::Importer do
+RSpec.describe Importu::Importer do
   describe "::record_class" do
     it "returns Importu::Record by default" do
       expect(Importu::Importer.record_class).to eq Importu::Record

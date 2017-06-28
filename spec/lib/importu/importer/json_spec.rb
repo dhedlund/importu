@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Importu::Importer::Json do
+RSpec.describe Importu::Importer::Json do
   subject(:importer) { build(:json_importer, :data => data) }
 
   context "input file is blank" do

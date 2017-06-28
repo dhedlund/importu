@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Importu::Record do
+RSpec.describe Importu::Record do
   subject(:record) { build(:importer_record) }
 
   it "includes Enumerable" do

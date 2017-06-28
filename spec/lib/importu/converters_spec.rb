@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'active_support/core_ext/time/calculations'
 
-describe Importu::Importer do
+RSpec.describe Importu::Importer do
   subject(:record) { build(:importer_record) }
 
   describe ":raw converter" do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Importu::ImportuException do
+RSpec.describe Importu::ImportuException do
   subject(:exception) { Importu::ImportuException.new }
 
   it "#name should return 'ImportuException" do

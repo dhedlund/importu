@@ -12,6 +12,11 @@
 
 RSpec::Matchers.define :delegate do |method|
   match do |delegator|
+    # Ensure instance vars are defined to suppress warnings about accessing
+    # undefined instance variables later on; values get set in matcher chains.
+    @prefix = false unless instance_variable_defined?(:@prefix)
+    @to = nil unless instance_variable_defined?(:@to)
+
     @method = @prefix ? :"#{@to}_#{method}" : method
     @delegator = delegator
     begin
