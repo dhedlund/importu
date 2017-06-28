@@ -33,7 +33,6 @@ require 'importu/core_ext/deep_freeze'
 #   :required - must be present in input file (values can be blank, default: true)
 
 require 'active_support/concern'
-require 'active_support/core_ext/array/extract_options'
 
 module Importu::Dsl
   extend ActiveSupport::Concern
@@ -59,7 +58,8 @@ module Importu::Dsl
 
     def fields(*fields, &block)
       block = fields.pop if fields.last.kind_of?(Proc)
-      options = fields.extract_options!.symbolize_keys!
+      options = fields.last.is_a?(Hash) ? fields.pop : {}
+      options.symbolize_keys!
 
       @definitions ||= definitions.deep_dup
       fields.compact.each do |field_name|
@@ -101,7 +101,7 @@ module Importu::Dsl
     end
 
     def config_dsl(*methods)
-      options = methods.extract_options!
+      options = methods.last.is_a?(Hash) ? methods.pop : {}
       options.assert_valid_keys(:default)
       default = (options[:default] || nil).deep_freeze
 
