@@ -5,6 +5,7 @@ module Importu
     end
   end
 
+  class InvalidDefinition < ImportuException; end
   class InvalidInput < ImportuException; end
 
   class InvalidRecord < ImportuException

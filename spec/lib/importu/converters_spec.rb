@@ -13,7 +13,7 @@ describe Importu::Importer do
     end
 
     it "raises an exception if field definition is not defined" do
-      expect { record.convert(:field1, :raw) }.to raise_error
+      expect { record.convert(:field1, :raw) }.to raise_error(Importu::InvalidDefinition)
     end
 
     it "raises MissingField if field data not defined" do

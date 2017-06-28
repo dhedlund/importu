@@ -10,7 +10,7 @@ module Importu::Converters
   included do
     converter :raw do |name,options|
       definition = definitions[name] \
-        or raise "importer field not defined: #{name}"
+        or raise Importu::InvalidDefinition, "importer field not defined: #{name}"
 
       label = definition[:label]
       raise Importu::MissingField, definition unless data.key?(label)
