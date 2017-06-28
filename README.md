@@ -7,9 +7,6 @@ Current supported source formats include CSV/TSV, XML and JSON.  It is fairly
 trivial to extend Importu to handle additional formats.  See the
 `lib/importu/importer` directory for implementations of supported importers.
 
-The current version of Importu depends on both ActiveRecord and ActiveSupport,
-which will become optional in a future release.
-
 ## Example
 **Please read the tutorial in the
 [import-examples](https://github.com/dhedlund/importu-examples) repository for

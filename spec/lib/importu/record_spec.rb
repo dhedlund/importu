@@ -1,7 +1,11 @@
 require 'spec_helper'
 
 RSpec.describe Importu::Record do
-  subject(:record) { build(:importer_record) }
+
+  let(:data) { Hash.new }
+  let(:raw_data) { Hash.new }
+  let(:importer) { Importu::Importer.new(StringIO.new) }
+  subject(:record) { Importu::Record.new(importer, data, raw_data) }
 
   it "includes Enumerable" do
     expect(record).to be_a_kind_of(Enumerable)
@@ -9,8 +13,6 @@ RSpec.describe Importu::Record do
 
   describe "#importer" do
     it "returns the importer used during construction" do
-      importer = build(:importer)
-      record = build(:importer_record, :importer => importer)
       expect(record.importer).to be importer
     end
 
@@ -32,26 +34,24 @@ RSpec.describe Importu::Record do
   end
 
   describe "#data" do
+    let(:data) { { "foo" => "bar" } }
+
     it "returns the data used during construction" do
-      data = { "foo" => "bar" }
-      record = build(:importer_record, :data => data)
       expect(record.data).to eq data
     end
   end
 
   describe "#raw_data" do
+    let(:raw_data) { "this,is\tsome_raw_data\n" }
+
     it "returns the raw_data used during construction" do
-      raw_data = "this,is\tsome_raw_data\n"
-      record = build(:importer_record, :raw_data => raw_data)
       expect(record.raw_data).to eq raw_data
     end
   end
 
   describe "#definitions" do
     it "returns the definitions defined in importer on construction" do
-      importer = build(:importer)
       allow(importer).to receive(:definitions).and_return({ :foo => :bar })
-      record = build(:importer_record, :importer => importer)
       expect(record.definitions).to be importer.definitions
     end
   end

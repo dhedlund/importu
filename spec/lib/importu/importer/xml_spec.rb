@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 RSpec.describe Importu::Importer::Xml do
-  subject(:importer) { build(:xml_importer, :infile => infile) }
+  let(:data) { nil } # string version of input file
+  subject(:importer) { Importu::Importer::Xml.new(StringIO.new(data)) }
 
   context "input file is blank" do
-    let(:infile) { StringIO.new }
+    let(:data) { "" }
 
     it "raises an InvalidInput exception" do
       expect { importer }.to raise_error Importu::InvalidInput

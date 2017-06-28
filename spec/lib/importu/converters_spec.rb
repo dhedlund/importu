@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe Importu::Importer do
-  subject(:record) { build(:importer_record) }
+  subject(:record) do
+    importer = Importu::Importer.new(StringIO.new)
+    Importu::Record.new(importer, {}, {})
+  end
 
   describe ":raw converter" do
     it "uses definition's label as key when looking up data" do

@@ -14,7 +14,6 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'factory_girl'
 require 'simplecov'
 
 require 'importu'
@@ -24,10 +23,6 @@ require 'importu'
 Dir[File.expand_path('../support/**/*.rb', __FILE__)].each {|f| require f }
 
 RSpec.configure do |config|
-  # FactoryGirl support
-  config.include FactoryGirl::Syntax::Methods
-  config.before(:suite) { FactoryGirl.find_definitions }
-
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

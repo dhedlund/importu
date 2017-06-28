@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe Importu::Importer::Json do
-  subject(:importer) { build(:json_importer, :data => data) }
+  let(:data) { nil } # string version of input file
+  subject(:importer) { Importu::Importer::Json.new(StringIO.new(data)) }
 
   context "input file is blank" do
     let(:data) { "" }
@@ -12,9 +13,12 @@ RSpec.describe Importu::Importer::Json do
   end
 
   context "non-array root elements" do
-    %w({}, "foo", 3, 3.7, false, nil).each do |data|
-      it "raises InvalidInput exception if root is #{data}" do
-        expect { build(:json_importer, :data => "") }.to raise_error(Importu::InvalidInput)
+    %w({}, "foo", 3, 3.7, false, nil).each do |bad_data|
+      context "when root is #{bad_data}" do
+        let(:data) { bad_data }
+        it "raises InvalidInput exception" do
+          expect { importer }.to raise_error(Importu::InvalidInput)
+        end
       end
     end
   end
