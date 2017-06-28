@@ -1,4 +1,4 @@
-require 'importu/core_ext/deep_freeze'
+require 'ice_nine'
 
 # importer definition examples:
 #   allow_actions :create
@@ -103,7 +103,7 @@ module Importu::Dsl
         raise ArgumentError, "Unknown key: #{unknown_keys.join(', ')}"
       end
 
-      default = (options[:default] || nil).deep_freeze
+      default = IceNine.deep_freeze(options[:default] || nil)
 
       methods.each do |m|
         instance_variable_set("@#{m}", default)
@@ -111,7 +111,7 @@ module Importu::Dsl
         singleton_class.send(:define_method, m) do |*args,&block|
           if block || !args.empty?
             val = (block ? instance_eval(&block) : args[0])
-            instance_variable_set("@#{m}", val.deep_freeze)
+            instance_variable_set("@#{m}", IceNine.deep_freeze(val))
           else
             instance_variable_defined?("@#{m}") \
               ? instance_variable_get("@#{m}")
