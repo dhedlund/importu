@@ -7,14 +7,14 @@ describe Importu::Importer::Json do
     let(:data) { "" }
 
     it "raises an InvalidInput exception" do
-      expect { importer }.to raise_error Importu::InvalidInput
+      expect { importer }.to raise_error(Importu::InvalidInput)
     end
   end
 
   context "non-array root elements" do
     %w({}, "foo", 3, 3.7, false, nil).each do |data|
       it "raises InvalidInput exception if root is #{data}" do
-        expect { build(:json_importer, :data => "") }.to raise_error Importu::InvalidInput
+        expect { build(:json_importer, :data => "") }.to raise_error(Importu::InvalidInput)
       end
     end
   end

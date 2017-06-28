@@ -4,7 +4,7 @@ FactoryGirl.define do
       Importu::Importer::Xml.new(infile, options)
     end
 
-    ignore do
+    transient do
       infile { StringIO.new("<r/>") }
       options { Hash.new }
     end

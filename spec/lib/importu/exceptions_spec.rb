@@ -4,7 +4,7 @@ describe Importu::ImportuException do
   subject(:exception) { Importu::ImportuException.new }
 
   it "#name should return 'ImportuException" do
-    exception.name.should eq "ImportuException"
+    expect(exception.name).to eq "ImportuException"
   end
 
   describe Importu::InvalidInput do
@@ -15,7 +15,7 @@ describe Importu::ImportuException do
     end
 
     it "#name should return 'InvalidInput'" do
-      exception.name.should eq "InvalidInput"
+      expect(exception.name).to eq "InvalidInput"
     end
   end
 
@@ -27,7 +27,7 @@ describe Importu::ImportuException do
     end
 
     it "#name should return 'InvalidRecord'" do
-      exception.name.should eq "InvalidRecord"
+      expect(exception.name).to eq "InvalidRecord"
     end
   end
 
@@ -39,7 +39,7 @@ describe Importu::ImportuException do
     end
 
     it "#name should return 'FieldParseError'" do
-      exception.name.should eq "FieldParseError"
+      expect(exception.name).to eq "FieldParseError"
     end
   end
 
@@ -52,22 +52,22 @@ describe Importu::ImportuException do
     end
 
     it "#name should return 'MissingField'" do
-      exception.name.should eq "MissingField"
+      expect(exception.name).to eq "MissingField"
     end
 
     it "#definition should return the definition passed during construction" do
-      exception.definition.should eq definition
+      expect(exception.definition).to eq definition
     end
 
     describe "#message" do
       it "should mention a missing field" do
-        exception.message.should match(/missing field/i)
+        expect(exception.message).to match(/missing field/i)
       end
 
       context "field definition has a label" do
         let(:definition) { { :label => "Field 2" } }
         it "mentions missing field's label" do
-          exception.message.should match(/Field 2/)
+          expect(exception.message).to match(/Field 2/)
         end
       end
 
@@ -75,7 +75,7 @@ describe Importu::ImportuException do
         let(:definition) { { :name => "foo_field_2" } }
 
         it "mentions missing field's name" do
-          exception.message.should match(/foo_field_2/)
+          expect(exception.message).to match(/foo_field_2/)
         end
       end
     end
@@ -89,7 +89,7 @@ describe Importu::ImportuException do
     end
 
     it "#name should return 'DuplicateRecord'" do
-      exception.name.should eq "DuplicateRecord"
+      expect(exception.name).to eq "DuplicateRecord"
     end
   end
 

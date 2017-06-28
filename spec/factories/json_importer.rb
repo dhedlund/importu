@@ -5,7 +5,7 @@ FactoryGirl.define do
       Importu::Importer::Json.new(infile, options)
     end
 
-    ignore do
+    transient do
       data nil # string version of input file
       infile { StringIO.new("[]") }
       options { Hash.new }

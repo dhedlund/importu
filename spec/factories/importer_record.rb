@@ -4,7 +4,7 @@ FactoryGirl.define do
       Importu::Record.new(importer, data, raw_data)
     end
 
-    ignore do
+    transient do
       importer { build(:importer) }
       data { Hash.new }
       raw_data { Hash.new }

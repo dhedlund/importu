@@ -4,7 +4,7 @@ FactoryGirl.define do
       Importu::Importer.new(infile, options)
     end
 
-    ignore do
+    transient do
       infile { StringIO.new }
       options { Hash.new }
     end
