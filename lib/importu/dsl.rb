@@ -1,5 +1,3 @@
-require 'active_support/core_ext/object/deep_dup'
-
 require 'importu/core_ext/deep_freeze'
 
 # importer definition examples:
@@ -58,7 +56,7 @@ module Importu::Dsl
       options = fields.last.is_a?(Hash) ? fields.pop : {}
       options = Hash[options.map {|k,v| [k.to_sym, v] }]
 
-      @definitions ||= definitions.deep_dup
+      @definitions ||= Marshal.load(Marshal.dump(definitions))
       fields.compact.each do |field_name|
         definition = (@definitions[field_name]||{}).merge(options)
 
