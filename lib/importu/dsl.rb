@@ -1,4 +1,3 @@
-require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/deep_dup'
 
 require 'importu/core_ext/deep_freeze'
@@ -32,6 +31,7 @@ require 'importu/core_ext/deep_freeze'
 
 module Importu::Dsl
   def self.included(base)
+    base.extend Forwardable
     base.extend ClassMethods
     base.class_eval do
       config_dsl :record_class, :default => Importu::Record
@@ -123,7 +123,7 @@ module Importu::Dsl
       end
 
       # make dsl methods available to importer instances
-      delegate *methods, :to => :singleton_class
+      delegate methods => :singleton_class
     end
   end
 

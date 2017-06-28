@@ -1,13 +1,12 @@
-require 'active_support/core_ext/module/delegation'
-
 class Importu::Record
   attr_reader :importer, :data, :raw_data
 
   include Enumerable
 
-  delegate :keys, :values, :each, :[], :key?, :to => :record_hash
-  delegate :preprocessor, :postprocessor, :to => :importer
-  delegate :definitions, :converters, :to => :importer
+  extend Forwardable
+  delegate [:keys, :values, :each, :[], :key?] => :record_hash
+  delegate [:preprocessor, :postprocessor] => :importer
+  delegate [:definitions, :converters] => :importer
 
   def initialize(importer, data, raw_data)
     @importer, @data, @raw_data = importer, data, raw_data
