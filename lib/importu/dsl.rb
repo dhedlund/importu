@@ -1,6 +1,5 @@
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/deep_dup'
-require 'active_support/concern'
 
 require 'importu/core_ext/deep_freeze'
 
@@ -31,19 +30,18 @@ require 'importu/core_ext/deep_freeze'
 #   :label - header/label/key/element name used in input file (default: field name)
 #   :required - must be present in input file (values can be blank, default: true)
 
-require 'active_support/concern'
-
 module Importu::Dsl
-  extend ActiveSupport::Concern
-
-  included do
-    config_dsl :record_class, :default => Importu::Record
-    config_dsl :model, :description
-    config_dsl :allowed_actions, :default => [:create]
-    config_dsl :finder_fields, :default => [[:id]]
-    config_dsl :definitions, :default => {}
-    config_dsl :preprocessor, :postprocessor
-    config_dsl :converters, :default => {}
+  def self.included(base)
+    base.extend ClassMethods
+    base.class_eval do
+      config_dsl :record_class, :default => Importu::Record
+      config_dsl :model, :description
+      config_dsl :allowed_actions, :default => [:create]
+      config_dsl :finder_fields, :default => [[:id]]
+      config_dsl :definitions, :default => {}
+      config_dsl :preprocessor, :postprocessor
+      config_dsl :converters, :default => {}
+    end
   end
 
   module ClassMethods
