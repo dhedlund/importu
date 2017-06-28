@@ -15,6 +15,8 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require 'factory_girl'
+require 'simplecov'
+
 require 'importu'
 
 # Requires supporting ruby files with custom matchers and macros, etc,

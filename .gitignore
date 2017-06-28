@@ -1,4 +1,5 @@
 Gemfile.lock
 .bundle/
+coverage/
 spec/examples.txt
 vendor/bundle
