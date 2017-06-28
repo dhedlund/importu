@@ -1,4 +1,3 @@
-require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/date_time/conversions'
 require 'active_support/concern'
 
@@ -19,9 +18,12 @@ module Importu::Converters
 
     converter :clean do |name,options|
       value = convert(name, :raw, options)
-      value.is_a?(String) \
-        ? (value.blank? ? nil : value.strip)
-        : value
+      if value.is_a?(String)
+        new_value = value.strip
+        new_value.empty? ? nil : new_value
+      else
+        value
+      end
     end
 
     converter :string do |name,options|
