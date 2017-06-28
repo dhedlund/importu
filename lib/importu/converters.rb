@@ -1,5 +1,3 @@
-require 'active_support/core_ext/date_time/conversions'
-
 require 'bigdecimal'
 
 module Importu::Converters
@@ -25,7 +23,8 @@ module Importu::Converters
       end
 
       converter :string do |name,options|
-        convert(name, :clean, options).try(:to_s)
+        value = convert(name, :clean, options)
+        value.nil? ? nil : String(value)
       end
 
       converter :integer do |name,options|
@@ -73,8 +72,8 @@ module Importu::Converters
           # TODO: options[:date_format] is deprecated
           date_format = options[:date_format] || options[:format]
           date_format \
-            ? DateTime.strptime(value, date_format).utc
-            : DateTime.parse(value).utc
+            ? DateTime.strptime(value, date_format).to_time.utc
+            : DateTime.parse(value).to_time.utc
         end
       end
 

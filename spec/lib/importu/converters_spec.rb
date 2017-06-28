@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-require 'active_support/core_ext/time/calculations'
-
 RSpec.describe Importu::Importer do
   subject(:record) { build(:importer_record) }
 
@@ -243,7 +241,7 @@ RSpec.describe Importu::Importer do
 
     context "when a format is not specified" do
       it "tries to guess the date format (DD/MM/YYYY is default?)" do
-        expected = DateTime.parse("2012-10-03 04:37:29")
+        expected = Time.parse("2012-10-03 04:37:29Z")
         record.converters[:clean] = proc { "03/10/2012 04:37:29" }
         expect(record.convert(:field1, :datetime)).to eq expected
       end
@@ -256,7 +254,7 @@ RSpec.describe Importu::Importer do
 
     context "when a format is specified" do
       it "parses datetimes that match the format" do
-        expected = DateTime.parse("2012-04-18 16:37:00")
+        expected = Time.parse("2012-04-18 16:37:00Z")
         record.converters[:clean] = proc { "04/18/2012 16:37" }
         expect(record.convert(:field1, :datetime, :format => "%m/%d/%Y %H:%M")).to eq expected
       end
