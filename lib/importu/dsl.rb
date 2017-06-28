@@ -1,6 +1,5 @@
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/deep_dup'
-require 'active_support/core_ext/hash/keys'
 require 'active_support/concern'
 
 require 'importu/core_ext/deep_freeze'
@@ -59,7 +58,7 @@ module Importu::Dsl
     def fields(*fields, &block)
       block = fields.pop if fields.last.kind_of?(Proc)
       options = fields.last.is_a?(Hash) ? fields.pop : {}
-      options.symbolize_keys!
+      options = Hash[options.map {|k,v| [k.to_sym, v] }]
 
       @definitions ||= definitions.deep_dup
       fields.compact.each do |field_name|
@@ -102,7 +101,12 @@ module Importu::Dsl
 
     def config_dsl(*methods)
       options = methods.last.is_a?(Hash) ? methods.pop : {}
-      options.assert_valid_keys(:default)
+
+      unknown_keys = options.keys - [:default] # Allowed keys
+      if unknown_keys.any?
+        raise ArgumentError, "Unknown key: #{unknown_keys.join(', ')}"
+      end
+
       default = (options[:default] || nil).deep_freeze
 
       methods.each do |m|
