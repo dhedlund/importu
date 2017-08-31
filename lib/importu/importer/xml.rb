@@ -18,7 +18,7 @@ class Importu::Importer::Xml < Importu::Importer
     @reader ||= Nokogiri::XML(infile)
   end
 
-  def import!(finder_scope = nil, &block)
+  def import!(&block)
     reader.xpath('//_errors').remove
     result = super
     outfile.write(reader) if @invalid > 0
@@ -34,7 +34,7 @@ class Importu::Importer::Xml < Importu::Importer
     end
   end
 
-  def import_record(record, finder_scope, &block)
+  def import_record(record, &block)
     begin
       super
       record.raw_data.remove

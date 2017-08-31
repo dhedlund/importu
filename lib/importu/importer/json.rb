@@ -12,7 +12,7 @@ class Importu::Importer::Json < Importu::Importer
     end
   end
 
-  def import!(finder_scope = nil, &block)
+  def import!(&block)
     result = super
     outfile.write(JSON.pretty_generate(@error_records)) if @invalid > 0
     result
@@ -26,7 +26,7 @@ class Importu::Importer::Json < Importu::Importer
     end
   end
 
-  def import_record(record, finder_scope, &block)
+  def import_record(record, &block)
     begin
       super
     rescue Importu::InvalidRecord => e

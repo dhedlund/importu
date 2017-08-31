@@ -21,12 +21,8 @@ class Importu::Importer
     @outfile ||= Tempfile.new('import', Rails.root.join('tmp'), 'wb+')
   end
 
-  def import!(finder_scope = nil, &block)
-    # if a scope is passed in, that scope becomes the starting scope used by
-    # the finder, otherwise the model's default scope is used).
-
-    finder_scope ||= model_class
-    records.each {|r| import_record(r, finder_scope, &block) }
+  def import!(&block)
+    records.each {|r| import_record(r, &block) }
   end
 
   def result_msg
@@ -53,9 +49,9 @@ class Importu::Importer
     @model_class ||= self.class.const_get(model)
   end
 
-  def import_record(record, finder_scope, &block)
+  def import_record(record, &block)
     begin
-      object = find(finder_scope, record) || model_class.new
+      object = find(record) || model_class.new
       action = object.new_record? ? :create : :update
       check_duplicate(object) if action == :update
 
@@ -88,18 +84,14 @@ class Importu::Importer
     end
   end
 
-  def find(scope, record)
-    # FIXME: find does not report if it finds more than one record matching
-    # the :find_by conditions passed in.  it just uses the first match for
-    # now.  what should be the correct behaviour?
-
+  def find(record)
     field_groups = self.class.finder_fields or return
     field_groups.each do |field_group|
       if field_group.respond_to?(:call) # proc
-        object = scope.instance_exec(record, &field_group).first
+        object = model_class.instance_exec(record, &field_group).first
       else
         conditions = Hash[field_group.map {|f| [f, record[f]]}]
-        object = scope.where(conditions).first
+        object = model_class.where(conditions).first
       end
 
       return object if object

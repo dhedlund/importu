@@ -29,7 +29,7 @@ class Importu::Importer::Csv < Importu::Importer
     end
   end
 
-  def import_record(record, finder_scope, &block)
+  def import_record(record, &block)
     begin
       super
     rescue Importu::MissingField => e
