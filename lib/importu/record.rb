@@ -98,6 +98,10 @@ class Importu::Record
         raise Importu::InvalidRecord, error_msgs, @object.errors.full_messages
       end
     end
+  else
+    def save!
+      raise NotImplementedError
+    end
   end
 
 

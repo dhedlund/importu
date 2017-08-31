@@ -25,7 +25,7 @@ class Importu::Importer
     # if a scope is passed in, that scope becomes the starting scope used by
     # the finder, otherwise the model's default scope is used).
 
-    finder_scope ||= model_class.scoped
+    finder_scope ||= model_class
     records.each {|r| import_record(r, finder_scope, &block) }
   end
 
@@ -50,7 +50,7 @@ class Importu::Importer
   protected
 
   def model_class
-    @model_class ||= model.constantize
+    @model_class ||= self.class.const_get(model)
   end
 
   def import_record(record, finder_scope, &block)

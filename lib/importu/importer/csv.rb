@@ -1,7 +1,7 @@
 require 'csv'
 
 class Importu::Importer::Csv < Importu::Importer
-  def initialize(infile, options = {})
+  def initialize(infile, csv_options: {}, **options)
     super
 
     @csv_options = {
@@ -9,11 +9,15 @@ class Importu::Importer::Csv < Importu::Importer
       :return_headers => true,
       :write_headers  => true,
       :skip_blanks    => true,
-    }.merge(options[:csv_options]||{})
+    }.merge(csv_options)
 
     @reader = ::CSV.new(@infile, @csv_options)
     @header = @reader.readline
     @data_pos = @infile.pos
+
+    if @header.nil?
+      raise Importu::InvalidInput, 'Empty document'
+    end
   end
 
   def records
