@@ -196,6 +196,11 @@ RSpec.describe Importu::Importer do
       record.converters[:clean] = proc { 0 }
       expect(record.convert(:field1, :boolean)).to eq false
     end
+
+    it "raises an exception if the value is invalid" do
+      record.converters[:clean] = proc { "why-not-both" }
+      expect { record.convert(:field1, :boolean) }.to raise_error(Importu::FieldParseError)
+    end
   end
 
   describe ":date converter" do
