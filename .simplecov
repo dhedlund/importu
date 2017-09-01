@@ -3,4 +3,4 @@ SimpleCov.start do
     # Filter out all files that are not in the gem's lib/ directory
     source_file.filename.start_with?("#{SimpleCov.root}/lib/") == false
   end
-end
+end if ENV["COVERAGE"]
