@@ -3,6 +3,8 @@
 source "http://rubygems.org"
 
 gem "pry"
+gem "sqlite3"
+gem "database_cleaner"
 gem "activerecord", "~> 5.1"
 
 gemspec path: "../"

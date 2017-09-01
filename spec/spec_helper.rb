@@ -16,6 +16,7 @@
 
 require 'simplecov'
 
+require "active_record" if Gem.loaded_specs.has_key?('activerecord')
 require 'importu'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -59,6 +60,13 @@ RSpec.configure do |config|
   # aliases for `it`, `describe`, and `context` that include `:focus`
   # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
   config.filter_run_when_matching :focus
+
+  # Only run certain specs when the relevant gems are available. This is to
+  # allow for testing integration with different frameworks/backends in
+  # isolation with the appraisal gem. If all gems were loaded simultaneously
+  # then we wouldn't know if we were using an ActiveSupport monkeypatched
+  # method (i.e. String#present?) that would break w/o ActiveSupport loaded.
+  config.filter_run_excluding activerecord: !defined?(::ActiveRecord)
 
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend
