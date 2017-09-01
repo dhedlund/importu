@@ -18,7 +18,7 @@ class Importu::Importer
   end
 
   def outfile
-    @outfile ||= Tempfile.new('import', Rails.root.join('tmp'), 'wb+')
+    @outfile ||= Tempfile.new('import', Rails.root.join('tmp'))
   end
 
   def import!(&block)
@@ -43,32 +43,39 @@ class Importu::Importer
   end
 
 
-  protected
-
-  def model_class
-    @model_class ||= self.class.const_get(model)
+  protected def enforce_allowed_actions!(action)
+    if action == :create && !allowed_actions.include?(:create)
+      raise Importu::InvalidRecord, "#{model} not found"
+    elsif action == :update && !allowed_actions.include?(:update)
+      raise Importu::InvalidRecord, "existing #{model} found"
+    end
   end
 
-  def import_record(record, &block)
-    begin
-      object = find(record) || model_class.new
-      action = object.new_record? ? :create : :update
-      check_duplicate(object) if action == :update
+  protected def import_record(record, &block)
+    backend = Importu::Backends::ActiveRecord.new(definition)
 
-      case ([action] - allowed_actions).first
-        when :create then raise Importu::InvalidRecord, "#{model} not found"
-        when :update then raise Importu::InvalidRecord, "existing #{model} found"
+    begin
+      object = backend.find(record)
+
+      if object.nil?
+        enforce_allowed_actions!(:create)
+        result = backend.create(record, &block)
+        # FIXME: mark_encountered(object) ?
+      else
+        enforce_allowed_actions!(:update)
+        check_duplicate!(backend, object) # FIXME: Should come before action enforcement?
+        result = backend.update(record, object, &block)
+        # FIXME: mark_encountered(object) ?
       end
 
-      record.assign_to(object, action, &block)
-
-      case record.save!
+      case result
         when :created   then @created   += 1
         when :updated   then @updated   += 1
         when :unchanged then @unchanged += 1
       end
 
     rescue Importu::InvalidRecord => e
+      # FIXME: Some of this may be ActiveRecord specific?
       if errors = e.validation_errors
         # convention: assume data-specific error messages put data inside parens, e.g. 'Dupe record found (sysnum 5489x)'
         errors.each {|error| @validation_errors[error.gsub(/ *\([^)]+\)/,'')] += 1 }     
@@ -84,26 +91,15 @@ class Importu::Importer
     end
   end
 
-  def find(record)
-    field_groups = self.class.finder_fields or return
-    field_groups.each do |field_group|
-      if field_group.respond_to?(:call) # proc
-        object = model_class.instance_exec(record, &field_group).first
-      else
-        conditions = Hash[field_group.map {|f| [f, record[f]]}]
-        object = model_class.where(conditions).first
-      end
-
-      return object if object
-    end
-    nil
-  end
-
-  def check_duplicate(record)
-    return unless id = record.respond_to?(:id) && record.id
-    if ((@encountered||=Hash.new(0))[id] += 1) > 1
+  protected def check_duplicate!(backend, object)
+    object_key = backend.object_key(object) or return
+    if ((@encountered||=Hash.new(0))[object_key] += 1) > 1
       raise Importu::DuplicateRecord, 'matches a previously imported record'
     end
+  end
+
+  private def definition
+    self.class
   end
 
 end
