@@ -158,3 +158,12 @@ importer.total # => 3
 importer.created # => 0
 importer.unchanged # => 3
 ```
+
+## Development
+
+Importu uses the [appraisal](https://github.com/thoughtbot/appraisal) gem to
+test against multiple frameworks and versions. To run the entire test suite:
+
+```bash
+bundle exec appraisal bundle exec rspec spec
+```
