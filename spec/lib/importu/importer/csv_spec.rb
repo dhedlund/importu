@@ -9,8 +9,7 @@ RSpec.describe Importu::Importer::Csv do
 
   let(:importer_class) do
     Class.new(described_class) do
-      model "PoroBook"
-      backend :dummy
+      model "PoroBook", backend: :dummy
       fields :title, :author, :isbn10, :pages, :release_date
     end
   end

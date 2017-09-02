@@ -10,7 +10,7 @@ class Importu::Backends
   end
 
   def guess_from_definition!(definition)
-    return lookup(definition.backend) if definition.backend
+    return lookup(definition.model_backend) if definition.model_backend
 
     matched = @registered.select do |name,backend|
       backend.supported_by_definition?(definition) rescue false

@@ -15,11 +15,10 @@ RSpec.describe Importu::Backends do
   end
 
   describe "#guess_from_definition!" do
-    context "when a backend is specified" do
+    context "when a model backend is specified" do
       let(:definition) do
         Class.new(Importu::Importer) do
-          backend :cherry_scones
-          model "MyModelGuest"
+          model "MyModelGuest", backend: :cherry_scones
         end
       end
 
@@ -39,7 +38,7 @@ RSpec.describe Importu::Backends do
       end
     end
 
-    context "when a backend is not specified" do
+    context "when a model backend is not specified" do
       let(:supported) { Class.new { def self.supported_by_definition?(*); true; end } }
       let(:unsupported) { Class.new { def self.supported_by_definition?(*); false; end } }
 

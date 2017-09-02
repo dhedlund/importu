@@ -33,7 +33,7 @@ module Importu::Dsl
     base.extend ClassMethods
     base.class_eval do
       config_dsl :record_class, default: Importu::Record
-      config_dsl :backend, :description
+      config_dsl :description
       config_dsl :allowed_actions, default: [:create]
       config_dsl :finder_fields, default: [[:id]]
       config_dsl :definitions, default: {}
@@ -77,10 +77,15 @@ module Importu::Dsl
 
     alias_method :field, :fields
 
-    def model(name = nil)
+    def model_backend
+      @model_backend
+    end
+
+    def model(name = nil, backend: nil)
       if name
         @model = name
-        @model_class = nil
+        @model_backend = backend
+        @model_class = nil # Clear memoized value
       else
         # Defer looking up model class until first use
         @model ||= nil # warning: instance variable @model not initialized
