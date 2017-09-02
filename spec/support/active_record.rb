@@ -16,7 +16,4 @@ if defined?(::ActiveRecord)
     add_index :books, :isbn10, unique: true
   end
 
-  class Book < ActiveRecord::Base
-  end
-
 end

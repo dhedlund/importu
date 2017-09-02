@@ -3,13 +3,14 @@ require "spec_helper"
 RSpec.describe Importu::Importer::Csv do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 
-  class PoroBook
-    # Plain old ruby object, no guessable backend
+  let!(:model) do
+    # Plain old ruby object for model, no guessable backend
+    stub_const "Book", Class.new
   end
 
   let(:importer_class) do
     Class.new(described_class) do
-      model "PoroBook", backend: :dummy
+      model "Book", backend: :dummy
       fields :title, :author, :isbn10, :pages, :release_date
     end
   end
@@ -71,7 +72,7 @@ RSpec.describe Importu::Importer::Csv do
     context "when a backend cannot be guessed from the model" do
       let(:importer_class) do
         Class.new(described_class) do
-          model "PoroBook"
+          model "Book"
           fields :title, :author, :isbn10, :pages, :release_date
         end
       end
