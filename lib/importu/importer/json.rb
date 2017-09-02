@@ -34,10 +34,7 @@ class Importu::Importer::Json < Importu::Importer
     end
   end
 
-
-  private
-
-  def write_error(data, msg)
+  private def write_error(data, msg)
     @error_records ||= []
     @error_records << data.merge("_errors" => msg)
   end

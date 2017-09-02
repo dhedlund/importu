@@ -78,26 +78,24 @@ class Importu::Record
     object
   end
 
-
-  private
-
-  attr_reader :object, :action # needed for exposing to instance_eval'd blocks
-
-  alias_method :record, :record_hash
-
-  def generate_record_hash
+  private def generate_record_hash
     definitions.inject({}) do |hash,(name,definition)|
       hash[name.to_sym] = field_value(name)
       hash
     end
   end
 
-  def method_missing(meth, *args, &block)
+  private def method_missing(meth, *args, &block)
     if converters[meth]
       convert(args[0], meth, args[1]||{}) # convert(name, type, options)
     else
       super
     end
   end
+
+  private
+
+  attr_reader :object, :action # needed for exposing to instance_eval'd blocks
+  alias_method :record, :record_hash # FIXME: used anymore, maybe also for ^?
 
 end

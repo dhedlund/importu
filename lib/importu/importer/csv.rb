@@ -40,10 +40,7 @@ class Importu::Importer::Csv < Importu::Importer
     end
   end
 
-
-  private
-
-  def write_error(data, msg)
+  private def write_error(data, msg)
     unless @writer
       @writer = ::CSV.new(outfile, @csv_options)
       @header["_errors"] = "_errors"
@@ -53,4 +50,5 @@ class Importu::Importer::Csv < Importu::Importer
     data["_errors"] = msg
     @writer << data
   end
+
 end

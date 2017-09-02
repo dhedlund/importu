@@ -42,10 +42,7 @@ class Importu::Importer::Xml < Importu::Importer
     end
   end
 
-
-  private
-
-  def add_xml_record_error(xml, text)
+  private def add_xml_record_error(xml, text)
     unless node = xml.xpath("./_errors").first
       node = Nokogiri::XML::Node.new "_errors", reader
       xml.add_child(node)
