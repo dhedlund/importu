@@ -3,12 +3,14 @@ require "spec_helper"
 RSpec.describe Importu::Importer::Csv do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 
-  class Book; end
+  class PoroBook
+    # Plain old ruby object, no guessable backend
+  end
 
   let(:importer_class) do
     Class.new(described_class) do
-      record_class Importu::Record::Dummy
-      model "Book"
+      model "PoroBook"
+      backend :dummy
       fields :title, :author, :isbn10, :pages, :release_date
     end
   end
@@ -62,12 +64,23 @@ RSpec.describe Importu::Importer::Csv do
 
   describe "#import!" do
     it "tries to import each record" do
-      num_records = importer.records.count
-      expect(importer).to receive(:import_record)
-        .exactly(num_records).times
-        .and_return(:unchanged)
-
       importer.import!
+      expect(importer.created).to eq 3
+      expect(importer.total).to eq 3
+    end
+
+    context "when a backend cannot be guessed from the model" do
+      let(:importer_class) do
+        Class.new(described_class) do
+          model "PoroBook"
+          fields :title, :author, :isbn10, :pages, :release_date
+        end
+      end
+
+      it "raises an error" do
+        importer # Ensure exception doesn't happen at initialization
+        expect { importer.import! }.to raise_error(Importu::BackendMatchError)
+      end
     end
   end
 

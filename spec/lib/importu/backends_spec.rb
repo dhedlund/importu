@@ -14,6 +14,88 @@ RSpec.describe Importu::Backends do
     end
   end
 
+  describe "#guess_from_definition!" do
+    context "when a backend is specified" do
+      let(:definition) do
+        Class.new(Importu::Importer) do
+          backend :cherry_scones
+          model "MyModelGuest"
+        end
+      end
+
+      context "and the backend is registered" do
+        let!(:backend) { registry.register(:cherry_scones, Class.new) }
+
+        it "returns the backend" do
+          expect(registry.guess_from_definition!(definition)).to eq backend
+        end
+      end
+
+      context "and the backend is not registered" do
+        it "raises a BackendNotRegistered error" do
+          expect { registry.guess_from_definition!(definition) }
+            .to raise_error(Importu::BackendNotRegistered)
+        end
+      end
+    end
+
+    context "when a backend is not specified" do
+      let(:supported) { Class.new { def self.supported_by_definition?(*); true; end } }
+      let(:unsupported) { Class.new { def self.supported_by_definition?(*); false; end } }
+
+      let(:definition) do
+        Class.new(Importu::Importer) do
+          model "MyModelGuest"
+        end
+      end
+
+      context "and no backends support the model" do
+        it "raises a BackendMatch error" do
+          expect { registry.guess_from_definition!(definition) }
+            .to raise_error(Importu::BackendMatchError)
+        end
+      end
+
+      context "and exactly one backend supports the model" do
+        before do
+          registry.register(:backend1, unsupported)
+          registry.register(:backend2, supported)
+        end
+
+        it "returns the supported backend" do
+          expect(registry.guess_from_definition!(definition)).to eq supported
+        end
+      end
+
+      context "and multiple backends support the model" do
+        before do
+          registry.register(:backend1, unsupported)
+          registry.register(:backend2, supported)
+          registry.register(:backend3, supported)
+        end
+
+        it "raises a BackendMatch error" do
+          expect { registry.guess_from_definition!(definition) }
+            .to raise_error(Importu::BackendMatchError)
+        end
+      end
+
+      context "and a backend raises an exception during checking" do
+        let(:broken) { Class.new { def self.supported_by_definition?(*); raise :hell; end } }
+
+        before do
+          registry.register(:backend1, broken)
+          registry.register(:backend2, unsupported)
+          registry.register(:backend3, supported)
+        end
+
+        it "ignores the backend" do
+          expect(registry.guess_from_definition!(definition)).to eq supported
+        end
+      end
+    end
+  end
+
   describe "#lookup" do
     let(:marvelous_impl) { Class.new }
     before { registry.register(:marvelous, marvelous_impl) }
@@ -43,6 +125,15 @@ RSpec.describe Importu::Backends do
   describe "#register" do
     let(:backend1) { Class.new }
     let(:backend2) { Class.new }
+
+    it "registers the backend" do
+      registry.register(:backend1, backend1)
+      expect(registry.lookup(:backend1)).to eq backend1
+    end
+
+    it "returns the backend that was registered" do
+      expect(registry.register(:backend1, backend1)).to eq backend1
+    end
 
     it "allows registering multiple backends" do
       registry.register(:backend1, backend1)

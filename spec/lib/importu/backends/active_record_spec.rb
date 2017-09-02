@@ -22,6 +22,12 @@ RSpec.describe "ActiveRecord Backend", :activerecord do
     it "imports new book records" do
       expect { importer.import! }.to change { Book.count }.by(3)
     end
+
+    it "records records as created" do
+      importer.import!
+      expect(importer.created).to eq 3
+      expect(importer.total).to eq 3
+    end
   end
 
 end

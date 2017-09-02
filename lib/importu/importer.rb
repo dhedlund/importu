@@ -98,7 +98,8 @@ class Importu::Importer
 
   private def backend
     @backend ||= begin
-      backend_impl = Importu::Backends.registry.lookup(:active_record)
+      registry = Importu::Backends.registry
+      backend_impl = registry.guess_from_definition!(definition)
       backend_impl.new(definition)
     end
   end

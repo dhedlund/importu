@@ -33,7 +33,7 @@ module Importu::Dsl
     base.extend ClassMethods
     base.class_eval do
       config_dsl :record_class, :default => Importu::Record
-      config_dsl :description
+      config_dsl :backend, :description
       config_dsl :allowed_actions, :default => [:create]
       config_dsl :finder_fields, :default => [[:id]]
       config_dsl :definitions, :default => {}

@@ -4,6 +4,10 @@ require "importu/exceptions"
 class Importu::Backends::ActiveRecord
   attr_reader :record
 
+  def self.supported_by_definition?(definition)
+    definition.model < ActiveRecord::Base
+  end
+
   def initialize(definition)
     @finder_fields = definition.finder_fields
     @model = definition.model
