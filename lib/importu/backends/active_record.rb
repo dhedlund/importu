@@ -1,3 +1,6 @@
+require "importu/backends"
+require "importu/exceptions"
+
 class Importu::Backends::ActiveRecord
   attr_reader :record
 
@@ -62,3 +65,5 @@ class Importu::Backends::ActiveRecord
   end
 
 end
+
+Importu::Backends.registry.register(:active_record, Importu::Backends::ActiveRecord)

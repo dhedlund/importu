@@ -52,8 +52,6 @@ class Importu::Importer
   end
 
   protected def import_record(record, &block)
-    backend = Importu::Backends::ActiveRecord.new(definition)
-
     begin
       object = backend.find(record)
 
@@ -95,6 +93,13 @@ class Importu::Importer
     object_key = backend.object_key(object) or return
     if ((@encountered||=Hash.new(0))[object_key] += 1) > 1
       raise Importu::DuplicateRecord, 'matches a previously imported record'
+    end
+  end
+
+  private def backend
+    @backend ||= begin
+      backend_impl = Importu::Backends.registry.lookup(:active_record)
+      backend_impl.new(definition)
     end
   end
 

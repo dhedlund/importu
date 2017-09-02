@@ -7,6 +7,7 @@ module Importu
 
   class InvalidDefinition < ImportuException; end
   class InvalidInput < ImportuException; end
+  class BackendNotRegistered < ImportuException; end
 
   class InvalidRecord < ImportuException
     attr_reader :validation_errors
