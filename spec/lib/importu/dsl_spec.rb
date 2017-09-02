@@ -34,11 +34,18 @@ RSpec.describe Importu::Importer do
     end
 
     it "can be overridden globally" do
-      custom_record_class = Class.new(Importu::Record)
       orig = Importu::Importer.record_class
-      Importu::Importer.record_class custom_record_class
-      expect(Importu::Importer.record_class).to eq custom_record_class
-      Importu::Importer.record_class orig
+      begin
+        custom_record_class = Class.new(Importu::Record)
+        Importu::Importer.record_class custom_record_class
+        expect(Importu::Importer.record_class).to eq custom_record_class
+
+        klass = Class.new(Importu::Importer)
+        expect(klass.record_class).to eq custom_record_class
+
+      ensure
+        Importu::Importer.record_class orig
+      end
     end
 
     it "can be overridden in a subclass" do
@@ -47,7 +54,9 @@ RSpec.describe Importu::Importer do
         record_class custom_record_class
       end
 
-      expect(klass.record_class).to eq custom_record_class
+      expect {
+        expect(klass.record_class).to eq custom_record_class
+      }.to_not change { Importu::Importer.record_class }
     end
   end
 end

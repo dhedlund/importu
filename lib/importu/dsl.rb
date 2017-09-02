@@ -37,7 +37,8 @@ module Importu::Dsl
       config_dsl :allowed_actions, default: [:create]
       config_dsl :finder_fields, default: [[:id]]
       config_dsl :definitions, default: {}
-      config_dsl :preprocessor, :postprocessor
+      config_dsl :preprocessor
+      config_dsl :postprocessor
       config_dsl :converters, default: {}
     end
   end
@@ -111,33 +112,22 @@ module Importu::Dsl
       converters[type] # FIXME: raise error if not found?
     end
 
-    def config_dsl(*methods)
-      options = methods.last.is_a?(Hash) ? methods.pop : {}
+    def config_dsl(meth, default: nil)
+      instance_variable_set("@#{meth}", IceNine.deep_freeze(default))
 
-      unknown_keys = options.keys - [:default] # Allowed keys
-      if unknown_keys.any?
-        raise ArgumentError, "Unknown key: #{unknown_keys.join(", ")}"
-      end
-
-      default = IceNine.deep_freeze(options[:default] || nil)
-
-      methods.each do |m|
-        instance_variable_set("@#{m}", default)
-
-        singleton_class.send(:define_method, m) do |*args,&block|
-          if block || !args.empty?
-            val = (block ? instance_eval(&block) : args[0])
-            instance_variable_set("@#{m}", IceNine.deep_freeze(val))
-          else
-            instance_variable_defined?("@#{m}") \
-              ? instance_variable_get("@#{m}")
-              : superclass.send(m)
-          end
+      singleton_class.send(:define_method, meth) do |*args,&block|
+        if block || !args.empty?
+          val = (block ? instance_eval(&block) : args[0])
+          instance_variable_set("@#{meth}", IceNine.deep_freeze(val))
+        else
+          instance_variable_defined?("@#{meth}") \
+            ? instance_variable_get("@#{meth}")
+            : superclass.send(meth)
         end
       end
 
-      # make dsl methods available to importer instances
-      delegate methods => :singleton_class
+      # make dsl method available to importer instances
+      delegate meth => :singleton_class
     end
   end
 
