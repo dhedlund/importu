@@ -1,5 +1,7 @@
 require "ice_nine"
 
+require "importu/record"
+
 # importer definition examples:
 #   allow_actions :create
 #   allow_actions :create, :update

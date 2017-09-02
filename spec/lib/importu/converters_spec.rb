@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/importer"
+
 RSpec.describe Importu::Importer do
   subject(:record) do
     importer = Importu::Importer.new(StringIO.new)

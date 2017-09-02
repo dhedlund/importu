@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/exceptions"
+
 RSpec.describe Importu::ImportuException do
   subject(:exception) { Importu::ImportuException.new }
 

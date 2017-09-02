@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/summary"
+
 RSpec.describe Importu::Summary do
   subject(:summary) { Importu::Summary.new }
 

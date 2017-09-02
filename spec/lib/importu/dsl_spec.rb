@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/importer"
+
 RSpec.describe Importu::Importer do
   describe ".model" do
     let(:importer) { Class.new(Importu::Importer) }

@@ -1,5 +1,8 @@
 require "spec_helper"
 
+require "importu/backends"
+require "importu/importer"
+
 RSpec.describe Importu::Backends do
   subject(:registry) { described_class.new }
 

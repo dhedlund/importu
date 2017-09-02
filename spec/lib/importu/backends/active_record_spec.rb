@@ -1,5 +1,8 @@
 require "spec_helper"
 
+require "importu/backends/active_record"
+require "importu/importer/csv"
+
 RSpec.describe "ActiveRecord Backend", :activerecord do
   let(:fixture_path) { File.expand_path("../../../../fixtures", __FILE__) }
   let(:infile) { File.join(fixture_path, "books.csv") }

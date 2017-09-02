@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/importer/csv"
+
 RSpec.describe "Dummy Backend" do
   let(:fixture_path) { File.expand_path("../../../../fixtures", __FILE__) }
   let(:infile) { File.join(fixture_path, "books.csv") }

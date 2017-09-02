@@ -1,3 +1,7 @@
+require "importu/backends"
+require "importu/converters"
+require "importu/dsl"
+require "importu/exceptions"
 require "importu/summary"
 
 class Importu::Importer

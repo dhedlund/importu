@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/importer/csv"
+
 RSpec.describe Importu::Importer::Csv do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 

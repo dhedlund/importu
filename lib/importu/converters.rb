@@ -1,5 +1,7 @@
 require "bigdecimal"
 
+require "importu/exceptions"
+
 module Importu::Converters
   def self.included(base)
     base.class_eval do

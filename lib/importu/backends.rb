@@ -1,3 +1,5 @@
+require "importu/exceptions"
+
 class Importu::Backends
   def self.registry
     @registry ||= self.new

@@ -1,5 +1,8 @@
 require "nokogiri"
 
+require "importu/importer"
+require "importu/exceptions"
+
 class Importu::Importer::Xml < Importu::Importer
   config_dsl :records_xpath
 

@@ -1,5 +1,8 @@
 require "spec_helper"
 
+require "importu/importer"
+require "importu/record"
+
 RSpec.describe Importu::Record do
 
   let(:data) { Hash.new }

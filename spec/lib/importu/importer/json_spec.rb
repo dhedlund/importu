@@ -1,5 +1,7 @@
 require "spec_helper"
 
+require "importu/importer/json"
+
 RSpec.describe Importu::Importer::Json do
   let(:data) { nil } # string version of input file
   subject(:importer) { Importu::Importer::Json.new(StringIO.new(data)) }
