@@ -1,15 +1,17 @@
+require "importu/summary"
+
 class Importu::Importer
-  attr_reader :options, :infile, :outfile, :validation_errors
-  attr_reader :total, :invalid, :created, :updated, :unchanged
+  attr_reader :options, :infile, :outfile
 
   include Importu::Dsl
   include Importu::Converters
 
+  # Summary helpers
+  delegate [:total, :invalid, :created, :updated, :unchanged] => :summary
+  delegate [:validation_errors, :result_msg] => :summary
+
   def initialize(infile, options = {})
     @options = options
-    @total = @invalid = @created = @updated = @unchanged = 0
-    @validation_errors = Hash.new(0) # counter for each validation error
-
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, 'rb')
   end
 
@@ -22,24 +24,12 @@ class Importu::Importer
   end
 
   def import!(&block)
+    @summary = nil # Reset counters
     records.each {|r| import_record(r, &block) }
   end
 
-  def result_msg
-    msg = <<-END.strip_heredoc
-      Total:     #{@total}
-      Created:   #{@created}
-      Updated:   #{@updated}
-      Invalid:   #{@invalid}
-      Unchanged: #{@unchanged}
-    END
-
-    if @validation_errors.any?
-      msg << "\nValidation Errors:\n"
-      msg << @validation_errors.map {|e,c| "  - #{e}: #{c}" }.join("\n")
-    end
-
-    msg
+  def summary
+    @summary ||= Importu::Summary.new
   end
 
 
@@ -66,26 +56,12 @@ class Importu::Importer
         # FIXME: mark_encountered(object) ?
       end
 
-      case result
-        when :created   then @created   += 1
-        when :updated   then @updated   += 1
-        when :unchanged then @unchanged += 1
-      end
+      summary.record(result)
 
     rescue Importu::InvalidRecord => e
-      # FIXME: Some of this may be ActiveRecord specific?
-      if errors = e.validation_errors
-        # convention: assume data-specific error messages put data inside parens, e.g. 'Dupe record found (sysnum 5489x)'
-        errors.each {|error| @validation_errors[error.gsub(/ *\([^)]+\)/,'')] += 1 }     
-      else
-        @validation_errors["#{e.name}: #{e.message}"] += 1
-      end
-
-      @invalid += 1
+      errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
+      summary.record(:invalid, errors: errors)
       raise
-
-    ensure
-      @total += 1
     end
   end
 
