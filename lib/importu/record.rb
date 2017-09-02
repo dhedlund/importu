@@ -80,7 +80,7 @@ class Importu::Record
   end
 
   private def generate_record_hash
-    field_definitions.inject({}) do |hash,(name,definition)|
+    field_definitions.keys.inject({}) do |hash,name|
       hash[name.to_sym] = field_value(name)
       hash
     end

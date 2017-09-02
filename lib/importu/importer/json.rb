@@ -22,7 +22,7 @@ class Importu::Importer::Json < Importu::Importer
   end
 
   def records(&block)
-    enum = Enumerator.new do |yielder|
+    Enumerator.new do |yielder|
       @reader.each_with_index do |data,idx|
         yielder.yield record_class.new(self.definition, data, data)
       end

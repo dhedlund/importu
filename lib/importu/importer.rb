@@ -5,7 +5,7 @@ require "importu/exceptions"
 require "importu/summary"
 
 class Importu::Importer
-  attr_reader :options, :infile, :outfile
+  attr_reader :options, :infile
 
   include Importu::Dsl
   include Importu::Converters
