@@ -1,4 +1,4 @@
-require 'nokogiri'
+require "nokogiri"
 
 class Importu::Importer::Xml < Importu::Importer
   config_dsl :records_xpath
@@ -8,7 +8,7 @@ class Importu::Importer::Xml < Importu::Importer
 
     xml_options = {}.merge(options[:xml_options]||{})
     if reader.root.nil?
-      raise Importu::InvalidInput, 'Empty document'
+      raise Importu::InvalidInput, "Empty document"
     elsif reader.errors.any?
       raise Importu::InvalidInput, reader.errors.join("\n")
     end
@@ -19,7 +19,7 @@ class Importu::Importer::Xml < Importu::Importer
   end
 
   def import!(&block)
-    reader.xpath('//_errors').remove
+    reader.xpath("//_errors").remove
     result = super
     outfile.write(reader) if @invalid > 0
     result
@@ -47,11 +47,11 @@ class Importu::Importer::Xml < Importu::Importer
   private
 
   def add_xml_record_error(xml, text)
-    unless node = xml.xpath('./_errors').first
-      node = Nokogiri::XML::Node.new '_errors', reader
+    unless node = xml.xpath("./_errors").first
+      node = Nokogiri::XML::Node.new "_errors", reader
       xml.add_child(node)
     end
-    node.content = text + ','
+    node.content = text + ","
   end
 
 end

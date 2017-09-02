@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Importu::Importer::Json do
   let(:data) { nil } # string version of input file

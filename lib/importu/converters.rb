@@ -1,4 +1,4 @@
-require 'bigdecimal'
+require "bigdecimal"
 
 module Importu::Converters
   def self.included(base)
@@ -51,8 +51,8 @@ module Importu::Converters
         value = convert(name, :clean, options)
         case value
           when nil then nil
-          when true, 'true', 'yes', '1', 1 then true
-          when false, 'false', 'no', '0', 0 then false
+          when true, "true", "yes", "1", 1 then true
+          when false, "false", "no", "0", 0 then false
           else raise ArgumentError, "invalid boolean value '#{value}'"
         end
       end

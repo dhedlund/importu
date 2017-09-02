@@ -12,7 +12,7 @@ class Importu::Importer
 
   def initialize(infile, options = {})
     @options = options
-    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, 'rb')
+    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
   end
 
   def records
@@ -20,7 +20,7 @@ class Importu::Importer
   end
 
   def outfile
-    @outfile ||= Tempfile.new('import', Rails.root.join('tmp'))
+    @outfile ||= Tempfile.new("import", Rails.root.join("tmp"))
   end
 
   def import!(&block)
@@ -68,7 +68,7 @@ class Importu::Importer
   protected def check_duplicate!(backend, object)
     object_key = backend.object_key(object) or return
     if ((@encountered||=Hash.new(0))[object_key] += 1) > 1
-      raise Importu::DuplicateRecord, 'matches a previously imported record'
+      raise Importu::DuplicateRecord, "matches a previously imported record"
     end
   end
 

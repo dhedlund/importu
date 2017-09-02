@@ -1,4 +1,4 @@
-require 'multi_json'
+require "multi_json"
 
 class Importu::Importer::Json < Importu::Importer
   def initialize(infile, options = {})
@@ -39,7 +39,7 @@ class Importu::Importer::Json < Importu::Importer
 
   def write_error(data, msg)
     @error_records ||= []
-    @error_records << data.merge('_errors' => msg)
+    @error_records << data.merge("_errors" => msg)
   end
 
 end

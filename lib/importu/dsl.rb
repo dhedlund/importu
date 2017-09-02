@@ -1,4 +1,4 @@
-require 'ice_nine'
+require "ice_nine"
 
 # importer definition examples:
 #   allow_actions :create
@@ -12,11 +12,11 @@ require 'ice_nine'
 #     scoped.where(:foo => record[:name].downcase)
 #   end
 #
-#   field  :field1, :label => 'Field 1'
+#   field  :field1, :label => "Field 1"
 #   fields :field1, :field2, :field3
 #   fields :field1, :field2, convert_to(:integer)
 #   fields :field1, :field2 do |data,definition|
-#     Time.strptime(data[definition[:label]], '%d/%m/%Y')
+#     Time.strptime(data[definition[:label]], "%d/%m/%Y")
 #   end
 #
 # allow actions:
@@ -61,7 +61,7 @@ module Importu::Dsl
         definition = (@definitions[field_name]||{}).merge(options)
 
         definition[:name] = field_name
-        definition[:label] ||= (options['label'] || field_name).to_s
+        definition[:label] ||= (options["label"] || field_name).to_s
         definition[:required] = true unless definition.key?(:required)
         definition[:create] = true unless definition.key?(:create)
         definition[:update] = true unless definition.key?(:update)
@@ -111,7 +111,7 @@ module Importu::Dsl
 
       unknown_keys = options.keys - [:default] # Allowed keys
       if unknown_keys.any?
-        raise ArgumentError, "Unknown key: #{unknown_keys.join(', ')}"
+        raise ArgumentError, "Unknown key: #{unknown_keys.join(", ")}"
       end
 
       default = IceNine.deep_freeze(options[:default] || nil)

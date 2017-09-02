@@ -16,7 +16,7 @@ RSpec.describe Importu::Importer::Csv do
   end
 
   let(:data) do
-    <<-DATA.gsub(/^\s+/, '')
+    <<-DATA.gsub(/^\s+/, "")
       "isbn10","title","author","release_date","pages"
       "0596516177","The Ruby Programming Language","David Flanagan and Yukihiro Matsumoto","Feb 1, 2008","448"
       "1449355978","Computer Science Programming Basics in Ruby","Ophir Frieder, Gideon Frieder and David Grossman","May 1, 2013","188"

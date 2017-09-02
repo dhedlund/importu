@@ -56,8 +56,8 @@ class Importu::Backends::ActiveRecord
     rescue ActiveRecord::RecordInvalid => e
       error_msgs = object.errors.map do |name,message|
         name = record.definitions[name][:label] if record.definitions[name]
-        name == 'base' ? message : "#{name} #{message}"
-      end.join(', ')
+        name == "base" ? message : "#{name} #{message}"
+      end.join(", ")
 
       raise Importu::InvalidRecord, error_msgs, object.errors.full_messages
     end

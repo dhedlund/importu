@@ -1,4 +1,4 @@
-require 'csv'
+require "csv"
 
 class Importu::Importer::Csv < Importu::Importer
   def initialize(infile, csv_options: {}, **options)
@@ -16,7 +16,7 @@ class Importu::Importer::Csv < Importu::Importer
     @data_pos = @infile.pos
 
     if @header.nil?
-      raise Importu::InvalidInput, 'Empty document'
+      raise Importu::InvalidInput, "Empty document"
     end
   end
 
@@ -46,11 +46,11 @@ class Importu::Importer::Csv < Importu::Importer
   def write_error(data, msg)
     unless @writer
       @writer = ::CSV.new(outfile, @csv_options)
-      @header['_errors'] = '_errors'
+      @header["_errors"] = "_errors"
       @writer << @header
     end
 
-    data['_errors'] = msg
+    data["_errors"] = msg
     @writer << data
   end
 end
