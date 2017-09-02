@@ -14,10 +14,10 @@ class Importu::Backends::ActiveRecord
 
     @finder_fields.each do |field_group|
       if field_group.respond_to?(:call) # proc
-        object = model_class.instance_exec(record, &field_group).first
+        object = @model.instance_exec(record, &field_group).first
       else
         conditions = Hash[field_group.map {|f| [f, record[f]]}]
-        object = model_class.where(conditions).first
+        object = @model.where(conditions).first
       end
 
       return object if object
@@ -31,7 +31,7 @@ class Importu::Backends::ActiveRecord
   end
 
   def create(record, &block)
-    object = model_class.new
+    object = @model.new
     record.assign_to(object, :create, &block)
     save(record, object)
     :created
@@ -41,10 +41,6 @@ class Importu::Backends::ActiveRecord
     record.assign_to(object, :update, &block)
     save(record, object)
     :updated
-  end
-
-  private def model_class
-    @model_class ||= self.class.const_get(@model)
   end
 
   private def save(record, object)
