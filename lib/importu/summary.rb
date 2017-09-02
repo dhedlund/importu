@@ -37,9 +37,7 @@ class Importu::Summary
     msg
   end
 
-  def to_s
-    result_msg
-  end
+  alias_method :to_s, :result_msg
 
   private def record_errors(errors)
     errors.each do |error|

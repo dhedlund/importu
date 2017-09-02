@@ -36,7 +36,7 @@ module Importu::Dsl
       config_dsl :description
       config_dsl :allowed_actions, default: [:create]
       config_dsl :finder_fields, default: [[:id]]
-      config_dsl :definitions, default: {}
+      config_dsl :field_definitions, default: {}
       config_dsl :preprocessor
       config_dsl :postprocessor
       config_dsl :converters, default: {}
@@ -57,9 +57,9 @@ module Importu::Dsl
       options = fields.last.is_a?(Hash) ? fields.pop : {}
       options = Hash[options.map {|k,v| [k.to_sym, v] }]
 
-      @definitions ||= Marshal.load(Marshal.dump(definitions))
+      @field_definitions ||= Marshal.load(Marshal.dump(field_definitions))
       fields.compact.each do |field_name|
-        definition = (@definitions[field_name]||{}).merge(options)
+        definition = (@field_definitions[field_name]||{}).merge(options)
 
         definition[:name] = field_name
         definition[:label] ||= (options["label"] || field_name).to_s
@@ -70,7 +70,7 @@ module Importu::Dsl
         definition[:converter] = block if block
         definition[:converter] ||= converters[:clean]
 
-        @definitions[field_name] = definition
+        @field_definitions[field_name] = definition
       end
 
       return

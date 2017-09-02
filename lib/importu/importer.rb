@@ -23,6 +23,10 @@ class Importu::Importer
     @outfile ||= Tempfile.new("import", Rails.root.join("tmp"))
   end
 
+  def definition
+    self.class
+  end
+
   def import!(&block)
     @summary = nil # Reset counters
     records.each {|r| import_record(r, &block) }
@@ -78,10 +82,6 @@ class Importu::Importer
       backend_impl = registry.guess_from_definition!(definition)
       backend_impl.new(definition)
     end
-  end
-
-  private def definition
-    self.class
   end
 
 end

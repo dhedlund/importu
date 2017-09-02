@@ -28,7 +28,7 @@ class Importu::Importer::Xml < Importu::Importer
     Enumerator.new do |yielder|
       reader.xpath(records_xpath).each do |xml|
         data = Hash[xml.elements.map {|e| [e.name, e.content]}]
-        yielder.yield record_class.new(self, data, xml)
+        yielder.yield record_class.new(self.definition, data, xml)
       end
     end
   end

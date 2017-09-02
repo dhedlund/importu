@@ -1,15 +1,14 @@
 class Importu::Record
-  attr_reader :importer, :data, :raw_data
+  attr_reader :definition, :data, :raw_data
 
   include Enumerable
 
   extend Forwardable
   delegate [:keys, :values, :each, :[], :key?] => :record_hash
-  delegate [:preprocessor, :postprocessor] => :importer
-  delegate [:definitions, :converters] => :importer
+  delegate [:field_definitions, :converters] => :definition
 
-  def initialize(importer, data, raw_data)
-    @importer, @data, @raw_data = importer, data, raw_data
+  def initialize(definition, data, raw_data)
+    @definition, @data, @raw_data = definition, data, raw_data
   end
 
   def record_hash
@@ -26,7 +25,7 @@ class Importu::Record
       or raise "converter not found: #{type}"
 
     # TODO: defining options in field definition is deprecated
-    definition = definitions[name] || {}
+    definition = field_definitions[name] || {}
     options = definition.merge(options)
 
     begin
@@ -44,21 +43,21 @@ class Importu::Record
   end
 
   def field_value(name, options = {})
-    definition = definitions[name] \
+    field_definition = field_definitions[name] \
       or raise "importer field not defined: #{name}"
 
-    convert(name, nil, definition.merge(options))
+    convert(name, nil, field_definition.merge(options))
   end
 
   def assign_to(object, action, &block)
     @object, @action = object, action
 
-    instance_eval(&preprocessor) if preprocessor
+    instance_eval(&definition.preprocessor) if definition.preprocessor
     instance_exec(object, record_hash, &block) if block
 
     # filter out any fields we're not allowed to copy for this action
-    allowed_fields = definitions.select {|n,d| d[action] }.keys
-    concrete_fields = definitions.reject {|n,d| d[:abstract] }.keys
+    allowed_fields = field_definitions.select {|n,d| d[action] }.keys
+    concrete_fields = field_definitions.reject {|n,d| d[:abstract] }.keys
     field_names = record_hash.keys & allowed_fields & concrete_fields
 
     unsupported = field_names.reject {|n| object.respond_to?("#{n}=") }
@@ -73,13 +72,13 @@ class Importu::Record
       end
     end
 
-    instance_eval(&postprocessor) if postprocessor
+    instance_eval(&definition.postprocessor) if definition.postprocessor
 
     object
   end
 
   private def generate_record_hash
-    definitions.inject({}) do |hash,(name,definition)|
+    field_definitions.inject({}) do |hash,(name,definition)|
       hash[name.to_sym] = field_value(name)
       hash
     end

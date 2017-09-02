@@ -8,7 +8,7 @@ RSpec.describe Importu::Importer do
 
   describe ":raw converter" do
     it "uses definition's label as key when looking up data" do
-      allow(record).to receive(:definitions).and_return({ field1: { label: "field1", required: true } })
+      allow(record).to receive(:field_definitions).and_return({ field1: { label: "field1", required: true } })
       allow(record).to receive(:data).and_return({ "field1" => " value1 ", "field2" => "value2" })
       expect(record.convert(:field1, :raw)).to eq " value1 "
     end
@@ -18,7 +18,7 @@ RSpec.describe Importu::Importer do
     end
 
     it "raises MissingField if field data not defined" do
-      allow(record).to receive(:definitions).and_return({ field1: { required: true } })
+      allow(record).to receive(:field_definitions).and_return({ field1: { required: true } })
       expect { record.convert(:field1, :raw) }.to raise_error(Importu::MissingField)
     end
   end

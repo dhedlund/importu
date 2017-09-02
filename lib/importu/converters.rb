@@ -4,7 +4,7 @@ module Importu::Converters
   def self.included(base)
     base.class_eval do
       converter :raw do |name,options|
-        definition = definitions[name] \
+        definition = field_definitions[name] \
           or raise Importu::InvalidDefinition, "importer field not defined: #{name}"
 
         label = definition[:label]

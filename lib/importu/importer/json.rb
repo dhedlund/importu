@@ -21,7 +21,7 @@ class Importu::Importer::Json < Importu::Importer
   def records(&block)
     enum = Enumerator.new do |yielder|
       @reader.each_with_index do |data,idx|
-        yielder.yield record_class.new(self, data, data)
+        yielder.yield record_class.new(self.definition, data, data)
       end
     end
   end
