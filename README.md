@@ -51,12 +51,12 @@ require "importu"
 
 class BookImporter < Importu::Importer::Csv
   # if you want to define multiple fields with similar rules, use "fields"
-  # NOTE: ":required => true" is redundant in this example; any defined
+  # NOTE: `required: true` is redundant in this example; any defined
   # fields must have a corresponding column in the source data by default
-  fields :title, :isbn10, :authors, :required => true
+  fields :title, :isbn10, :authors, required: true
 
   # to mark a field as optional in the source data
-  field :pages, :required => false
+  field :pages, required: false
 
   # you can reference the same field multiple times and apply rules
   # incrementally; this provides a lot of flexibility in describing your
@@ -64,16 +64,16 @@ class BookImporter < Importu::Importer::Csv
   # explicitly stating that "these are required"; the importer becomes the
   # reference document:
   #
-  # fields :title, :isbn10, :authors, :release_date, :required => true
-  # fields :pages, :required => false
+  # fields :title, :isbn10, :authors, :release_date, required: true
+  # fields :pages, required: false
   #
   # ...or keep all the rules for that field with that field, whatever makes
   # sense for your particular use case.
 
   # if your field is not named the same as the source data, you can use
-  # :label => "..." to reference the correct field, where the label is what
+  # `label: "..."` to reference the correct field, where the label is what
   # the field is labelled in the source data
-  field :authors, :label => "author"
+  field :authors, label: "author"
 
   # you can convert fields using one of the built-in converters
   field :pages, &convert_to(:integer)
@@ -82,7 +82,7 @@ class BookImporter < Importu::Importer::Csv
   # some converters allow you to pass additional arguments; in the case of
   # the date converter, you can pass an explicit format and it will raise an
   # error if a date is encountered that doesn't match
-  field :release_date, &convert_to(:date, :format => "%b %d, %Y")
+  field :release_date, &convert_to(:date, format: "%b %d, %Y")
 
   # passing a block to a field definition allows you to add your own logic
   # for converting data or checking for unexpected values
@@ -100,7 +100,7 @@ class BookImporter < Importu::Importer::Csv
   end
 
   # abstract fields that are not part of the original data set can be created
-  field :by_matz, :abstract => true do
+  field :by_matz, abstract: true do
     # field conversion rules can reference other fields; the field value is
     # what would be returned after referenced field's rules have been applied
     field_value(:authors).include?("Yukihiro Matsumoto")
@@ -113,17 +113,17 @@ A more condensed version of the above, with all the rules grouped into individua
 class BookImporter < Importu::Importer::Csv
   fields :title, :isbn10
 
-  field :authors, :label => "author" do
+  field :authors, label: "author" do
     authors = clean(:authors).to_s.split(/(?:, )|(?: and )|(?: & )/i)
     raise ArgumentError, "at least one author is required" if authors.none?
 
     authors
   end
 
-  field :pages, :required => false, &convert_to(:integer)
-  field :release_date, &convert_to(:date, :format => "%b %d, %Y")
+  field :pages, required: false, &convert_to(:integer)
+  field :release_date, &convert_to(:date, format: "%b %d, %Y")
 
-  field :by_matz, :abstract => true do
+  field :by_matz, abstract: true do
     field_value(:authors).include?("Yukihiro Matsumoto")
   end
 end

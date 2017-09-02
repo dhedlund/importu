@@ -3,10 +3,9 @@ require "nokogiri"
 class Importu::Importer::Xml < Importu::Importer
   config_dsl :records_xpath
 
-  def initialize(infile, options = {})
-    super
+  def initialize(infile, xml_options: {}, **options)
+    super(infile, options)
 
-    xml_options = {}.merge(options[:xml_options]||{})
     if reader.root.nil?
       raise Importu::InvalidInput, "Empty document"
     elsif reader.errors.any?

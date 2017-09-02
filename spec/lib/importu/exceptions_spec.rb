@@ -44,7 +44,7 @@ RSpec.describe Importu::ImportuException do
   end
 
   describe Importu::MissingField do
-    let(:definition) { { :name => "foo_field_1", :label => "Field 1" } }
+    let(:definition) { { name: "foo_field_1", label: "Field 1" } }
     subject(:exception) { Importu::MissingField.new(definition) }
 
     it "should be a subclass of Importu::InvalidRecord" do
@@ -65,14 +65,14 @@ RSpec.describe Importu::ImportuException do
       end
 
       context "field definition has a label" do
-        let(:definition) { { :label => "Field 2" } }
+        let(:definition) { { label: "Field 2" } }
         it "mentions missing field's label" do
           expect(exception.message).to match(/Field 2/)
         end
       end
 
       context "field definition is missing a label" do
-        let(:definition) { { :name => "foo_field_2" } }
+        let(:definition) { { name: "foo_field_2" } }
 
         it "mentions missing field's name" do
           expect(exception.message).to match(/foo_field_2/)

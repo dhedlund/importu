@@ -9,10 +9,10 @@ require "ice_nine"
 #   find_by :id, [:name, :date] # try name/date combo if no id match
 #   find_by nil # never try to look up records, assume :create
 #   find_by do |record|
-#     scoped.where(:foo => record[:name].downcase)
+#     scoped.where(foo: record[:name].downcase)
 #   end
 #
-#   field  :field1, :label => "Field 1"
+#   field  :field1, label: "Field 1"
 #   fields :field1, :field2, :field3
 #   fields :field1, :field2, convert_to(:integer)
 #   fields :field1, :field2 do |data,definition|
@@ -32,13 +32,13 @@ module Importu::Dsl
     base.extend Forwardable
     base.extend ClassMethods
     base.class_eval do
-      config_dsl :record_class, :default => Importu::Record
+      config_dsl :record_class, default: Importu::Record
       config_dsl :backend, :description
-      config_dsl :allowed_actions, :default => [:create]
-      config_dsl :finder_fields, :default => [[:id]]
-      config_dsl :definitions, :default => {}
+      config_dsl :allowed_actions, default: [:create]
+      config_dsl :finder_fields, default: [[:id]]
+      config_dsl :definitions, default: {}
       config_dsl :preprocessor, :postprocessor
-      config_dsl :converters, :default => {}
+      config_dsl :converters, default: {}
     end
   end
 

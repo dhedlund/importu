@@ -1,8 +1,8 @@
 require "multi_json"
 
 class Importu::Importer::Json < Importu::Importer
-  def initialize(infile, options = {})
-    super
+  def initialize(infile, **options)
+    super(infile, options)
 
     begin
       infile.rewind

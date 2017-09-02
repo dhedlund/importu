@@ -51,20 +51,20 @@ RSpec.describe Importu::Record do
 
   describe "#definitions" do
     it "returns the definitions defined in importer on construction" do
-      allow(importer).to receive(:definitions).and_return({ :foo => :bar })
+      allow(importer).to receive(:definitions).and_return({ foo: :bar })
       expect(record.definitions).to be importer.definitions
     end
   end
 
   describe "#record_hash" do
     it "tries to generate a record hash on first access" do
-      expected = { :foo => 1, :bar => 2 }
+      expected = { foo: 1, bar: 2 }
       expect(record).to receive(:generate_record_hash).and_return(expected)
       expect(record.record_hash).to eq expected
     end
 
     it "should not try to regenerate record hash no subsequent access" do
-      expected = { :foo => 1, :bar => 2 }
+      expected = { foo: 1, bar: 2 }
       expect(record).to receive(:generate_record_hash).once.and_return(expected)
       record.record_hash
       expect(record.record_hash).to eq expected
@@ -99,22 +99,22 @@ RSpec.describe Importu::Record do
       context "with a :default option" do
         it "returns data value if data value not nil" do
           record.converters[:clean] = proc { "value1" }
-          expect(record.convert(:field1, :clean, :default => "foobar")).to eq "value1"
+          expect(record.convert(:field1, :clean, default: "foobar")).to eq "value1"
         end
 
         it "returns default value if data value is nil" do
           record.converters[:clean] = proc { nil }
-          expect(record.convert(:field1, :clean, :default => "foobar")).to eq "foobar"
+          expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "returns default value if data field is missing and not required" do
           record.converters[:clean] = proc { raise Importu::MissingField, "field1" }
-          expect(record.convert(:field1, :clean, :default => "foobar")).to eq "foobar"
+          expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "raises an exception if data field is missing and is required" do
           record.converters[:clean] = proc { raise Importu::MissingField, "field1" }
-          expect { record.convert(:field1, :clean, :default => "foobar", :required => true) }.to raise_error(Importu::MissingField)
+          expect { record.convert(:field1, :clean, default: "foobar", required: true) }.to raise_error(Importu::MissingField)
         end
       end
     end

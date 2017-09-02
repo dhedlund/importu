@@ -2,7 +2,6 @@ require "importu/backends"
 require "importu/exceptions"
 
 class Importu::Backends::ActiveRecord
-  attr_reader :record
 
   def self.supported_by_definition?(definition)
     definition.model < ActiveRecord::Base

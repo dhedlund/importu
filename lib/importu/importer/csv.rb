@@ -2,13 +2,13 @@ require "csv"
 
 class Importu::Importer::Csv < Importu::Importer
   def initialize(infile, csv_options: {}, **options)
-    super
+    super(infile, options)
 
     @csv_options = {
-      :headers        => true,
-      :return_headers => true,
-      :write_headers  => true,
-      :skip_blanks    => true,
+      headers:        true,
+      return_headers: true,
+      write_headers:  true,
+      skip_blanks:    true,
     }.merge(csv_options)
 
     @reader = ::CSV.new(@infile, @csv_options)

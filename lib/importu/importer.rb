@@ -6,7 +6,7 @@ class Importu::Importer
   include Importu::Dsl
   include Importu::Converters
 
-  # Summary helpers
+  # Summary helpers (deprecated, please use #summary instead)
   delegate [:total, :invalid, :created, :updated, :unchanged] => :summary
   delegate [:validation_errors, :result_msg] => :summary
 
