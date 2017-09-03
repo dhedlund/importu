@@ -38,11 +38,8 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
     it "correctly summarizes import statistics" do
       importer.import!
-      expect(importer.created).to eq 3
-      expect(importer.updated).to eq 0
-      expect(importer.unchanged).to eq 0
-      expect(importer.invalid).to eq 0
-      expect(importer.total).to eq 3
+      expect(importer.summary.to_hash.stringify_keys)
+        .to eq expected_summary_json("books1")
     end
 
     it "correctly saves imported data in the model" do

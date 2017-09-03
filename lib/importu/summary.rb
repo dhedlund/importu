@@ -37,6 +37,17 @@ class Importu::Summary
     msg
   end
 
+  def to_hash
+    {
+      created: created,
+      invalid: invalid,
+      total: total,
+      unchanged: unchanged,
+      updated: updated,
+      validation_errors: validation_errors,
+    }
+  end
+
   alias_method :to_s, :result_msg
 
   private def record_errors(errors)

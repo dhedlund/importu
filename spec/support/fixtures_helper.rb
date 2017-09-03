@@ -4,16 +4,24 @@ module FixturesHelper
   end
 
   def expected_model_json(name)
-    @expected_model ||= Hash.new do |hash, name|
-      data = File.read(File.join(fixtures_path, name, "model.json"))
-      JSON.parse(data)
-    end
+    load_fixture_json(name, "model.json")
+  end
 
-    @expected_model[name]
+  def expected_summary_json(name)
+    load_fixture_json(name, "summary.json")
   end
 
   def fixtures_path
     File.expand_path("../../fixtures", __FILE__)
+  end
+
+  private def load_fixture_json(*path_parts)
+    @fixture_json_cache ||= Hash.new do |hash, name|
+      data = File.read(File.join(fixtures_path, *path_parts))
+      JSON.parse(data)
+    end
+
+    @fixture_json_cache[path_parts]
   end
 
 end

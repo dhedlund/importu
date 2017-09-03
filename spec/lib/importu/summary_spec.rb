@@ -65,6 +65,42 @@ RSpec.describe Importu::Summary do
     end
   end
 
+  describe "#to_hash" do
+    it "returns summary counts as a hash" do
+      5.times { summary.record(:created) }
+      4.times { summary.record(:updated) }
+      3.times { summary.record(:unchanged) }
+      2.times { summary.record(:invalid, errors: ["foo was invalid"]) }
+      1.times { summary.record(:invalid, errors: ["bar was invalid"]) }
+
+      expect(summary.to_hash).to include({
+        created: 5,
+        invalid: 3,
+        unchanged: 3,
+        updated: 4,
+        total: 15,
+      })
+    end
+
+    context "when there are no validation errors" do
+      it "includes an empty hash of errors" do
+        expect(summary.to_hash[:validation_errors]).to eq({})
+      end
+    end
+
+    context "when there are validation errors" do
+      it "includes a breakdown of errors" do
+        2.times { summary.record(:invalid, errors: ["foo was invalid"]) }
+        1.times { summary.record(:invalid, errors: ["bar was invalid"]) }
+
+        expect(summary.to_hash[:validation_errors]).to eq({
+          "foo was invalid" => 2,
+          "bar was invalid" => 1,
+        })
+      end
+    end
+  end
+
   describe "#to_s" do
     it "returns same summary as #result_msg" do
       expect(summary.to_s).to eq summary.result_msg
