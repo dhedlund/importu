@@ -65,7 +65,9 @@ RSpec.configure do |config|
   # isolation with the appraisal gem. If all gems were loaded simultaneously
   # then we wouldn't know if we were using an ActiveSupport monkeypatched
   # method (i.e. String#present?) that would break w/o ActiveSupport loaded.
-  config.filter_run_excluding activerecord: !defined?(::ActiveRecord)
+  config.filter_run_excluding active_record: !defined?(::ActiveRecord)
+
+  config.include FixturesHelper
 
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend

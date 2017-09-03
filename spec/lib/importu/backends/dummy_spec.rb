@@ -3,10 +3,7 @@ require "spec_helper"
 require "importu/importer/csv"
 
 RSpec.describe "Dummy Backend" do
-  let(:fixture_path) { File.expand_path("../../../../fixtures", __FILE__) }
-  let(:infile) { File.join(fixture_path, "books.csv") }
-
-  subject(:importer) { importer_class.new(infile) }
+  subject(:importer) { importer_class.new(csv_infile("books")) }
 
   let!(:model) do
     # Plain old ruby object for model, no guessable backend

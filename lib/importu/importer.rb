@@ -24,7 +24,7 @@ class Importu::Importer
   end
 
   def outfile
-    @outfile ||= Tempfile.new("import", Rails.root.join("tmp"))
+    @outfile ||= Tempfile.new("import")
   end
 
   def definition

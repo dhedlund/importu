@@ -6,9 +6,9 @@ if defined?(::ActiveRecord)
 
     create_table :books, force: true do |t|
       t.string :title, null: false
-      t.string :author, null: false
+      t.string :authors, null: false
       t.string :isbn10, null: false
-      t.integer :pages, null: false
+      t.integer :pages
       t.date :release_date, null: false
       t.timestamps null: false
     end
