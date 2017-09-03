@@ -3,7 +3,7 @@ require "spec_helper"
 require "importu/importer/csv"
 
 RSpec.describe "Dummy Backend" do
-  subject(:importer) { importer_class.new(csv_infile("books")) }
+  subject(:importer) { importer_class.new(infile("books1", :csv)) }
 
   let!(:model) do
     # Plain old ruby object for model, no guessable backend
