@@ -1,0 +1,23 @@
+[
+  {
+    "isbn10": "0596516177",
+    "title": "The Ruby Programming Language",
+    "author": "David Flanagan and Yukihiro Matsumoto",
+    "release_date": "Feb 1, 2008",
+    "pages": "0448"
+  },
+  {
+    "isbn10": "1449355978",
+    "title": "Computer Science Programming Basics in Ruby",
+    "author": "Ophir Frieder, Gideon Frieder and David Grossman",
+    "release_date": "1 May, 2013",
+    "pages": 188
+  },
+  {
+    "isbn10": "  0596523696  ",
+    "title": "  Ruby Cookbook  ",
+    "author": "  Lucas Carlson and Leonard Richardson  ",
+    "release_date": "  2006-7-26  ",
+    "pages": "  910  "
+  }
+]

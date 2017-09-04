@@ -11,8 +11,9 @@ RSpec.describe Importu::Importer::Csv do
   end
 
   let(:importer_class) do
-    Class.new(BookImporter) do
+    Class.new(Importu::Importer::Csv) do
       model "Book", backend: :dummy
+      include BookImporterDefinition
     end
   end
 
@@ -69,9 +70,8 @@ RSpec.describe Importu::Importer::Csv do
 
     context "when a backend cannot be guessed from the model" do
       let(:importer_class) do
-        Class.new(described_class) do
-          model "Book"
-          fields :title, :author, :isbn10, :pages, :release_date
+        Class.new(super()) do
+          model "Book", backend: nil
         end
       end
 

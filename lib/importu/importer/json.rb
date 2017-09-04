@@ -17,7 +17,7 @@ class Importu::Importer::Json < Importu::Importer
 
   def import!(&block)
     result = super
-    outfile.write(JSON.pretty_generate(@error_records)) if @invalid > 0
+    outfile.write(JSON.pretty_generate(@error_records)) if summary.invalid > 0
     result
   end
 

@@ -3,41 +3,88 @@ require "spec_helper"
 require "importu/importer/json"
 
 RSpec.describe Importu::Importer::Json do
-  let(:data) { nil } # string version of input file
-  subject(:importer) { Importu::Importer::Json.new(StringIO.new(data)) }
+  subject(:importer) { importer_class.new(StringIO.new(data)) }
 
-  context "input file is blank" do
-    let(:data) { "" }
+  let!(:model) do
+    # Plain old ruby object for model, no guessable backend
+    stub_const "Book", Class.new
+  end
 
-    it "raises an InvalidInput exception" do
-      expect { importer }.to raise_error(Importu::InvalidInput)
+  let(:importer_class) do
+    Class.new(Importu::Importer::Json) do
+      model "Book", backend: :dummy
+      include BookImporterDefinition
     end
   end
 
-  context "non-array root elements" do
-    %w({}, "foo", 3, 3.7, false, nil).each do |bad_data|
-      context "when root is #{bad_data}" do
-        let(:data) { bad_data }
-        it "raises InvalidInput exception" do
-          expect { importer }.to raise_error(Importu::InvalidInput)
+  let(:data) do
+    File.read(infile("books1", :json))
+  end
+
+  describe "#initialize" do
+    context "when input file is blank" do
+      let(:data) { "" }
+
+      it "raises an InvalidInput exception" do
+        expect { importer }.to raise_error(Importu::InvalidInput)
+      end
+    end
+
+    context "when root element is not an array" do
+      %w({}, "foo", 3, 3.7, false, nil).each do |bad_data|
+        context "when root is #{bad_data}" do
+          let(:data) { bad_data }
+          it "raises InvalidInput exception" do
+            expect { importer }.to raise_error(Importu::InvalidInput)
+          end
         end
       end
     end
   end
 
-  context "input file is []" do
-    let(:data) { "[]" }
+  describe "#records" do
+    it "returns records parsed from source data" do
+      # Dump and re-parse to ensure everything is JSON types w/ string keys
+      record_json = JSON.parse(JSON.dump(importer.records.map(&:to_hash)))
+      expect(record_json).to eq expected_record_json("books1")
+    end
 
-    it "treats file as having 0 records" do
-      expect(importer.records.count).to eq 0
+    context "when input has no records" do
+      let(:data) { "[]" }
+
+      it "treats file as having 0 records" do
+        expect(importer.records.count).to eq 0
+      end
+    end
+
+    context "when input contains empty record objects" do
+      let(:data) { "[{},{}]" }
+
+      it "treats empty records as existing (albeit invalid)" do
+        expect(importer.records.count).to eq 2
+      end
     end
   end
 
-  context "input file is [{},{}]" do
-    let(:data) { "[{},{}]" }
+  describe "#import!" do
+    it "tries to import each record" do
+      importer.import!
+      expect(importer.created).to eq 3
+      expect(importer.total).to eq 3
+    end
 
-    it "treats file as having 2 records" do
-      expect(importer.records.count).to eq 2
+    context "when a backend cannot be guessed from the model" do
+      let(:importer_class) do
+        Class.new(super()) do
+          model "Book", backend: nil
+        end
+      end
+
+      it "raises an error" do
+        importer # Ensure exception doesn't happen at initialization
+        expect { importer.import! }.to raise_error(Importu::BackendMatchError)
+      end
     end
   end
+
 end
