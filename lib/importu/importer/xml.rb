@@ -23,14 +23,17 @@ class Importu::Importer::Xml < Importu::Importer
   def import!(&block)
     reader.xpath("//_errors").remove
     result = super
-    outfile.write(reader) if @invalid > 0
+    outfile.write(reader) if summary.invalid > 0
     result
   end
 
   def records
     Enumerator.new do |yielder|
       reader.xpath(records_xpath).each do |xml|
-        data = Hash[xml.elements.map {|e| [e.name, e.content]}]
+        data = Hash[[
+          *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
+          *xml.elements.map {|e| [e.name, e.content]},
+        ]]
         yielder.yield record_class.new(self.definition, data, xml)
       end
     end

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<books>
+  <!-- attribute-style record -->
+  <book isbn10="0596516177" title="The Ruby Programming Language" author="David Flanagan and Yukihiro Matsumoto" release_date="Feb 1, 2008" pages="0448" />
+
+  <!-- element style record -->
+  <book>
+    <isbn10>1449355978</isbn10>
+    <title>Computer Science Programming Basics in Ruby</title>
+    <author>Ophir Frieder, Gideon Frieder and David Grossman</author>
+    <release_date>1 May, 2013</release_date>
+    <pages>188</pages>
+  </book>
+
+  <!-- mixed style record -->
+  <book isbn10="  0596523696  " title="  Ruby Cookbook  " author="  Lucas Carlson and Leonard Richardson  ">
+    <release_date>  2006-7-26  </release_date>
+    <pages>  910  </pages>
+  </book>
+</books>

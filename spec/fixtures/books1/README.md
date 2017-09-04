@@ -4,6 +4,7 @@ should all be created successfully on import.
 The following anomalies exist in the data:
 
 | Record | Field         | Formats  | Value           | Description |
+| _all_  | _all_         | xml      | n/a             | mixed xml attribute-element styles, should treat similarly |
 | 1      | release\_date | _all_    | "Feb 1, 2008"   | should detect date format |
 | 1      | pages         | _all_    | "0448"          | leading 0 should parse as decimal not octal |
 | 2      | release\_date | _all_    | "1 May, 2013"   | should detect date format |
