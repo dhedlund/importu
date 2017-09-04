@@ -4,6 +4,7 @@ require "importu/importer"
 require "importu/record"
 
 RSpec.describe Importu::Record do
+  include ConverterStubbing
 
   let(:data) { Hash.new }
   let(:raw_data) { Hash.new }
@@ -93,22 +94,22 @@ RSpec.describe Importu::Record do
     describe "#convert" do
       context "with a :default option" do
         it "returns data value if data value not nil" do
-          record.converters[:clean] = proc { "value1" }
+          stub_converter(:clean) { "value1" }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "value1"
         end
 
         it "returns default value if data value is nil" do
-          record.converters[:clean] = proc { nil }
+          stub_converter(:clean) { nil }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "returns default value if data field is missing and not required" do
-          record.converters[:clean] = proc { raise Importu::MissingField, "field1" }
+          stub_converter(:clean) { raise Importu::MissingField, "field1" }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "raises an exception if data field is missing and is required" do
-          record.converters[:clean] = proc { raise Importu::MissingField, "field1" }
+          stub_converter(:clean) { raise Importu::MissingField, "field1" }
           expect { record.convert(:field1, :clean, default: "foobar", required: true) }.to raise_error(Importu::MissingField)
         end
       end
