@@ -1,3 +1,5 @@
+require "tempfile"
+
 require "importu/backends"
 require "importu/converters"
 require "importu/dsl"
