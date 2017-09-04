@@ -11,19 +11,13 @@ RSpec.describe Importu::Importer::Csv do
   end
 
   let(:importer_class) do
-    Class.new(described_class) do
+    Class.new(BookImporter) do
       model "Book", backend: :dummy
-      fields :title, :author, :isbn10, :pages, :release_date
     end
   end
 
   let(:data) do
-    <<-DATA.gsub(/^\s+/, "")
-      "isbn10","title","author","release_date","pages"
-      "0596516177","The Ruby Programming Language","David Flanagan and Yukihiro Matsumoto","Feb 1, 2008","448"
-      "1449355978","Computer Science Programming Basics in Ruby","Ophir Frieder, Gideon Frieder and David Grossman","May 1, 2013","188"
-      "0596523696","Ruby Cookbook"," Lucas Carlson and Leonard Richardson","Jul 26, 2006","910"
-    DATA
+    File.read(infile("books1", :csv))
   end
 
   describe "#initialize" do
@@ -48,18 +42,20 @@ RSpec.describe Importu::Importer::Csv do
 
   describe "#records" do
     it "returns records parsed from source data" do
-      expect(importer.records.count).to eq 3
+      # Dump and re-parse to ensure everything is JSON types w/ string keys
+      record_json = JSON.parse(JSON.dump(importer.records.map(&:to_hash)))
+      expect(record_json).to eq expected_record_json("books1")
     end
 
     context "when input has header but no records" do
-      let(:data) { %("isbn10","title","author","release_date","pages") }
+      let(:data) { super().lines.first }
 
       it "treats file as having no records" do
         expect(importer.records.count).to eq 0
       end
     end
 
-    it "returns same records on subsequent invocations" do
+    it "returns same records on subsequent invocations (rewinds)" do
       expect(importer.records.count).to eq importer.records.count
     end
   end

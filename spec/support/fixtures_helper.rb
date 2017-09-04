@@ -7,6 +7,10 @@ module FixturesHelper
     load_fixture_json(name, "model.json")
   end
 
+  def expected_record_json(name)
+    load_fixture_json(name, "record.json")
+  end
+
   def expected_summary_json(name)
     load_fixture_json(name, "summary.json")
   end
