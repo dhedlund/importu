@@ -31,7 +31,12 @@ module Importu::Converters
 
       converter :integer do |name,options|
         value = convert(name, :clean, options)
-        value.nil? ? nil : Integer(value)
+
+        case value
+          when nil then nil
+          when Integer then value
+          else Integer(value.to_s, 10)
+        end
       end
 
       converter :float do |name,options|

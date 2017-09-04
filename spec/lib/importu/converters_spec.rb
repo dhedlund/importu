@@ -83,6 +83,11 @@ RSpec.describe Importu::Importer do
       expect(record.convert(:field1, :integer)).to eq 29
     end
 
+    it "handles values with a leading 0 as a decimal (not octal)" do
+      stub_converter(:clean) { "044" }
+      expect(record.convert(:field1, :integer)).to eq 44
+    end
+
     it "raises an exception if clean value is not a valid integer" do
       stub_converter(:clean) { "4.25" }
       expect { record.convert(:field1, :integer) }.to raise_error(Importu::FieldParseError)
