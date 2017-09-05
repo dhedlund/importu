@@ -209,6 +209,14 @@ RSpec.describe Importu::Importer do
       stub_converter(:clean) { "why-not-both" }
       expect { record.convert(:field1, :boolean) }.to raise_error(Importu::FieldParseError)
     end
+
+    it "treats values as case-insensitive" do
+      stub_converter(:clean) { "TrUE" }
+      expect(record.convert(:field1, :boolean)).to eq true
+
+      stub_converter(:clean) { "fAlse" }
+      expect(record.convert(:field1, :boolean)).to eq false
+    end
   end
 
   describe ":date converter" do

@@ -58,8 +58,8 @@ module Importu::Converters
         value = convert(name, :clean, options)
         case value
           when nil then nil
-          when true, "true", "yes", "1", 1 then true
-          when false, "false", "no", "0", 0 then false
+          when true, 1, /\A(?:true|yes|1)\z/i then true
+          when false, 0, /\A(?:false|no|0)\z/i then false
           else raise ArgumentError, "invalid boolean value '#{value}'"
         end
       end
