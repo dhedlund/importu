@@ -8,10 +8,6 @@ trivial to extend Importu to handle additional formats.  See the
 `lib/importu/importer` directory for implementations of supported importers.
 
 ## Example
-**Please read the tutorial in the
-[import-examples](https://github.com/dhedlund/importu-examples) repository for
-a more complete overview of available features.**
-
 Assuming you have the following data in the file `data.csv`:
 ```
 "isbn10","title","author","release_date","pages"
