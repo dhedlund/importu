@@ -1,12 +1,13 @@
 require "csv"
 
-require "importu/importer"
 require "importu/exceptions"
 require "importu/sources"
 
-class Importu::Sources::CSV < Importu::Importer
+class Importu::Sources::CSV
+  attr_reader :outfile
+
   def initialize(infile, csv_options: {})
-    super(infile)
+    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
     @csv_options = {
       headers:        true,
@@ -24,18 +25,18 @@ class Importu::Sources::CSV < Importu::Importer
     end
   end
 
-  def records
+  def records(definition)
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
       @reader.each do |row|
-        yielder.yield record_class.new(self.definition, row.to_hash, row)
+        yielder.yield definition.record_class.new(definition, row.to_hash, row)
       end
     end
   end
 
-  def import_record(record, &block)
+  def wrap_import_record(record, &block)
     begin
-      super
+      yield
     rescue Importu::MissingField => e
       # if one record missing field, all are, major error
       raise Importu::InvalidInput, "missing required field: #{e.message}"
@@ -46,7 +47,8 @@ class Importu::Sources::CSV < Importu::Importer
 
   private def write_error(data, msg)
     unless @writer
-      @writer = ::CSV.new(outfile, @csv_options)
+      @outfile = Tempfile.new("import")
+      @writer = ::CSV.new(@outfile, @csv_options)
       @header["_errors"] = "_errors"
       @writer << @header
     end

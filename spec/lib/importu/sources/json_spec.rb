@@ -1,9 +1,11 @@
 require "spec_helper"
 
+require "importu/importer"
 require "importu/sources/json"
 
 RSpec.describe Importu::Sources::JSON do
-  subject(:importer) { importer_class.new(StringIO.new(data)) }
+  subject(:importer) { importer_class.new(source) }
+  let(:source) { described_class.new(StringIO.new(data)) }
 
   let!(:model) do
     # Plain old ruby object for model, no guessable backend
@@ -11,7 +13,7 @@ RSpec.describe Importu::Sources::JSON do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Sources::JSON) do
+    Class.new(Importu::Importer) do
       model "Book", backend: :dummy
       include BookImporterDefinition
     end

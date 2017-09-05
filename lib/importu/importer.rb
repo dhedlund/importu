@@ -7,17 +7,14 @@ require "importu/exceptions"
 require "importu/summary"
 
 class Importu::Importer
-  attr_reader :infile
 
   include Importu::Dsl
   include Importu::Converters
 
-  def initialize(infile, _options = {})
-    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
-  end
+  attr_reader :source
 
-  def outfile
-    @outfile ||= Tempfile.new("import")
+  def initialize(source)
+    @source = source
   end
 
   def definition
@@ -26,15 +23,23 @@ class Importu::Importer
 
   def import!(&block)
     @summary = nil # Reset counters
-    records.each {|r| import_record(r, &block) }
+    records.each do |record|
+      source.wrap_import_record(record) do
+        import_record(record, &block)
+      end
+    end
     summary
+  end
+
+  def records
+    @source.records(definition)
   end
 
   def summary
     @summary ||= Importu::Summary.new
   end
 
-  protected def enforce_allowed_actions!(action)
+  private def enforce_allowed_actions!(action)
     if action == :create && !allowed_actions.include?(:create)
       raise Importu::InvalidRecord, "#{model} not found"
     elsif action == :update && !allowed_actions.include?(:update)
@@ -42,7 +47,7 @@ class Importu::Importer
     end
   end
 
-  protected def import_record(record, &block)
+  private def import_record(record, &block)
     begin
       object = backend.find(record)
 
@@ -66,7 +71,7 @@ class Importu::Importer
     end
   end
 
-  protected def check_duplicate!(backend, object)
+  private def check_duplicate!(backend, object)
     object_key = backend.object_key(object) or return
     if ((@encountered||=Hash.new(0))[object_key] += 1) > 1
       raise Importu::DuplicateRecord, "matches a previously imported record"

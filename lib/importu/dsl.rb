@@ -42,6 +42,10 @@ module Importu::Dsl
       config_dsl :preprocessor
       config_dsl :postprocessor
       config_dsl :converters, default: {}
+
+      # FIXME: source-specific setting, here until we have a way to define
+      # source and backend-specific configurations from their own classes.
+      config_dsl :records_xpath # Importu::Sources::XML
     end
   end
 

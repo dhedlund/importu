@@ -1,12 +1,11 @@
 require "multi_json"
 
-require "importu/importer"
 require "importu/exceptions"
 require "importu/sources"
 
-class Importu::Sources::JSON < Importu::Importer
+class Importu::Sources::JSON
   def initialize(infile)
-    super(infile)
+    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
     begin
       infile.rewind
@@ -16,23 +15,25 @@ class Importu::Sources::JSON < Importu::Importer
     end
   end
 
-  def import!(&block)
-    result = super
-    outfile.write(JSON.pretty_generate(@error_records)) if summary.invalid > 0
-    result
+  def outfile
+    return nil unless @error_records
+
+    @outfile ||= Tempfile.new("import").tap do |outfile|
+      outfile.write(JSON.pretty_generate(@error_records))
+    end
   end
 
-  def records(&block)
+  def records(definition)
     Enumerator.new do |yielder|
       @reader.each_with_index do |data,idx|
-        yielder.yield record_class.new(self.definition, data, data)
+        yielder.yield definition.record_class.new(definition, data, data)
       end
     end
   end
 
-  def import_record(record, &block)
+  def wrap_import_record(record, &block)
     begin
-      super
+      yield
     rescue Importu::InvalidRecord => e
       write_error(record.raw_data, e.message)
     end

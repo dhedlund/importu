@@ -1,9 +1,11 @@
 require "spec_helper"
 
+require "importu/importer"
 require "importu/sources/csv"
 
 RSpec.describe Importu::Sources::CSV do
-  subject(:importer) { importer_class.new(StringIO.new(data)) }
+  subject(:importer) { importer_class.new(source) }
+  let(:source) { described_class.new(StringIO.new(data)) }
 
   let!(:model) do
     # Plain old ruby object for model, no guessable backend
@@ -11,7 +13,7 @@ RSpec.describe Importu::Sources::CSV do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Sources::CSV) do
+    Class.new(Importu::Importer) do
       model "Book", backend: :dummy
       include BookImporterDefinition
     end
@@ -27,7 +29,8 @@ RSpec.describe Importu::Sources::CSV do
       let(:data) { super() + "\n\n\n" }
 
       it "allows overriding csv options" do
-        custom_importer = importer_class.new(StringIO.new(data), csv_options: csv_options)
+        source = described_class.new(StringIO.new(data), csv_options: csv_options)
+        custom_importer = importer_class.new(source)
         expect(custom_importer.records.count).to be > importer.records.count
       end
     end

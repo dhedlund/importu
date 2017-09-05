@@ -1,10 +1,12 @@
 require "spec_helper"
 
 require "importu/backends/active_record"
+require "importu/importer"
 require "importu/sources/csv"
 
 RSpec.describe "ActiveRecord Backend", :active_record do
-  subject(:importer) { importer_class.new(infile("books1", :csv)) }
+  let(:source) { Importu::Sources::CSV.new(infile("books1", :csv)) }
+  subject(:importer) { importer_class.new(source) }
 
   let!(:model) do
     stub_const("Book", Class.new(ActiveRecord::Base) do
@@ -15,7 +17,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Sources::CSV) do
+    Class.new(Importu::Importer) do
       model "Book"
       include BookImporterDefinition
     end

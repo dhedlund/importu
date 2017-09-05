@@ -1,14 +1,11 @@
 require "nokogiri"
 
-require "importu/importer"
 require "importu/exceptions"
 require "importu/sources"
 
-class Importu::Sources::XML < Importu::Importer
-  config_dsl :records_xpath
-
+class Importu::Sources::XML
   def initialize(infile, xml_options: {})
-    super(infile)
+    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
     if reader.root.nil?
       raise Importu::InvalidInput, "Empty document"
@@ -17,32 +14,29 @@ class Importu::Sources::XML < Importu::Importer
     end
   end
 
-  def reader
-    @reader ||= Nokogiri::XML(infile)
+  def outfile
+    return nil unless @has_errors
+
+    @outfile ||= Tempfile.new("import").tap do |file|
+      file.write(reader)
+    end
   end
 
-  def import!(&block)
-    reader.xpath("//_errors").remove
-    result = super
-    outfile.write(reader) if summary.invalid > 0
-    result
-  end
-
-  def records
+  def records(definition)
     Enumerator.new do |yielder|
-      reader.xpath(records_xpath).each do |xml|
+      reader.xpath(definition.records_xpath).each do |xml|
         data = Hash[[
           *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
           *xml.elements.map {|e| [e.name, e.content]},
         ]]
-        yielder.yield record_class.new(self.definition, data, xml)
+        yielder.yield definition.record_class.new(definition, data, xml)
       end
     end
   end
 
-  def import_record(record, &block)
+  def wrap_import_record(record, &block)
     begin
-      super
+      yield
       record.raw_data.remove
     rescue Importu::InvalidRecord => e
       add_xml_record_error(record.raw_data, e.message)
@@ -50,11 +44,23 @@ class Importu::Sources::XML < Importu::Importer
   end
 
   private def add_xml_record_error(xml, text)
+    unless @has_errors
+      # Writing first error from import run, make sure there are no errors
+      # from previous runs still hanging out in the file.
+      reader.xpath("//_errors").remove
+    end
+
     unless node = xml.xpath("./_errors").first
       node = Nokogiri::XML::Node.new "_errors", reader
       xml.add_child(node)
     end
     node.content = text + ","
+
+    @has_errors = true
+  end
+
+  private def reader
+    @reader ||= Nokogiri::XML(@infile)
   end
 
 end

@@ -22,7 +22,7 @@ Assuming you have the following data in the file `data.csv`:
 
 You can create a minimal importer to read the CSV data:
 ```ruby
-class BookImporter < Importu::Sources::CSV
+class BookImporter < Importu::Importer
   # fields we expect to find in the CSV file, field order is not important
   fields :title, :author, :isbn10, :pages, :release_date
 end
@@ -33,7 +33,7 @@ And then load that data in your application:
 require "importu"
 
 filename = File.expand_path("../data.csv", __FILE__)
-importer = BookImporter.new(filename)
+importer = BookImporter.new(Importu::Sources::CSV.new(filename))
 
 # importer.records returns an Enumerable
 importer.records.count # => 3
@@ -49,7 +49,7 @@ A more complete example of the book importer above might look like the following
 ```ruby
 require "importu"
 
-class BookImporter < Importu::Sources::CSV
+class BookImporter < Importu::Importer
   # if you want to define multiple fields with similar rules, use "fields"
   # NOTE: `required: true` is redundant in this example; any defined
   # fields must have a corresponding column in the source data by default
@@ -110,7 +110,7 @@ end
 
 A more condensed version of the above, with all the rules grouped into individual field definitions:
 ```ruby
-class BookImporter < Importu::Sources::CSV
+class BookImporter < Importu::Importer
   fields :title, :isbn10
 
   field :authors, label: "author" do
@@ -135,14 +135,14 @@ named the same as the attributes in your model, Importu can iterate through and
 create or update records for you:
 
 ```ruby
-class BookImporter < Importu::Sources::CSV
+class BookImporter < Importu::Importer
   model "Book"
 
   # ...
 end
 
 filename = File.expand_path("../data.csv", __FILE__)
-importer = BookImporter.new(filename)
+importer = BookImporter.new(Importu::Sources::CSV.new(filename))
 
 summary = importer.import!
 
