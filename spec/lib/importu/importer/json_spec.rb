@@ -67,10 +67,10 @@ RSpec.describe Importu::Importer::Json do
   end
 
   describe "#import!" do
-    it "tries to import each record" do
-      importer.import!
-      expect(importer.created).to eq 3
-      expect(importer.total).to eq 3
+    it "returns a summary of results" do
+      summary = importer.import!
+      expect(summary.created).to eq 3
+      expect(summary.total).to eq 3
     end
 
     context "when a backend cannot be guessed from the model" do

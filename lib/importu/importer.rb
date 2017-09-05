@@ -12,10 +12,6 @@ class Importu::Importer
   include Importu::Dsl
   include Importu::Converters
 
-  # Summary helpers (deprecated, please use #summary instead)
-  delegate [:total, :invalid, :created, :updated, :unchanged] => :summary
-  delegate [:validation_errors, :result_msg] => :summary
-
   def initialize(infile, options = {})
     @options = options
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
@@ -36,6 +32,7 @@ class Importu::Importer
   def import!(&block)
     @summary = nil # Reset counters
     records.each {|r| import_record(r, &block) }
+    summary
   end
 
   def summary

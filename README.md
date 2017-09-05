@@ -144,19 +144,19 @@ end
 filename = File.expand_path("../data.csv", __FILE__)
 importer = BookImporter.new(filename)
 
-importer.import!
+summary = importer.import!
 
-importer.total # => 3
-importer.invalid # => 0
-importer.created # => 3
-importer.updated # => 0
-importer.unchanged # => 0
+summary.total # => 3
+summary.invalid # => 0
+summary.created # => 3
+summary.updated # => 0
+summary.unchanged # => 0
 
-importer.import!
+summary = importer.import!
 
-importer.total # => 3
-importer.created # => 0
-importer.unchanged # => 3
+summary.total # => 3
+summary.created # => 0
+summary.unchanged # => 3
 ```
 
 ## Development
