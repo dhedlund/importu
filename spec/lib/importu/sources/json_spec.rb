@@ -13,9 +13,8 @@ RSpec.describe Importu::Sources::JSON do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Importer) do
+    Class.new(BookImporter) do
       model "Book", backend: :dummy
-      include BookImporterDefinition
     end
   end
 

@@ -15,11 +15,8 @@ RSpec.describe "Dummy Backend" do
   describe "#import!" do
     context "when a backend cannot be guessed from the model" do
       let(:importer_class) do
-        Class.new(Importu::Importer) do
+        Class.new(BookImporter) do
           model "Book"
-          fields :title, :author, :isbn10
-          field :pages, &convert_to(:integer)
-          field :release_date, &convert_to(:date)
         end
       end
 

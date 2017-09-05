@@ -17,9 +17,8 @@ RSpec.describe "ActiveRecord Backend", :active_record do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Importer) do
+    Class.new(BookImporter) do
       model "Book"
-      include BookImporterDefinition
     end
   end
 
