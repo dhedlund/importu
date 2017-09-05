@@ -3,7 +3,7 @@ require "csv"
 require "importu/importer"
 require "importu/exceptions"
 
-class Importu::Importer::Csv < Importu::Importer
+class Importu::Importer::CSV < Importu::Importer
   def initialize(infile, csv_options: {})
     super(infile)
 

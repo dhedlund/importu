@@ -1,6 +1,6 @@
 # Using a module instead of a real importer class is a temporary workaround
 # for sharing the importer definition. Importers currently have to inherit
-# from a class representing their data source (i.e. *::Csv, *::Json, etc).
+# from a class representing their data source (i.e. *::CSV, *::JSON, etc).
 # When that logic is made to be mixed in or configured via the DSL then this
 # could be converted back into a class.
 
