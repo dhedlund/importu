@@ -40,8 +40,8 @@ RSpec.describe "ActiveRecord Backend", :active_record do
     end
 
     it "correctly summarizes import statistics" do
-      importer.import!
-      expect(importer.summary.to_hash.stringify_keys)
+      summary = importer.import!
+      expect(summary.to_hash.stringify_keys)
         .to eq expected_summary_json("books1")
     end
 

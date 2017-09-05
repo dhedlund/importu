@@ -22,10 +22,10 @@ class Importu::Importer
   end
 
   def import!(&block)
-    @summary = nil # Reset counters
+    summary = Importu::Summary.new
     records.each do |record|
       source.wrap_import_record(record) do
-        import_record(record, &block)
+        import_record(record, summary, &block)
       end
     end
     summary
@@ -33,10 +33,6 @@ class Importu::Importer
 
   def records
     @source.records(definition)
-  end
-
-  def summary
-    @summary ||= Importu::Summary.new
   end
 
   private def enforce_allowed_actions!(action)
@@ -47,7 +43,7 @@ class Importu::Importer
     end
   end
 
-  private def import_record(record, &block)
+  private def import_record(record, summary, &block)
     begin
       object = backend.find(record)
 
