@@ -7,18 +7,13 @@ require "importu/exceptions"
 require "importu/summary"
 
 class Importu::Importer
-  attr_reader :options, :infile
+  attr_reader :infile
 
   include Importu::Dsl
   include Importu::Converters
 
-  def initialize(infile, options = {})
-    @options = options
+  def initialize(infile, _options = {})
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
-  end
-
-  def records
-    [].to_enum # implement in a subclass
   end
 
   def outfile
@@ -38,7 +33,6 @@ class Importu::Importer
   def summary
     @summary ||= Importu::Summary.new
   end
-
 
   protected def enforce_allowed_actions!(action)
     if action == :create && !allowed_actions.include?(:create)

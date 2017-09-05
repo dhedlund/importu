@@ -6,8 +6,8 @@ require "importu/exceptions"
 class Importu::Importer::Xml < Importu::Importer
   config_dsl :records_xpath
 
-  def initialize(infile, xml_options: {}, **options)
-    super(infile, options)
+  def initialize(infile, xml_options: {})
+    super(infile)
 
     if reader.root.nil?
       raise Importu::InvalidInput, "Empty document"

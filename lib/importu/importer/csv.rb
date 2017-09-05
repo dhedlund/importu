@@ -4,8 +4,8 @@ require "importu/importer"
 require "importu/exceptions"
 
 class Importu::Importer::Csv < Importu::Importer
-  def initialize(infile, csv_options: {}, **options)
-    super(infile, options)
+  def initialize(infile, csv_options: {})
+    super(infile)
 
     @csv_options = {
       headers:        true,

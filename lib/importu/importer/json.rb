@@ -4,8 +4,8 @@ require "importu/importer"
 require "importu/exceptions"
 
 class Importu::Importer::Json < Importu::Importer
-  def initialize(infile, **options)
-    super(infile, options)
+  def initialize(infile)
+    super(infile)
 
     begin
       infile.rewind
