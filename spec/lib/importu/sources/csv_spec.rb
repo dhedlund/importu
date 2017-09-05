@@ -1,8 +1,8 @@
 require "spec_helper"
 
-require "importu/importer/csv"
+require "importu/sources/csv"
 
-RSpec.describe Importu::Importer::CSV do
+RSpec.describe Importu::Sources::CSV do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 
   let!(:model) do
@@ -11,7 +11,7 @@ RSpec.describe Importu::Importer::CSV do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Importer::CSV) do
+    Class.new(Importu::Sources::CSV) do
       model "Book", backend: :dummy
       include BookImporterDefinition
     end

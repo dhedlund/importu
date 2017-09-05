@@ -1,8 +1,8 @@
 require "spec_helper"
 
-require "importu/importer/json"
+require "importu/sources/json"
 
-RSpec.describe Importu::Importer::JSON do
+RSpec.describe Importu::Sources::JSON do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 
   let!(:model) do
@@ -11,7 +11,7 @@ RSpec.describe Importu::Importer::JSON do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Importer::JSON) do
+    Class.new(Importu::Sources::JSON) do
       model "Book", backend: :dummy
       include BookImporterDefinition
     end

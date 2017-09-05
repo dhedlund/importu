@@ -1,8 +1,8 @@
 require "spec_helper"
 
-require "importu/importer/xml"
+require "importu/sources/xml"
 
-RSpec.describe Importu::Importer::XML do
+RSpec.describe Importu::Sources::XML do
   subject(:importer) { importer_class.new(StringIO.new(data)) }
 
   let!(:model) do
@@ -11,7 +11,7 @@ RSpec.describe Importu::Importer::XML do
   end
 
   let(:importer_class) do
-    Class.new(Importu::Importer::XML) do
+    Class.new(Importu::Sources::XML) do
       model "Book", backend: :dummy
       include BookImporterDefinition
       records_xpath '//book'

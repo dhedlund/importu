@@ -2,8 +2,9 @@ require "nokogiri"
 
 require "importu/importer"
 require "importu/exceptions"
+require "importu/sources"
 
-class Importu::Importer::XML < Importu::Importer
+class Importu::Sources::XML < Importu::Importer
   config_dsl :records_xpath
 
   def initialize(infile, xml_options: {})

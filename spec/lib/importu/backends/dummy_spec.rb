@@ -1,6 +1,6 @@
 require "spec_helper"
 
-require "importu/importer/csv"
+require "importu/sources/csv"
 
 RSpec.describe "Dummy Backend" do
   subject(:importer) { importer_class.new(infile("books1", :csv)) }
@@ -13,7 +13,7 @@ RSpec.describe "Dummy Backend" do
   describe "#import!" do
     context "when a backend cannot be guessed from the model" do
       let(:importer_class) do
-        Class.new(Importu::Importer::CSV) do
+        Class.new(Importu::Sources::CSV) do
           model "Book"
           fields :title, :author, :isbn10
           field :pages, &convert_to(:integer)

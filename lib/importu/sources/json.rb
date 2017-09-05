@@ -2,8 +2,9 @@ require "multi_json"
 
 require "importu/importer"
 require "importu/exceptions"
+require "importu/sources"
 
-class Importu::Importer::JSON < Importu::Importer
+class Importu::Sources::JSON < Importu::Importer
   def initialize(infile)
     super(infile)
 
