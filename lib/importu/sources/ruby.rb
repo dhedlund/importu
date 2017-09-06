@@ -1,3 +1,4 @@
+require "importu/record"
 require "importu/sources"
 
 # Supports a plain array of hashes as source data, or an enumerable that
@@ -14,7 +15,7 @@ class Importu::Sources::Ruby
   def records(definition)
     Enumerator.new do |yielder|
       @data.each do |row|
-        yielder.yield definition.record_class.new(definition, row.to_hash, row)
+        yielder.yield Importu::Record.new(definition, row.to_hash, row)
       end
     end
   end

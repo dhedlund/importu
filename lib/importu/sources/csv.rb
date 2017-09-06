@@ -1,6 +1,7 @@
 require "csv"
 
 require "importu/exceptions"
+require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::CSV
@@ -29,7 +30,7 @@ class Importu::Sources::CSV
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
       @reader.each do |row|
-        yielder.yield definition.record_class.new(definition, row.to_hash, row)
+        yielder.yield Importu::Record.new(definition, row.to_hash, row)
       end
     end
   end

@@ -1,6 +1,7 @@
 require "multi_json"
 
 require "importu/exceptions"
+require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::JSON
@@ -26,7 +27,7 @@ class Importu::Sources::JSON
   def records(definition)
     Enumerator.new do |yielder|
       @reader.each_with_index do |data,idx|
-        yielder.yield definition.record_class.new(definition, data, data)
+        yielder.yield Importu::Record.new(definition, data, data)
       end
     end
   end

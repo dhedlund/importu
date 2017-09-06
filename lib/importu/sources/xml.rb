@@ -1,6 +1,7 @@
 require "nokogiri"
 
 require "importu/exceptions"
+require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::XML
@@ -29,7 +30,7 @@ class Importu::Sources::XML
           *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
           *xml.elements.map {|e| [e.name, e.content]},
         ]]
-        yielder.yield definition.record_class.new(definition, data, xml)
+        yielder.yield Importu::Record.new(definition, data, xml)
       end
     end
   end

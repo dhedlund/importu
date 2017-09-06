@@ -30,35 +30,4 @@ RSpec.describe Importu::Importer do
     end
   end
 
-  describe ".record_class" do
-    it "returns Importu::Record by default" do
-      expect(Importu::Importer.record_class).to eq Importu::Record
-    end
-
-    it "can be overridden globally" do
-      orig = Importu::Importer.record_class
-      begin
-        custom_record_class = Class.new(Importu::Record)
-        Importu::Importer.record_class custom_record_class
-        expect(Importu::Importer.record_class).to eq custom_record_class
-
-        klass = Class.new(Importu::Importer)
-        expect(klass.record_class).to eq custom_record_class
-
-      ensure
-        Importu::Importer.record_class orig
-      end
-    end
-
-    it "can be overridden in a subclass" do
-      custom_record_class = Class.new(Importu::Record)
-      klass = Class.new(Importu::Importer) do
-        record_class custom_record_class
-      end
-
-      expect {
-        expect(klass.record_class).to eq custom_record_class
-      }.to_not change { Importu::Importer.record_class }
-    end
-  end
 end
