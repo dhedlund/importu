@@ -64,22 +64,18 @@ module Importu::Converters
         end
       end
 
-      converter :date do |name,options|
+      converter :date do |name, format: nil, **options|
         if value = convert(name, :clean, options)
-          # TODO: options[:date_format] is deprecated
-          date_format = options[:date_format] || options[:format]
-          date_format \
-            ? Date.strptime(value, date_format)
+          format \
+            ? Date.strptime(value, format)
             : Date.parse(value)
         end
       end
 
-      converter :datetime do |name,options|
+      converter :datetime do |name, format: nil, **options|
         if value = convert(name, :clean, options)
-          # TODO: options[:date_format] is deprecated
-          date_format = options[:date_format] || options[:format]
-          date_format \
-            ? DateTime.strptime(value, date_format).to_time.utc
+          format \
+            ? DateTime.strptime(value, format).to_time.utc
             : DateTime.parse(value).to_time.utc
         end
       end
