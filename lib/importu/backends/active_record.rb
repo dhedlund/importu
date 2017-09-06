@@ -7,9 +7,9 @@ class Importu::Backends::ActiveRecord
     model < ActiveRecord::Base # Inherits from
   end
 
-  def initialize(definition)
-    @finder_fields = definition.finder_fields
-    @model = definition.model
+  def initialize(model:, finder_fields:, **)
+    @model = model.is_a?(String) ? self.class.const_get(model) : model
+    @finder_fields = finder_fields
   end
 
   def find(record)

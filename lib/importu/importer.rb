@@ -2,13 +2,13 @@ require "tempfile"
 
 require "importu/backends"
 require "importu/converters"
-require "importu/dsl"
+require "importu/definition"
 require "importu/exceptions"
 require "importu/summary"
 
 class Importu::Importer
 
-  include Importu::Dsl
+  extend Importu::Definition
   include Importu::Converters
 
   attr_reader :source
@@ -22,8 +22,8 @@ class Importu::Importer
     @backend = backend
   end
 
-  def definition
-    self.class
+  def config
+    self.class.config
   end
 
   def import!(&block)
@@ -37,10 +37,11 @@ class Importu::Importer
   end
 
   def records
-    @source.records(definition)
+    @source.records(config)
   end
 
   private def enforce_allowed_actions!(action)
+    allowed_actions = config[:allowed_actions]
     if action == :create && !allowed_actions.include?(:create)
       raise Importu::InvalidRecord, "#{model} not found"
     elsif action == :update && !allowed_actions.include?(:update)
@@ -81,8 +82,8 @@ class Importu::Importer
 
   private def backend
     @backend ||= begin
-      backend_class = self.class.backend_registry.from_definition!(definition)
-      backend_class.new(definition)
+      backend_class = self.class.backend_registry.from_config!(config[:backend])
+      backend_class.new(config[:backend])
     end
   end
 

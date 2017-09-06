@@ -11,10 +11,9 @@ class Importu::Backends
     end
   end
 
-  def from_definition!(definition)
-    definition.model_backend \
-      ? lookup(definition.model_backend)
-      : detect_from_model(definition.model)
+  def from_config!(name:, model:, **)
+    model = model.is_a?(String) ? self.class.const_get(model) : model
+    name ? lookup(name) : detect_from_model(model)
   end
 
   def lookup(name)

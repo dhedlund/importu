@@ -2,15 +2,19 @@ require "importu/exceptions"
 
 class Importu::Record
   attr_reader :definition, :data, :raw_data
+  attr_reader :field_definitions, :converters
 
   include Enumerable
 
   extend Forwardable
   delegate [:keys, :values, :each, :[], :key?] => :record_hash
-  delegate [:field_definitions, :converters] => :definition
 
-  def initialize(definition, data, raw_data)
-    @definition, @data, @raw_data = definition, data, raw_data
+  def initialize(data, raw_data, fields:, converters:, preprocessor: nil, postprocessor: nil, **)
+    @data, @raw_data = data, raw_data
+    @preprocessor = preprocessor
+    @postprocessor = postprocessor
+    @field_definitions = fields
+    @converters = converters
   end
 
   def record_hash
@@ -54,7 +58,7 @@ class Importu::Record
   def assign_to(object, action, &block)
     @object, @action = object, action
 
-    instance_eval(&definition.preprocessor) if definition.preprocessor
+    instance_eval(&@preprocessor) if @preprocessor
     instance_exec(object, record_hash, &block) if block
 
     # filter out any fields we're not allowed to copy for this action
@@ -74,7 +78,7 @@ class Importu::Record
       end
     end
 
-    instance_eval(&definition.postprocessor) if definition.postprocessor
+    instance_eval(&@postprocessor) if @postprocessor
 
     object
   end

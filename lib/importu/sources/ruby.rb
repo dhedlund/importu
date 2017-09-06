@@ -12,10 +12,10 @@ class Importu::Sources::Ruby
   def outfile
   end
 
-  def records(definition)
+  def records(config)
     Enumerator.new do |yielder|
       @data.each do |row|
-        yielder.yield Importu::Record.new(definition, row.to_hash, row)
+        yielder.yield Importu::Record.new(row.to_hash, row, config)
       end
     end
   end

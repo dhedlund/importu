@@ -17,11 +17,12 @@ RSpec.describe Importu::Backends do
     end
   end
 
-  describe "#from_definition!" do
+  describe "#from_config!" do
     let!(:model) { stub_const("MyModelGuest", Class.new) }
+    let(:config) { importer_class.config[:backend] }
 
     context "when a model backend is specified" do
-      let(:definition) do
+      let(:importer_class) do
         Class.new(Importu::Importer) do
           model "MyModelGuest", backend: :cherry_scones
         end
@@ -31,13 +32,13 @@ RSpec.describe Importu::Backends do
         let!(:backend) { registry.register(:cherry_scones, Class.new) }
 
         it "returns the backend" do
-          expect(registry.from_definition!(definition)).to eq backend
+          expect(registry.from_config!(config)).to eq backend
         end
       end
 
       context "and the backend is not registered" do
         it "raises a BackendNotRegistered error" do
-          expect { registry.from_definition!(definition) }
+          expect { registry.from_config!(config) }
             .to raise_error(Importu::BackendNotRegistered)
         end
       end
@@ -47,7 +48,7 @@ RSpec.describe Importu::Backends do
       let(:supported) { Class.new { def self.supported_by_model?(*); true; end } }
       let(:unsupported) { Class.new { def self.supported_by_model?(*); false; end } }
 
-      let(:definition) do
+      let(:importer_class) do
         Class.new(Importu::Importer) do
           model "MyModelGuest"
         end
@@ -55,7 +56,7 @@ RSpec.describe Importu::Backends do
 
       context "and no backends support the model" do
         it "raises a BackendMatch error" do
-          expect { registry.from_definition!(definition) }
+          expect { registry.from_config!(config) }
             .to raise_error(Importu::BackendMatchError)
         end
       end
@@ -67,7 +68,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "returns the supported backend" do
-          expect(registry.from_definition!(definition)).to eq supported
+          expect(registry.from_config!(config)).to eq supported
         end
       end
 
@@ -79,7 +80,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "raises a BackendMatch error" do
-          expect { registry.from_definition!(definition) }
+          expect { registry.from_config!(config) }
             .to raise_error(Importu::BackendMatchError)
         end
       end
@@ -94,7 +95,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "ignores the backend" do
-          expect(registry.from_definition!(definition)).to eq supported
+          expect(registry.from_config!(config)).to eq supported
         end
       end
     end

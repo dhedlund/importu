@@ -2,11 +2,11 @@ require "spec_helper"
 
 require "importu/importer"
 
-RSpec.describe Importu::Importer do
+RSpec.describe "Importu Converters" do
   include ConverterStubbing
 
   subject(:record) do
-    Importu::Record.new(Importu::Importer, {}, {})
+    Importu::Record.new({}, {}, Importu::Importer.config)
   end
 
   describe ":raw converter" do

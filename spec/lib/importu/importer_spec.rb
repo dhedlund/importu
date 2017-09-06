@@ -23,9 +23,9 @@ RSpec.describe Importu::Importer do
     end
   end
 
-  describe "#definition" do
-    it "returns the definition used by the importer" do
-      expect(importer.definition).to eq importer_class
+  describe "#config" do
+    it "returns the configuration of the import definition" do
+      expect(importer.config[:fields]).to include(:animal, :name, :age)
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe Importu::Importer do
     context "when a backend is not specified at initialization" do
       it "tries to detect backend from the definition" do
         expect(Importu::Importer.backend_registry)
-          .to receive(:from_definition!).with(importer.definition)
+          .to receive(:from_config!).with(importer.config[:backend])
           .and_return(DummyBackend)
         importer.import!
       end

@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
 
   s.licenses = ["MIT"]
   
-  s.add_dependency "ice_nine",      ["~> 0.10"]
   s.add_dependency "multi_json",    ["~> 1.0"]
   s.add_dependency "nokogiri"
 

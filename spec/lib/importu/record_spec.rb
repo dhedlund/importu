@@ -9,24 +9,10 @@ RSpec.describe Importu::Record do
   let(:data) { Hash.new }
   let(:raw_data) { Hash.new }
   let(:importer) { Importu::Importer.new(StringIO.new) }
-  subject(:record) { Importu::Record.new(importer.definition, data, raw_data) }
+  subject(:record) { Importu::Record.new(data, raw_data, importer.config) }
 
   it "includes Enumerable" do
     expect(record).to be_a_kind_of(Enumerable)
-  end
-
-  describe "#importer" do
-    it "returns the importer definition used during construction" do
-      expect(record.definition).to be importer.definition
-    end
-
-    it "is delegated from #field_definitions" do
-      expect(record).to delegate(:field_definitions).to(:definition)
-    end
-
-    it "is delegated from #converters" do
-      expect(record).to delegate(:converters).to(:definition)
-    end
   end
 
   describe "#data" do
@@ -46,9 +32,10 @@ RSpec.describe Importu::Record do
   end
 
   describe "#field_definitions" do
+    let(:importer) { Class.new(Importu::Importer) { field :foo } }
+
     it "returns the field definitions defined in importer on construction" do
-      allow(importer.definition).to receive(:field_definitions).and_return({ foo: :bar })
-      expect(record.field_definitions).to eq({ foo: :bar })
+      expect(record.field_definitions).to include(:foo)
     end
   end
 
