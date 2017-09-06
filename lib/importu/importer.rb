@@ -13,8 +13,13 @@ class Importu::Importer
 
   attr_reader :source
 
-  def initialize(source)
+  def self.backend_registry
+    Importu::Backends.registry
+  end
+
+  def initialize(source, backend: nil)
     @source = source
+    @backend = backend
   end
 
   def definition
@@ -76,9 +81,8 @@ class Importu::Importer
 
   private def backend
     @backend ||= begin
-      registry = Importu::Backends.registry
-      backend_impl = registry.guess_from_definition!(definition)
-      backend_impl.new(definition)
+      backend_class = self.class.backend_registry.from_definition!(definition)
+      backend_class.new(definition)
     end
   end
 

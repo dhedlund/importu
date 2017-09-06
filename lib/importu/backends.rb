@@ -11,9 +11,25 @@ class Importu::Backends
     end
   end
 
-  def guess_from_definition!(definition)
-    return lookup(definition.model_backend) if definition.model_backend
+  def from_definition!(definition)
+    definition.model_backend \
+      ? lookup(definition.model_backend)
+      : detect_backend_class(definition)
+  end
 
+  def lookup(name)
+    @registered[name.to_sym]
+  end
+
+  def names
+    @registered.keys
+  end
+
+  def register(name, klass)
+    @registered[name.to_sym] = klass
+  end
+
+  private def detect_backend_class(definition)
     matched = @registered.select do |name,backend|
       backend.supported_by_definition?(definition) rescue false
     end
@@ -30,18 +46,6 @@ class Importu::Backends
         ":mybackend` to your definition. Matched backends are: " +
         matched.keys.map {|v|":#{v}"}.join(", ")
     end
-  end
-
-  def lookup(name)
-    @registered[name.to_sym]
-  end
-
-  def names
-    @registered.keys
-  end
-
-  def register(name, klass)
-    @registered[name.to_sym] = klass
   end
 
 end
