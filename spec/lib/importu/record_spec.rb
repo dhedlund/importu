@@ -1,15 +1,20 @@
 require "spec_helper"
 
-require "importu/importer"
+require "importu/converters"
+require "importu/definition"
 require "importu/record"
 
 RSpec.describe Importu::Record do
-  include ConverterStubbing
+  subject(:record) { Importu::Record.new(data, raw_data, definition.config) }
+  let(:definition) do
+    Class.new do
+      extend Importu::Definition
+      include Importu::Converters
+    end
+  end
 
   let(:data) { Hash.new }
   let(:raw_data) { Hash.new }
-  let(:importer) { Importu::Importer.new(StringIO.new) }
-  subject(:record) { Importu::Record.new(data, raw_data, importer.config) }
 
   it "includes Enumerable" do
     expect(record).to be_a_kind_of(Enumerable)
@@ -32,7 +37,7 @@ RSpec.describe Importu::Record do
   end
 
   describe "#field_definitions" do
-    let(:importer) { Class.new(Importu::Importer) { field :foo } }
+    let(:definition) { Class.new(super()) { field :foo } }
 
     it "returns the field definitions defined in importer on construction" do
       expect(record.field_definitions).to include(:foo)
@@ -81,22 +86,22 @@ RSpec.describe Importu::Record do
     describe "#convert" do
       context "with a :default option" do
         it "returns data value if data value not nil" do
-          stub_converter(:clean) { "value1" }
+          definition.converter(:clean) { "value1" }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "value1"
         end
 
         it "returns default value if data value is nil" do
-          stub_converter(:clean) { nil }
+          definition.converter(:clean) { nil }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "returns default value if data field is missing and not required" do
-          stub_converter(:clean) { raise Importu::MissingField, "field1" }
+          definition.converter(:clean) { raise Importu::MissingField, "field1" }
           expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
         end
 
         it "raises an exception if data field is missing and is required" do
-          stub_converter(:clean) { raise Importu::MissingField, "field1" }
+          definition.converter(:clean) { raise Importu::MissingField, "field1" }
           expect { record.convert(:field1, :clean, default: "foobar", required: true) }.to raise_error(Importu::MissingField)
         end
       end
