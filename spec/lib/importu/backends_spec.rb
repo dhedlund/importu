@@ -18,6 +18,8 @@ RSpec.describe Importu::Backends do
   end
 
   describe "#from_definition!" do
+    let!(:model) { stub_const("MyModelGuest", Class.new) }
+
     context "when a model backend is specified" do
       let(:definition) do
         Class.new(Importu::Importer) do
@@ -42,8 +44,8 @@ RSpec.describe Importu::Backends do
     end
 
     context "when a model backend is not specified" do
-      let(:supported) { Class.new { def self.supported_by_definition?(*); true; end } }
-      let(:unsupported) { Class.new { def self.supported_by_definition?(*); false; end } }
+      let(:supported) { Class.new { def self.supported_by_model?(*); true; end } }
+      let(:unsupported) { Class.new { def self.supported_by_model?(*); false; end } }
 
       let(:definition) do
         Class.new(Importu::Importer) do
@@ -83,7 +85,7 @@ RSpec.describe Importu::Backends do
       end
 
       context "and a backend raises an exception during checking" do
-        let(:broken) { Class.new { def self.supported_by_definition?(*); raise :hell; end } }
+        let(:broken) { Class.new { def self.supported_by_model?(*); raise :hell; end } }
 
         before do
           registry.register(:backend1, broken)

@@ -3,8 +3,8 @@ require "importu/exceptions"
 
 class Importu::Backends::ActiveRecord
 
-  def self.supported_by_definition?(definition)
-    definition.model < ActiveRecord::Base
+  def self.supported_by_model?(model)
+    model < ActiveRecord::Base # Inherits from
   end
 
   def initialize(definition)
