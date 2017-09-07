@@ -20,7 +20,7 @@ module Importu::Definition
 
   def convert_to(type, **options)
     block = config[:converters].fetch(type)
-    options.any? ? ->(n,**o) { block.call(n, options.merge(o)) } : block
+    options.any? ? ->(n) { block.call(n, options) } : block
   end
 
   def converter(name, &block)
@@ -116,9 +116,9 @@ module Importu::Definition
       label: name.to_s,
       required: true,
       abstract: false,
+      default: nil,
       create: true,
       update: true,
-      # FIXME: Can we make this nil for now, and default during execution?
       converter: convert_to(:clean),
     }
   end

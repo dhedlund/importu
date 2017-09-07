@@ -9,13 +9,12 @@ class Importu::Record
   extend Forwardable
   delegate [:keys, :values, :each, :[], :key?] => :record_hash
 
-  def initialize(data, raw_data, fields:, converters:, preprocessor: nil, postprocessor: nil, **)
+  def initialize(data, raw_data, context, fields:, preprocessor: nil, postprocessor: nil, **)
     @data, @raw_data = data, raw_data
     @preprocessor = preprocessor
     @postprocessor = postprocessor
     @field_definitions = fields
-
-    @context = Importu::ImportContext.new(data, fields: fields, converters: converters)
+    @context = context.new(data)
   end
 
   def record_hash
@@ -29,8 +28,8 @@ class Importu::Record
   def assign_to(object, action, &block)
     @object, @action = object, action
 
-    @context.instance_eval(&@preprocessor) if @preprocessor
-    @context.instance_exec(object, record_hash, &block) if block
+    instance_eval(&@preprocessor) if @preprocessor
+    instance_exec(object, record_hash, &block) if block
 
     # filter out any fields we're not allowed to copy for this action
     allowed_fields = @field_definitions.select {|n,d| d[action] }.keys
@@ -49,7 +48,7 @@ class Importu::Record
       end
     end
 
-    @context.instance_eval(&@postprocessor) if @postprocessor
+    instance_eval(&@postprocessor) if @postprocessor
 
     object
   end

@@ -23,14 +23,14 @@ class Importu::Sources::XML
     end
   end
 
-  def records(config)
+  def records(context, config)
     Enumerator.new do |yielder|
       reader.xpath(config[:records_xpath]).each do |xml|
         data = Hash[[
           *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
           *xml.elements.map {|e| [e.name, e.content]},
         ]]
-        yielder.yield Importu::Record.new(data, xml, config)
+        yielder.yield Importu::Record.new(data, xml, context, config)
       end
     end
   end

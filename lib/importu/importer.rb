@@ -4,6 +4,7 @@ require "importu/backends"
 require "importu/converters"
 require "importu/definition"
 require "importu/exceptions"
+require "importu/import_context"
 require "importu/summary"
 
 class Importu::Importer
@@ -11,7 +12,7 @@ class Importu::Importer
   extend Importu::Definition
   include Importu::Converters
 
-  attr_reader :source
+  attr_reader :source, :context
 
   def self.backend_registry
     Importu::Backends.registry
@@ -20,6 +21,7 @@ class Importu::Importer
   def initialize(source, backend: nil)
     @source = source
     @backend = backend
+    @context = Importu::ImportContext.with_config(config)
   end
 
   def config
@@ -37,7 +39,7 @@ class Importu::Importer
   end
 
   def records
-    @source.records(config)
+    @source.records(context, config)
   end
 
   private def enforce_allowed_actions!(action)

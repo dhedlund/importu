@@ -65,12 +65,6 @@ RSpec.describe Importu::Definition do
       expect(block.call("beep")).to eq "foo(beep, {a:b})"
     end
 
-    it "allows passing additional converter options on call" do
-      block = definition.convert_to(:foo, a: :b, c: :d)
-      expect(block.call("beep", c: :x, y: :z))
-        .to eq "foo(beep, {a:b,c:x,y:z})"
-    end
-
     it "raises an exception if converter cannot be found" do
       expect { definition.convert_to(:bar) }.to raise_error(KeyError)
     end

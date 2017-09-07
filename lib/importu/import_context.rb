@@ -1,50 +1,47 @@
 require "importu/exceptions"
 
+# Provides a limited environment in which field conversion can occur. Exists
+# primarily to prevent custom converters from gaining access to too much of
+# the environment that might otherwise change in the future.
 class Importu::ImportContext
 
-  attr_reader :data, :field_definitions
-
-  def initialize(data, fields:, converters:)
+  def initialize(data)
     @data = data
-    @field_definitions = fields
-    @converters = converters
   end
 
-  def convert(name, converter, **options)
-    definition = @field_definitions.fetch(name, {})
-    default = options.fetch(:default) { definition[:default] }
-    required = options.fetch(:required) { definition[:required] }
-    converter = converter.respond_to?(:call) \
-      ? converter # Proc
-      : @converters.fetch(converter) # Symbol
+  def self.with_config(converters:, fields:, **)
+    Class.new(self) do
+      define_method(:field_definitions) { fields }
+      converters.each {|name,block| define_method(name, &block) }
+    end
+  end
+
+  def field_value(name)
+    definition = fetch_field_definition(name)
 
     begin
-      value = instance_exec(name, options, &converter)
-      value.nil? ? default : value
-
-    rescue Importu::MissingField => e
-      raise if required
-      default
-
+      value = instance_exec(name, {}, &definition[:converter])
     rescue ArgumentError => e
       # conversion of field value most likely failed
       raise Importu::FieldParseError, "#{name}: #{e.message}"
     end
-  end
 
-  def field_value(name, **options)
-    field_definition = @field_definitions[name] \
-      or raise "importer field not defined: #{name}"
-
-    convert(name, field_definition[:converter], options)
-  end
-
-  private def method_missing(meth, *args, &block)
-    if @converters[meth]
-      convert(args[0], meth, args[1]||{}) # convert(name, converter, options)
+    if value.nil? && definition[:required]
+      raise Importu::MissingField, definition
     else
-      super
+      value.nil? ? definition[:default] : value
     end
-  end 
+  end
+
+  def raw_value(name)
+    definition = fetch_field_definition(name)
+    @data[definition.fetch(:label)]
+  end
+
+  private def fetch_field_definition(name)
+    field_definitions.fetch(name) do
+      raise Importu::InvalidDefinition, "importer field not defined: #{name}"
+    end
+  end
 
 end

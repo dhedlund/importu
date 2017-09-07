@@ -26,11 +26,11 @@ class Importu::Sources::CSV
     end
   end
 
-  def records(config)
+  def records(context, config)
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
       @reader.each do |row|
-        yielder.yield Importu::Record.new(row.to_hash, row, config)
+        yielder.yield Importu::Record.new(row.to_hash, row, context, config)
       end
     end
   end

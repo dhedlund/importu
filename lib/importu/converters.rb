@@ -5,17 +5,12 @@ require "importu/exceptions"
 module Importu::Converters
   def self.included(base)
     base.class_eval do
-      converter :raw do |name,options|
-        definition = field_definitions[name] \
-          or raise Importu::InvalidDefinition, "importer field not defined: #{name}"
-
-        label = definition[:label]
-        raise Importu::MissingField, definition unless data.key?(label)
-        data[label]
+      converter :raw do |name|
+        raw_value(name)
       end
 
-      converter :clean do |name,options|
-        value = convert(name, :raw, options)
+      converter :clean do |name|
+        value = raw_value(name)
         if value.is_a?(String)
           new_value = value.strip
           new_value.empty? ? nil : new_value
@@ -24,13 +19,13 @@ module Importu::Converters
         end
       end
 
-      converter :string do |name,options|
-        value = convert(name, :clean, options)
+      converter :string do |name|
+        value = clean(name)
         value.nil? ? nil : String(value)
       end
 
-      converter :integer do |name,options|
-        value = convert(name, :clean, options)
+      converter :integer do |name|
+        value = clean(name)
 
         case value
           when nil then nil
@@ -39,13 +34,13 @@ module Importu::Converters
         end
       end
 
-      converter :float do |name,options|
-        value = convert(name, :clean, options)
+      converter :float do |name|
+        value = clean(name)
         value.nil? ? nil : Float(value)
       end
 
-      converter :decimal do |name,options|
-        value = convert(name, :clean, options)
+      converter :decimal do |name|
+        value = clean(name)
         case value
           when nil then nil
           when BigDecimal then value
@@ -54,8 +49,8 @@ module Importu::Converters
         end
       end
 
-      converter :boolean do |name,options|
-        value = convert(name, :clean, options)
+      converter :boolean do |name|
+        value = clean(name)
         case value
           when nil then nil
           when true, 1, /\A(?:true|yes|1)\z/i then true
@@ -64,16 +59,16 @@ module Importu::Converters
         end
       end
 
-      converter :date do |name, format: nil, **options|
-        if value = convert(name, :clean, options)
+      converter :date do |name, format: nil|
+        if value = clean(name)
           format \
             ? Date.strptime(value, format)
             : Date.parse(value)
         end
       end
 
-      converter :datetime do |name, format: nil, **options|
-        if value = convert(name, :clean, options)
+      converter :datetime do |name, format: nil|
+        if value = clean(name)
           format \
             ? DateTime.strptime(value, format).to_time.utc
             : DateTime.parse(value).to_time.utc

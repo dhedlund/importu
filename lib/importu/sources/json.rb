@@ -24,10 +24,10 @@ class Importu::Sources::JSON
     end
   end
 
-  def records(config)
+  def records(context, config)
     Enumerator.new do |yielder|
       @reader.each_with_index do |data,idx|
-        yielder.yield Importu::Record.new(data, data, config)
+        yielder.yield Importu::Record.new(data, data, context, config)
       end
     end
   end
