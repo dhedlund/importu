@@ -1,19 +1,10 @@
 require "spec_helper"
 
-require "importu/converters"
 require "importu/definition"
 
 RSpec.describe Importu::Definition do
-  let(:ancestor) do
-    Class.new do
-      extend Importu::Definition
-      include Importu::Converters
-    end
-  end
-
-  subject(:definition) do
-    Class.new(ancestor)
-  end
+  subject(:definition) { Class.new(ancestor) }
+  let(:ancestor) { Class.new { extend Importu::Definition } }
 
   describe "#allow_actions" do
     it "updates the :allowed_actions config" do
@@ -130,6 +121,12 @@ RSpec.describe Importu::Definition do
         label: "baaa",
         converter: converter,
       )
+    end
+
+    it "defaults to using the :default converter" do
+      definition.field(:foo)
+      field_definition = definition.config[:fields][:foo]
+      expect(field_definition[:converter].type).to eq :default
     end
   end
 

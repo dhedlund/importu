@@ -23,6 +23,17 @@ module Importu::Definition
     ConverterStub.for(type, options)
   end
 
+  # converter(:uppercase) do |name|
+  #   value = raw(name)
+  #   value.respond_to?(:upcase) ? value.upcase : value
+  # end
+  #
+  # converter(:varchar) do |name, length: 255|
+  #   value = raw(name)
+  #   value.is_a?(String) ? name.slice(0, length) : value
+  # end
+  #
+  # converter :default, &convert_to(:varchar, length: 255)
   def converter(name, &block)
     @config = { **config,
       converters: { **config[:converters], name => block }
@@ -104,7 +115,9 @@ module Importu::Definition
       preprocess: nil,
       postprocess: nil,
       records_xpath: nil,
-      converters: {},
+      converters: {
+        default: ->(n) { raw_value(n) },
+      },
       fields: {},
     }
   end
@@ -119,7 +132,7 @@ module Importu::Definition
       default: nil,
       create: true,
       update: true,
-      converter: convert_to(:clean),
+      converter: convert_to(:default),
     }
   end
 
@@ -135,7 +148,7 @@ module Importu::Definition
       @type, @options = type, options
     end
 
-    def self.for(type, options)
+    def self.for(type, **options)
       block = options.any? \
         ? ->(n) { send(type, n, options) }
         : ->(n) { send(type, n) }

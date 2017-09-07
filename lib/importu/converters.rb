@@ -75,6 +75,7 @@ module Importu::Converters
         end
       end
 
+      converter :default, &convert_to(:clean)
     end
   end
 end
