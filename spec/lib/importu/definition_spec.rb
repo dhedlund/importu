@@ -55,14 +55,14 @@ RSpec.describe Importu::Definition do
       end
     end
 
-    it "returns a proc representing the converter" do
-      block = definition.convert_to(:foo)
-      expect(block.call("beep")).to eq "foo(beep, {})"
+    it "returns a converter stub representing the converter" do
+      stub = definition.convert_to(:foo)
+      expect(stub.type).to eq :foo
     end
 
-    it "allows passing converter options from definition" do
-      block = definition.convert_to(:foo, a: :b)
-      expect(block.call("beep")).to eq "foo(beep, {a:b})"
+    it "saves converter options from definition" do
+      expect(definition.convert_to(:foo, a: 7).options).to eq({a: 7})
+      expect(definition.convert_to(:foo).options).to eq({})
     end
 
     it "raises an exception if converter cannot be found" do
@@ -93,6 +93,7 @@ RSpec.describe Importu::Definition do
 
   describe "#field" do
     let(:converter) { Proc.new {} }
+
     it "updates the :fields config and presets defaults" do
       definition.field(:foo, required: false)
       expect(definition.config[:fields][:foo])

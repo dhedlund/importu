@@ -20,7 +20,7 @@ class Importu::ConverterContext
     definition = fetch_field_definition(name)
 
     begin
-      value = instance_exec(name, {}, &definition[:converter])
+      value = instance_exec(name, &definition[:converter])
     rescue ArgumentError => e
       # conversion of field value most likely failed
       raise Importu::FieldParseError, "#{name}: #{e.message}"

@@ -19,8 +19,8 @@ module Importu::Definition
   end
 
   def convert_to(type, **options)
-    block = config[:converters].fetch(type)
-    options.any? ? ->(n) { block.call(n, options) } : block
+    converter = config[:converters].fetch(type)
+    ConverterStub.for(type, options)
   end
 
   def converter(name, &block)
@@ -121,6 +121,31 @@ module Importu::Definition
       update: true,
       converter: convert_to(:clean),
     }
+  end
+
+  # @!visibility private
+  # A proc-like object that stores info about how to call the converter
+  # in the future from within a ConverterContext. This allows subclassed
+  # definitions to override a converter's behavior and have it affect
+  # already defined fields.
+  class ConverterStub < Proc
+    attr_reader :type, :options
+
+    def initialize(type, options)
+      @type, @options = type, options
+    end
+
+    def self.for(type, options)
+      block = options.any? \
+        ? ->(n) { send(type, n, options) }
+        : ->(n) { send(type, n) }
+
+      new(type, options, &block)
+    end
+
+    def ==(other)
+      type == other.type && options == other.options
+    end
   end
 
 end
