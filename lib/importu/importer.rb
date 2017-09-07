@@ -1,10 +1,10 @@
 require "tempfile"
 
 require "importu/backends"
+require "importu/converter_context"
 require "importu/converters"
 require "importu/definition"
 require "importu/exceptions"
-require "importu/import_context"
 require "importu/summary"
 
 class Importu::Importer
@@ -21,7 +21,7 @@ class Importu::Importer
   def initialize(source, backend: nil)
     @source = source
     @backend = backend
-    @context = Importu::ImportContext.with_config(config)
+    @context = Importu::ConverterContext.with_config(config)
   end
 
   def config

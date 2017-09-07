@@ -1,12 +1,12 @@
 require "spec_helper"
 
+require "importu/converter_context"
 require "importu/converters"
 require "importu/exceptions"
-require "importu/import_context"
 
-RSpec.describe Importu::ImportContext do
+RSpec.describe Importu::ConverterContext do
   subject(:context) do
-    Importu::ImportContext.with_config(definition.config).new(data)
+    described_class.with_config(definition.config).new(data)
   end
 
   let(:definition) do

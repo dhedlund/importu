@@ -1,13 +1,13 @@
 require "spec_helper"
 
+require "importu/converter_context"
 require "importu/converters"
 require "importu/definition"
-require "importu/import_context"
 require "importu/record"
 
 RSpec.describe Importu::Record do
   subject(:record) { Importu::Record.new(data, raw_data, context, definition.config) }
-  let(:context) { Importu::ImportContext.with_config(definition.config) }
+  let(:context) { Importu::ConverterContext.with_config(definition.config) }
   let(:definition) do
     Class.new do
       extend Importu::Definition

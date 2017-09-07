@@ -3,7 +3,7 @@ require "importu/exceptions"
 # Provides a limited environment in which field conversion can occur. Exists
 # primarily to prevent custom converters from gaining access to too much of
 # the environment that might otherwise change in the future.
-class Importu::ImportContext
+class Importu::ConverterContext
 
   def initialize(data)
     @data = data

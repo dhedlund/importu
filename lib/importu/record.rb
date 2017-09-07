@@ -1,5 +1,4 @@
 require "importu/exceptions"
-require "importu/import_context"
 
 class Importu::Record
   attr_reader :data, :raw_data
