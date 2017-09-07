@@ -36,14 +36,6 @@ RSpec.describe Importu::Record do
     end
   end
 
-  describe "#field_definitions" do
-    let(:definition) { Class.new(super()) { field :foo } }
-
-    it "returns the field definitions defined in importer on construction" do
-      expect(record.field_definitions).to include(:foo)
-    end
-  end
-
   describe "#record_hash" do
     it "tries to generate a record hash on first access" do
       expected = { foo: 1, bar: 2 }
@@ -82,30 +74,5 @@ RSpec.describe Importu::Record do
     it "is delegated from #key?" do
       expect(record).to delegate(:key?).to(:record_hash)
     end
-
-    describe "#convert" do
-      context "with a :default option" do
-        it "returns data value if data value not nil" do
-          definition.converter(:clean) { "value1" }
-          expect(record.convert(:field1, :clean, default: "foobar")).to eq "value1"
-        end
-
-        it "returns default value if data value is nil" do
-          definition.converter(:clean) { nil }
-          expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
-        end
-
-        it "returns default value if data field is missing and not required" do
-          definition.converter(:clean) { raise Importu::MissingField, "field1" }
-          expect(record.convert(:field1, :clean, default: "foobar")).to eq "foobar"
-        end
-
-        it "raises an exception if data field is missing and is required" do
-          definition.converter(:clean) { raise Importu::MissingField, "field1" }
-          expect { record.convert(:field1, :clean, default: "foobar", required: true) }.to raise_error(Importu::MissingField)
-        end
-      end
-    end
-
   end
 end
