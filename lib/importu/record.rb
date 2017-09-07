@@ -25,22 +25,21 @@ class Importu::Record
     record_hash
   end
 
-  def convert(name, type, options = {})
-    type, options = type[:to], type if type.kind_of?(Hash)
-    converter = type ? converters[type] : options[:converter] \
-      or raise "converter not found: #{type}"
-
-    # TODO: defining options in field definition is deprecated
-    definition = field_definitions[name] || {}
-    options = definition.merge(options)
+  def convert(name, converter, **options)
+    definition = field_definitions.fetch(name, {})
+    default = options.fetch(:default) { definition[:default] }
+    required = options.fetch(:required) { definition[:required] }
+    converter = converter.respond_to?(:call) \
+      ? converter # Proc
+      : converters.fetch(converter) # Symbol
 
     begin
       value = instance_exec(name, options, &converter)
-      value.nil? ? options[:default] : value
+      value.nil? ? default : value
 
     rescue Importu::MissingField => e
-      raise e if options[:required]
-      options[:default]
+      raise if required
+      default
 
     rescue ArgumentError => e
       # conversion of field value most likely failed
@@ -48,11 +47,11 @@ class Importu::Record
     end
   end
 
-  def field_value(name, options = {})
+  def field_value(name, **options)
     field_definition = field_definitions[name] \
       or raise "importer field not defined: #{name}"
 
-    convert(name, nil, field_definition.merge(options))
+    convert(name, field_definition[:converter], field_definition.merge(options))
   end
 
   def assign_to(object, action, &block)
