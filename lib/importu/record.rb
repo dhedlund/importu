@@ -1,12 +1,8 @@
-require "importu/exceptions"
-
 class Importu::Record
-  attr_reader :data
-
-  include Enumerable
 
   extend Forwardable
-  delegate [:keys, :values, :each, :[], :key?] => :record_hash
+
+  attr_reader :data
 
   def initialize(data, context, fields:, preprocessor: nil, postprocessor: nil, **)
     @data = data
@@ -16,33 +12,25 @@ class Importu::Record
     @context = context.new(data)
   end
 
-  def record_hash
-    @record_hash ||= generate_record_hash
-  end
-
-  def to_hash
-    record_hash
-  end
-
   def assign_to(object, action, &block)
     @object, @action = object, action
 
     instance_eval(&@preprocessor) if @preprocessor
-    instance_exec(object, record_hash, &block) if block
+    instance_exec(object, self, &block) if block
 
     # filter out any fields we're not allowed to copy for this action
     allowed_fields = @field_definitions.select {|n,d| d[action] }.keys
     concrete_fields = @field_definitions.reject {|n,d| d[:abstract] }.keys
-    field_names = record_hash.keys & allowed_fields & concrete_fields
+    field_names = keys & allowed_fields & concrete_fields
 
     unsupported = field_names.reject {|n| object.respond_to?("#{n}=") }
     if unsupported.any?
       raise "model does not support assigning fields: #{unsupported.to_sentence}"
     end
 
-    (record_hash.keys & allowed_fields & concrete_fields).each do |name|
+    (keys & allowed_fields & concrete_fields).each do |name|
       if object.respond_to?("#{name}=")
-        object.send("#{name}=", record_hash[name])
+        object.send("#{name}=", self[name])
       else
       end
     end
@@ -52,16 +40,20 @@ class Importu::Record
     object
   end
 
-  private def generate_record_hash
-    @field_definitions.keys.inject({}) do |hash,name|
-      hash[name.to_sym] = @context.field_value(name)
-      hash
+  def to_hash
+    @record_hash ||= @field_definitions.each_with_object({}) do |(name,_),hash|
+      hash[name] = @context.field_value(name)
     end
   end
+
+  # A record should behave as similarly to a hash as possible, so forward all
+  # hash methods not defined on this class to our hash of converted values.
+  delegate (Hash.public_instance_methods - public_instance_methods) => :to_hash
+
 
   private
 
   attr_reader :object, :action # needed for exposing to instance_eval'd blocks
-  alias_method :record, :record_hash # FIXME: used anymore, maybe also for ^?
+  alias_method :record, :to_hash # FIXME: used anymore, maybe also for ^?
 
 end

@@ -8,64 +8,50 @@ require "importu/record"
 RSpec.describe Importu::Record do
   subject(:record) { Importu::Record.new(data, context, definition.config) }
   let(:context) { Importu::ConverterContext.with_config(definition.config) }
+
   let(:definition) do
     Class.new do
       extend Importu::Definition
       include Importu::Converters
+      field :pilot
+      field :balloons, &convert_to(:integer)
+      field :flying, &convert_to(:boolean)
     end
   end
 
-  let(:data) { Hash.new }
+  let(:data) { { "pilot" => "Nena",  "balloons" => "99", "flying" => "yes" } }
 
-  it "includes Enumerable" do
-    expect(record).to be_a_kind_of(Enumerable)
+  it "supports hash-like accessors" do
+    expect(record[:pilot]).to eq "Nena"
+    expect(record.fetch(:balloons)).to eq 99
+    expect { record.fetch(:color) }.to raise_error(KeyError)
+    expect(record.key?(:flying)).to be true
+    expect(record.key?(:color)).to be false
+    expect(record.keys).to eq [:pilot, :balloons, :flying]
+    expect(record.values).to eq ["Nena", 99, true]
+  end
+
+  it "supports enumerable behaviors" do
+    expect(record.each.with_index.to_a) # enumerable is composable (#w_index)
+      .to eq [[[:pilot, "Nena"], 0], [[:balloons, 99], 1], [[:flying, true], 2]]
+
+    expect(record.reduce([]) {|acc,(k,_)| acc << k }).to eq record.keys
   end
 
   describe "#data" do
-    let(:data) { { "foo" => "bar" } }
-
-    it "returns the data used during construction" do
+    it "returns data supplied during initialization" do
       expect(record.data).to eq data
     end
   end
 
-  describe "#record_hash" do
-    it "tries to generate a record hash on first access" do
-      expected = { foo: 1, bar: 2 }
-      expect(record).to receive(:generate_record_hash).and_return(expected)
-      expect(record.record_hash).to eq expected
+  describe "#to_hash" do
+    it "returns data with field converters applied" do
+      expect(record.to_hash).to eq(pilot: "Nena", balloons: 99, flying: true)
     end
 
-    it "should not try to regenerate record hash no subsequent access" do
-      expected = { foo: 1, bar: 2 }
-      expect(record).to receive(:generate_record_hash).once.and_return(expected)
-      record.record_hash
-      expect(record.record_hash).to eq expected
-    end
-
-    it "is aliased from #to_hash" do
-      expect(record).to receive(:record_hash).and_return(:called)
-      expect(record.to_hash).to eq :called
-    end
-
-    it "is delegated from #keys" do
-      expect(record).to delegate(:keys).to(:record_hash)
-    end
-
-    it "is delegated from #values" do
-      expect(record).to delegate(:values).to(:record_hash)
-    end
-
-    it "is delegated from #each" do
-      expect(record).to delegate(:each).to(:record_hash)
-    end
-
-    it "is delegated from #[]" do
-      expect(record).to delegate(:[]).to(:record_hash)
-    end
-
-    it "is delegated from #key?" do
-      expect(record).to delegate(:key?).to(:record_hash)
+    it "does not try to recovert the data each time (returns same has)" do
+      expect(record.to_hash.object_id).to eq record.to_hash.object_id
     end
   end
+
 end
