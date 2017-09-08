@@ -11,8 +11,19 @@ module FixturesHelper
     load_fixture_json(name, "record.json")
   end
 
+  def expected_record_json!(name, records)
+    # Dump and re-parse to ensure everything is JSON types w/ string keys
+    record_json = JSON.parse(JSON.dump(records.map(&:to_hash)))
+    expect(record_json).to eq expected_record_json("books1")
+  end
+
   def expected_summary_json(name)
     load_fixture_json(name, "summary.json")
+  end
+
+  def expected_summary_json!(name, summary)
+    summary_json = JSON.parse(JSON.dump(summary.to_hash))
+    expect(summary_json).to eq expected_summary_json(name)
   end
 
   def fixtures_path

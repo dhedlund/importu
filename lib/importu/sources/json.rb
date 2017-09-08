@@ -1,16 +1,15 @@
 require "multi_json"
 
 require "importu/exceptions"
-require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::JSON
-  def initialize(infile)
+  def initialize(infile, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
     begin
-      infile.rewind
-      @reader = MultiJson.load(infile.read)
+      @infile.rewind
+      @reader = MultiJson.load(@infile.read)
     rescue MultiJson::DecodeError => e
       raise Importu::InvalidInput, e.message
     end
@@ -24,11 +23,9 @@ class Importu::Sources::JSON
     end
   end
 
-  def records(context, config)
+  def rows
     Enumerator.new do |yielder|
-      @reader.each_with_index do |data,idx|
-        yielder.yield Importu::Record.new(data, data, context, config)
-      end
+      @reader.each {|row| yielder.yield(row, row) }
     end
   end
 

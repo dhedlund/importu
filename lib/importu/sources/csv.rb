@@ -1,13 +1,12 @@
 require "csv"
 
 require "importu/exceptions"
-require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::CSV
   attr_reader :outfile
 
-  def initialize(infile, csv_options: {})
+  def initialize(infile, csv_options: {}, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
     @csv_options = {
@@ -17,8 +16,13 @@ class Importu::Sources::CSV
       skip_blanks:    true,
     }.merge(csv_options)
 
-    @reader = ::CSV.new(@infile, @csv_options)
-    @header = @reader.readline
+    begin
+      @reader = ::CSV.new(@infile, @csv_options)
+      @header = @reader.readline
+    rescue CSV::MalformedCSVError => ex
+      raise Importu::InvalidInput, ex.message
+    end
+
     @data_pos = @infile.pos
 
     if @header.nil?
@@ -26,12 +30,10 @@ class Importu::Sources::CSV
     end
   end
 
-  def records(context, config)
+  def rows
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
-      @reader.each do |row|
-        yielder.yield Importu::Record.new(row.to_hash, row, context, config)
-      end
+      @reader.each {|row| yielder.yield(row.to_hash, row) }
     end
   end
 

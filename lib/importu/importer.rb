@@ -5,6 +5,7 @@ require "importu/converter_context"
 require "importu/converters"
 require "importu/definition"
 require "importu/exceptions"
+require "importu/record"
 require "importu/summary"
 
 class Importu::Importer
@@ -39,7 +40,11 @@ class Importu::Importer
   end
 
   def records
-    @source.records(context, config)
+    Enumerator.new do |yielder|
+      @source.rows.each do |data, raw_data|
+        yielder.yield Importu::Record.new(data, raw_data, context, config)
+      end
+    end
   end
 
   private def enforce_allowed_actions!(action)

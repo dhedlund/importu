@@ -1,12 +1,12 @@
 require "nokogiri"
 
 require "importu/exceptions"
-require "importu/record"
 require "importu/sources"
 
 class Importu::Sources::XML
-  def initialize(infile, xml_options: {})
+  def initialize(infile, records_xpath:, xml_options: {}, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
+    @records_xpath = records_xpath
 
     if reader.root.nil?
       raise Importu::InvalidInput, "Empty document"
@@ -23,14 +23,14 @@ class Importu::Sources::XML
     end
   end
 
-  def records(context, config)
+  def rows
     Enumerator.new do |yielder|
-      reader.xpath(config[:records_xpath]).each do |xml|
+      reader.xpath(@records_xpath).each do |xml|
         data = Hash[[
           *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
           *xml.elements.map {|e| [e.name, e.content]},
         ]]
-        yielder.yield Importu::Record.new(data, xml, context, config)
+        yielder.yield(data, xml)
       end
     end
   end
