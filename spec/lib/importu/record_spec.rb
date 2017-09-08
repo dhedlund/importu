@@ -6,7 +6,7 @@ require "importu/definition"
 require "importu/record"
 
 RSpec.describe Importu::Record do
-  subject(:record) { Importu::Record.new(data, raw_data, context, definition.config) }
+  subject(:record) { Importu::Record.new(data, context, definition.config) }
   let(:context) { Importu::ConverterContext.with_config(definition.config) }
   let(:definition) do
     Class.new do
@@ -16,7 +16,6 @@ RSpec.describe Importu::Record do
   end
 
   let(:data) { Hash.new }
-  let(:raw_data) { Hash.new }
 
   it "includes Enumerable" do
     expect(record).to be_a_kind_of(Enumerable)
@@ -27,14 +26,6 @@ RSpec.describe Importu::Record do
 
     it "returns the data used during construction" do
       expect(record.data).to eq data
-    end
-  end
-
-  describe "#raw_data" do
-    let(:raw_data) { "this,is\tsome_raw_data\n" }
-
-    it "returns the raw_data used during construction" do
-      expect(record.raw_data).to eq raw_data
     end
   end
 

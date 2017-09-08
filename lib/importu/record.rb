@@ -1,15 +1,15 @@
 require "importu/exceptions"
 
 class Importu::Record
-  attr_reader :data, :raw_data
+  attr_reader :data
 
   include Enumerable
 
   extend Forwardable
   delegate [:keys, :values, :each, :[], :key?] => :record_hash
 
-  def initialize(data, raw_data, context, fields:, preprocessor: nil, postprocessor: nil, **)
-    @data, @raw_data = data, raw_data
+  def initialize(data, context, fields:, preprocessor: nil, postprocessor: nil, **)
+    @data = data
     @preprocessor = preprocessor
     @postprocessor = postprocessor
     @field_definitions = fields

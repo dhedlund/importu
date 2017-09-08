@@ -31,18 +31,16 @@ class Importu::Importer
 
   def import!(&block)
     summary = Importu::Summary.new
-    records.each do |record|
-      source.wrap_import_record(record) do
-        import_record(record, summary, &block)
-      end
+    records.each.with_index do |record, idx|
+      import_record(record, idx, summary, &block)
     end
     summary
   end
 
   def records
     Enumerator.new do |yielder|
-      @source.rows.each do |data, raw_data|
-        yielder.yield Importu::Record.new(data, raw_data, context, config)
+      @source.rows.each do |data|
+        yielder.yield Importu::Record.new(data, context, config)
       end
     end
   end
@@ -56,7 +54,7 @@ class Importu::Importer
     end
   end
 
-  private def import_record(record, summary, &block)
+  private def import_record(record, index, summary, &block)
     begin
       object = backend.find(record)
 
@@ -71,11 +69,11 @@ class Importu::Importer
         # FIXME: mark_encountered(object) ?
       end
 
-      summary.record(result)
+      summary.record(result, index: index)
 
     rescue Importu::InvalidRecord => e
       errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
-      summary.record(:invalid, errors: errors)
+      summary.record(:invalid, index: index, errors: errors)
       raise
     end
   end

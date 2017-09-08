@@ -4,7 +4,6 @@ require "importu/exceptions"
 require "importu/sources"
 
 class Importu::Sources::CSV
-  attr_reader :outfile
 
   def initialize(infile, csv_options: {}, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
@@ -33,31 +32,30 @@ class Importu::Sources::CSV
   def rows
     @infile.pos = @data_pos
     Enumerator.new do |yielder|
-      @reader.each {|row| yielder.yield(row.to_hash, row) }
+      @reader.each {|row| yielder.yield(row.to_hash) }
     end
   end
 
-  def wrap_import_record(record, &block)
-    begin
-      yield
-    rescue Importu::MissingField => e
-      # if one record missing field, all are, major error
-      raise Importu::InvalidInput, "missing required field: #{e.message}"
-    rescue Importu::InvalidRecord => e
-      write_error(record.raw_data, e.message)
-    end
-  end
+  def write_errors(summary)
+    return unless summary.itemized_errors.any?
 
-  private def write_error(data, msg)
-    unless @writer
-      @outfile = Tempfile.new("import")
-      @writer = ::CSV.new(@outfile, @csv_options)
-      @header["_errors"] = "_errors"
-      @writer << @header
-    end
+    header = @header.fields | ["_errors"]
+    itemized_errors = summary.itemized_errors
 
-    data["_errors"] = msg
-    @writer << data
+    Tempfile.new("import").tap do |file|
+      writer = CSV.new(file, @csv_options)
+      writer << header
+
+      rows.each.with_index do |row, index|
+        errors = itemized_errors.key?(index) \
+          ? itemized_errors[index].join(", ")
+          : nil
+
+        writer << row.merge("_errors" => errors).values_at(*header)
+      end
+
+      file.rewind
+    end
   end
 
 end

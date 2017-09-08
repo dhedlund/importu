@@ -15,31 +15,30 @@ class Importu::Sources::JSON
     end
   end
 
-  def outfile
-    return nil unless @error_records
-
-    @outfile ||= Tempfile.new("import").tap do |outfile|
-      outfile.write(JSON.pretty_generate(@error_records))
-    end
-  end
-
   def rows
     Enumerator.new do |yielder|
-      @reader.each {|row| yielder.yield(row, row) }
+      @reader.each {|row| yielder.yield(row) }
     end
   end
 
-  def wrap_import_record(record, &block)
-    begin
-      yield
-    rescue Importu::InvalidRecord => e
-      write_error(record.raw_data, e.message)
-    end
-  end
+  def write_errors(summary)
+    return unless summary.itemized_errors.any?
 
-  private def write_error(data, msg)
-    @error_records ||= []
-    @error_records << data.merge("_errors" => msg)
+    itemized_errors = summary.itemized_errors
+    updated_rows = rows.map.with_index do |row, index|
+      if itemized_errors.key?(index)
+        row.merge("_errors" => itemized_errors[index].join(", "))
+      elsif row.key?("_errors")
+        row.dup.tap {|r| r.delete("_errors") }
+      else
+        row
+      end
+    end
+
+    Tempfile.new("import").tap do |file|
+      file.write(JSON.pretty_generate(updated_rows))
+      file.rewind
+    end
   end
 
 end

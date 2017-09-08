@@ -8,17 +8,13 @@ class Importu::Sources::Ruby
     @data = data
   end
 
-  def outfile
-  end
-
   def rows
     Enumerator.new do |yielder|
-      @data.each {|row| yielder.yield(row.to_hash, row) }
+      @data.each {|row| yielder.yield(row.to_hash) }
     end
   end
 
-  def wrap_import_record(record, &block)
-    yield
+  def write_errors(summary)
   end
 
 end
