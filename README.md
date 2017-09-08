@@ -3,10 +3,6 @@ Importu is a framework and DSL for simplifying the process of importing
 structured data into your application.  It is also a tool for separating
 import-related business logic from the rest of your code.
 
-Current supported source formats include CSV/TSV, XML and JSON.  It is fairly
-trivial to extend Importu to handle additional formats.  See the
-`lib/importu/importer` directory for implementations of supported importers.
-
 ## Example
 Assuming you have the following data in the file `data.csv`:
 ```
