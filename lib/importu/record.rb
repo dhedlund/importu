@@ -12,27 +12,29 @@ class Importu::Record
     @context = context.new(data)
   end
 
+  def assignable_fields_for(action)
+    @field_definitions.each_with_object([]) do |(name,definition),acc|
+      if definition[action] == true && definition[:abstract] == false
+        acc << name
+      end
+    end
+  end
+
   def assign_to(object, action, &block)
     @object, @action = object, action
 
     instance_eval(&@preprocessor) if @preprocessor
     instance_exec(object, self, &block) if block
 
-    # filter out any fields we're not allowed to copy for this action
-    allowed_fields = @field_definitions.select {|n,d| d[action] }.keys
-    concrete_fields = @field_definitions.reject {|n,d| d[:abstract] }.keys
-    field_names = keys & allowed_fields & concrete_fields
+    field_names = assignable_fields_for(action)
 
     unsupported = field_names.reject {|n| object.respond_to?("#{n}=") }
     if unsupported.any?
       raise "model does not support assigning fields: #{unsupported.to_sentence}"
     end
 
-    (keys & allowed_fields & concrete_fields).each do |name|
-      if object.respond_to?("#{name}=")
-        object.send("#{name}=", self[name])
-      else
-      end
+    field_names.each do |name|
+      object.send("#{name}=", self[name])
     end
 
     instance_eval(&@postprocessor) if @postprocessor

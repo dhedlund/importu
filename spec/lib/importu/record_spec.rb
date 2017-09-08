@@ -38,6 +38,35 @@ RSpec.describe Importu::Record do
     expect(record.reduce([]) {|acc,(k,_)| acc << k }).to eq record.keys
   end
 
+  describe "#assignable_fields_for" do
+    it "returns all field names by default" do
+      expect(record.assignable_fields_for(:create))
+        .to eq [:pilot, :balloons, :flying]
+    end
+
+    context "when a field is allowed for create but not update" do
+      let(:definition) do
+        Class.new(super()) { field :pilot, create: true, update: false }
+      end
+
+      it "includes field for :create action but not :update action" do
+        expect(record.assignable_fields_for(:create)).to include(:pilot)
+        expect(record.assignable_fields_for(:update)).to_not include(:pilot)
+      end
+    end
+
+    context "when a field is marked as abstract" do
+      let(:definition) do
+        Class.new(super()) { field :balloons, abstract: true }
+      end
+
+      it "excludes the abstract field from list" do
+        expect(record.assignable_fields_for(:create)).to eq [:pilot, :flying]
+        expect(record.assignable_fields_for(:update)).to eq [:pilot, :flying]
+      end
+    end
+  end
+
   describe "#data" do
     it "returns data supplied during initialization" do
       expect(record.data).to eq data
