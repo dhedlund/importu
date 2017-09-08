@@ -1,13 +1,20 @@
 class Importu::Summary
+
   attr_reader :created, :invalid, :total, :unchanged, :updated
-  attr_reader :validation_errors
+  attr_reader :validation_errors, :itemized_errors
 
   def initialize
     @total = @invalid = @created = @updated = @unchanged = 0
     @validation_errors = Hash.new(0) # counter for each validation error
+
+    # Sparse array of error messages grouped by the index of the record.
+    # Should stay ordered by index because rows are processed sequentially
+    # and hashes preserve insertion order. Recorded errors without an index
+    # will be ignored. Index is 0-based from first record.
+    @itemized_errors = Hash.new {|h,idx| h[idx] = [] }
   end
 
-  def record(result, errors: [])
+  def record(result, index: nil, errors: [])
     @total += 1
 
     case result
@@ -16,7 +23,7 @@ class Importu::Summary
       when :unchanged then @unchanged += 1
       when :invalid then
         @invalid += 1
-        record_errors(errors)
+        record_errors(errors, index: index)
     end
   end
 
@@ -50,7 +57,7 @@ class Importu::Summary
 
   alias_method :to_s, :result_msg
 
-  private def record_errors(errors)
+  private def record_errors(errors, index: nil)
     errors.each do |error|
       # Strip parts of error that might be specific to record. Values within
       # parens is assumed to be data, e.g. "Dupe record found (sysnum 5489x)".
@@ -58,6 +65,8 @@ class Importu::Summary
       normalized_error = error.gsub(/ *\([^)]+\) *$/, "")
       @validation_errors[normalized_error] += 1
     end
+
+    @itemized_errors[index] += errors if index
   end
 
 end

@@ -26,9 +26,15 @@ RSpec.describe Importu::Summary do
       expect { summary.record(:invalid) }.to change { summary.total }.by(1)
     end
 
-    it "records errors associated with :invalid results" do
+    it "records aggregated errors associated with :invalid results" do
       summary.record(:invalid, errors: ["foo was invalid", "bar was invalid"])
       expect(summary.validation_errors.count).to eq 2
+    end
+
+    it "allows passing a record index to associate with errors" do
+      summary.record(:invalid, index: 71, errors: ["foo was invalid"])
+      summary.record(:invalid, index: 94, errors: ["bar was invalid"])
+      expect(summary.itemized_errors.keys).to eq [71, 94]
     end
   end
 
@@ -116,11 +122,11 @@ RSpec.describe Importu::Summary do
 
     context "when multiple errors" do
       it "counts each occurrence of error message" do
-      summary.record(:invalid, errors: ["foo was invalid", "bar was invalid"])
-      summary.record(:invalid, errors: ["bar was invalid", "baz was invalid"])
-      expect(summary.validation_errors["foo was invalid"]).to eq 1
-      expect(summary.validation_errors["bar was invalid"]).to eq 2
-      expect(summary.validation_errors["baz was invalid"]).to eq 1
+        summary.record(:invalid, errors: ["foo was invalid", "bar was invalid"])
+        summary.record(:invalid, errors: ["bar was invalid", "baz was invalid"])
+        expect(summary.validation_errors["foo was invalid"]).to eq 1
+        expect(summary.validation_errors["bar was invalid"]).to eq 2
+        expect(summary.validation_errors["baz was invalid"]).to eq 1
       end
     end
 
@@ -132,4 +138,32 @@ RSpec.describe Importu::Summary do
       end
     end
   end
+
+  describe "#itemized_errors" do
+    context "when no errors" do
+      it "returns an empty hash" do
+        expect(summary.itemized_errors).to eq({})
+      end
+
+      it "ignores errors not associated with a record index" do
+        expect { summary.record(:invalid, errors: ["foo was invalid"]) }
+          .to_not change { summary.itemized_errors }
+        expect { summary.record(:invalid, index: nil, errors: ["foo was invalid"]) }
+          .to_not change { summary.itemized_errors }
+      end
+
+      it "groups error messages by record index" do
+        summary.record(:invalid, index:  9, errors: ["foo", "bar"])
+        summary.record(:invalid, index: 11, errors: ["foo"])
+        summary.record(:invalid, index: 11, errors: ["bar", "baz"])
+        summary.record(:invalid, index: 17, errors: ["bar"])
+        expect(summary.itemized_errors).to eq({
+           9 => ["foo", "bar"],
+          11 => ["foo", "bar", "baz"],
+          17 => ["bar"],
+        })
+      end
+    end
+  end
+
 end
