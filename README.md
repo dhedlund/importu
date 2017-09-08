@@ -83,7 +83,7 @@ class BookImporter < Importu::Importer
   # passing a block to a field definition allows you to add your own logic
   # for converting data or checking for unexpected values
   field :authors do
-    value = clean(:authors) # apply :clean converter which strips whitespace
+    value = trimmed(:authors) # apply :trimmed converter which strips whitespace
     authors = value ? value.split(/(?:, )|(?: and )|(?: & )/i) : []
 
     if authors.none?
@@ -110,7 +110,7 @@ class BookImporter < Importu::Importer
   fields :title, :isbn10
 
   field :authors, label: "author" do
-    authors = clean(:authors).to_s.split(/(?:, )|(?: and )|(?: & )/i)
+    authors = trimmed(:authors).to_s.split(/(?:, )|(?: and )|(?: & )/i)
     raise ArgumentError, "at least one author is required" if authors.none?
 
     authors

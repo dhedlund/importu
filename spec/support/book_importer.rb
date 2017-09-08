@@ -9,7 +9,7 @@ class BookImporter < Importu::Importer
   field :release_date, &convert_to(:date)
 
   field :authors, label: "author" do
-    authors = clean(:authors).to_s.split(/(?:, )|(?: and )|(?: & )/i)
+    authors = trimmed(:authors).to_s.split(/(?:, )|(?: and )|(?: & )/i)
     raise ArgumentError, "at least one author is required" if authors.none?
     authors
   end

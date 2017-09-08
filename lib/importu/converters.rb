@@ -1,7 +1,5 @@
 require "bigdecimal"
 
-require "importu/exceptions"
-
 module Importu::Converters
   def self.included(base)
     base.class_eval do
@@ -9,7 +7,7 @@ module Importu::Converters
         raw_value(name)
       end
 
-      converter :clean do |name|
+      converter :trimmed do |name|
         value = raw_value(name)
         if value.is_a?(String)
           new_value = value.strip
@@ -20,12 +18,12 @@ module Importu::Converters
       end
 
       converter :string do |name|
-        value = clean(name)
+        value = trimmed(name)
         value.nil? ? nil : String(value)
       end
 
       converter :integer do |name|
-        value = clean(name)
+        value = trimmed(name)
 
         case value
           when nil then nil
@@ -35,12 +33,12 @@ module Importu::Converters
       end
 
       converter :float do |name|
-        value = clean(name)
+        value = trimmed(name)
         value.nil? ? nil : Float(value)
       end
 
       converter :decimal do |name|
-        value = clean(name)
+        value = trimmed(name)
         case value
           when nil then nil
           when BigDecimal then value
@@ -50,7 +48,7 @@ module Importu::Converters
       end
 
       converter :boolean do |name|
-        value = clean(name)
+        value = trimmed(name)
         case value
           when nil then nil
           when true, 1, /\A(?:true|yes|1)\z/i then true
@@ -60,7 +58,7 @@ module Importu::Converters
       end
 
       converter :date do |name, format: nil|
-        if value = clean(name)
+        if value = trimmed(name)
           format \
             ? Date.strptime(value, format)
             : Date.parse(value)
@@ -68,14 +66,14 @@ module Importu::Converters
       end
 
       converter :datetime do |name, format: nil|
-        if value = clean(name)
+        if value = trimmed(name)
           format \
             ? DateTime.strptime(value, format).to_time.utc
             : DateTime.parse(value).to_time.utc
         end
       end
 
-      converter :default, &convert_to(:clean)
+      converter :default, &convert_to(:trimmed)
     end
   end
 end
