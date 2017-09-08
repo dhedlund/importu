@@ -105,6 +105,8 @@ module Importu::Definition
 
   # @!visibility private
   def default_config
+    raw_converter = ->(n) { raw_value(n) }
+
     {
       allowed_actions: [:create],
       backend: {
@@ -116,7 +118,8 @@ module Importu::Definition
       postprocess: nil,
       records_xpath: nil,
       converters: {
-        default: ->(n) { raw_value(n) },
+        raw: raw_converter,
+        default: raw_converter,
       },
       fields: {},
     }
