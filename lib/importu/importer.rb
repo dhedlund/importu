@@ -29,10 +29,10 @@ class Importu::Importer
     self.class.config
   end
 
-  def import!(&block)
+  def import!
     summary = Importu::Summary.new
     records.each.with_index do |record, idx|
-      import_record(record, idx, summary, &block)
+      import_record(record, idx, summary)
     end
     summary
   end
@@ -54,18 +54,18 @@ class Importu::Importer
     end
   end
 
-  private def import_record(record, index, summary, &block)
+  private def import_record(record, index, summary)
     begin
       object = backend.find(record)
 
       if object.nil?
         enforce_allowed_actions!(:create)
-        result = backend.create(record, &block)
+        result = backend.create(record)
         # FIXME: mark_encountered(object) ?
       else
         enforce_allowed_actions!(:update)
         check_duplicate!(backend, object) # FIXME: Should come before action enforcement?
-        result = backend.update(record, object, &block)
+        result = backend.update(record, object)
         # FIXME: mark_encountered(object) ?
       end
 

@@ -7,9 +7,11 @@ class Importu::Backends::ActiveRecord
     model < ActiveRecord::Base # Inherits from
   end
 
-  def initialize(model:, finder_fields:, **)
+  def initialize(model:, finder_fields:, preprocessor: nil, postprocessor: nil, **)
     @model = model.is_a?(String) ? self.class.const_get(model) : model
     @finder_fields = finder_fields
+    @preprocessor = preprocessor
+    @postprocessor = postprocessor
   end
 
   def find(record)
@@ -33,17 +35,25 @@ class Importu::Backends::ActiveRecord
     object.respond_to?(:id) ? object.id : nil
   end
 
-  def create(record, &block)
+  def create(record)
     object = @model.new
-    record.assign_to(object, :create, &block)
+    perform_assignment(record, object, :create)
     save(record, object)
     :created
   end
 
-  def update(record, object, &block)
-    record.assign_to(object, :update, &block)
+  def update(record, object)
+    perform_assignment(record, object, :update)
     save(record, object)
     :updated
+  end
+
+  private def perform_assignment(record, object, action)
+    AssignmentContext.new(record, object, action).tap do |context|
+      context.apply(&@preprocessor)
+      context.assign_values
+      context.apply(&@postprocessor)
+    end
   end
 
   private def save(record, object)
@@ -61,6 +71,35 @@ class Importu::Backends::ActiveRecord
       raise Importu::InvalidRecord, error_msgs, object.errors.full_messages
     end
 
+  end
+
+  class AssignmentContext
+    attr_reader :record, :object, :action
+
+    def initialize(record, object, action)
+      @record, @object, @action = record, object, action
+    end
+
+    def apply(&block)
+      instance_eval(&block) if block
+    end
+
+    def assign_values
+      field_names = record.assignable_fields_for(action)
+
+      begin
+        field_names.each do |name|
+          object.send("#{name}=", record[name])
+        end
+      rescue NoMethodError
+        raise_unassignable_fields!(field_names)
+      end
+    end
+
+    private def raise_unassignable_fields!(field_names)
+      unassignable = field_names.reject {|n| object.respond_to?("#{n}=") }
+      raise "model does not support assigning fields: " + unassignable.join(", ")
+    end
   end
 
 end
