@@ -222,15 +222,15 @@ RSpec.describe Importu::Definition do
   describe "#records_xpath" do
     let(:foo_block) { Proc.new {} }
 
-    it "updates the :records_xpath config" do
+    it "updates the [:sources][:xml][:records_xpath] config" do
       expect { definition.records_xpath("//books") }
-        .to change { definition.config[:records_xpath] }
+        .to change { definition.config[:sources][:xml][:records_xpath] }
         .to("//books")
     end
 
     it "inherits config from ancestor" do
       ancestor.records_xpath("//books")
-      expect(definition.config[:records_xpath]).to eq "//books"
+      expect(definition.config[:sources][:xml][:records_xpath]).to eq "//books"
     end
 
     it "does not affect ancestor config" do

@@ -4,8 +4,9 @@ require "importu/summary"
 
 # Implement the following in specs that use this example:
 #
-#   subject(:source) { described_class.new(input, importer_class.config) }
+#   subject(:source) { described_class.new(input, source_config) }
 #   let(:importer_class) { Class.new(Importu::Importer) }
+#   let(:source_config) { importer_class.config[:sources][:csv] }
 #
 RSpec.shared_examples "importer source" do |format, exclude: []|
   describe "#initialize" do
@@ -61,7 +62,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
   end
 
   describe "#write_errors" do
-    subject(:source) { described_class.new(infile("books1", format), importer_class.config) }
+    subject(:source) { described_class.new(infile("books1", format), source_config) }
     let(:importer_class) { Class.new(super()) { include BookImporterDefinition } }
 
     context "when there are no errors during import" do
@@ -88,7 +89,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
 
       it "records errors to '_errors' field with source data" do
         errfile = source.write_errors(summary)
-        new_source = described_class.new(errfile, importer_class.config)
+        new_source = described_class.new(errfile, source_config)
 
         expect(new_source.rows.map {|r| r["_errors"] }).to eq [
           nil,                                # 0
@@ -103,14 +104,14 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
 
       it "clears any existing '_errors' values in source data" do
         errfile = source.write_errors(summary)
-        source2 = described_class.new(errfile, importer_class.config)
+        source2 = described_class.new(errfile, source_config)
 
         summary2 = Importu::Summary.new.tap do |summary|
           summary.record(:invalid, index: 0, errors: ["baz was invalid"])
         end
 
         errfile2 = source2.write_errors(summary2)
-        source3 = described_class.new(errfile2, importer_class.config)
+        source3 = described_class.new(errfile2, source_config)
 
         expect(source3.rows.map {|r| r["_errors"] }).to eq [
           "baz was invalid", # 0
@@ -126,7 +127,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
 
       it "supports only writing records with errors" do
         errfile = source.write_errors(summary, only_errors: true)
-        new_source = described_class.new(errfile, importer_class.config)
+        new_source = described_class.new(errfile, source_config)
         expect(new_source.rows.map {|r| r["_errors"] }).to eq [
           # nil,                              # 0, excluded
           "foo was invalid",                  # 1

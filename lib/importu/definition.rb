@@ -98,7 +98,11 @@ module Importu::Definition
   # source and backend-specific configurations from their own classes.
   # Should also have value moved into a [:sources][:xml] field.
   def records_xpath(xpath)
-    @config = { **config, records_xpath: xpath }
+    @config = { **config,
+      sources: { **config[:sources],
+        xml: { **config[:sources][:xml], records_xpath: xpath }
+      }
+    }
   end
 
   # @!visibility private
@@ -113,7 +117,14 @@ module Importu::Definition
         finder_fields: [[:id]],
         before_save: nil,
       },
-      records_xpath: nil,
+      sources: {
+        csv: {},
+        json: {},
+        ruby: {},
+        xml: {
+          records_xpath: nil,
+        },
+      },
       converters: {
         raw: raw_converter,
         default: raw_converter,
