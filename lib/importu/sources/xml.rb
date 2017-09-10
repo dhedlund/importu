@@ -27,7 +27,7 @@ class Importu::Sources::XML
     end
   end
 
-  def write_errors(summary)
+  def write_errors(summary, only_errors: false)
     return unless summary.itemized_errors.any?
 
     @infile.rewind
@@ -36,11 +36,13 @@ class Importu::Sources::XML
 
     itemized_errors = summary.itemized_errors
     writer.xpath(@records_xpath).each_with_index do |xml, index|
-      next unless itemized_errors.key?(index)
-
-      node = Nokogiri::XML::Node.new "_errors", writer
-      node.content = itemized_errors[index].join(", ")
-      xml.add_child(node)
+      if itemized_errors.key?(index)
+        node = Nokogiri::XML::Node.new "_errors", writer
+        node.content = itemized_errors[index].join(", ")
+        xml.add_child(node)
+      elsif only_errors
+        xml.remove
+      end
     end
 
     Tempfile.new("import").tap do |file|

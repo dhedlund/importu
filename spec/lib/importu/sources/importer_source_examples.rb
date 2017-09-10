@@ -123,6 +123,16 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
         expect { source.write_errors(summary) }
           .to_not change { source.rows.to_a }
       end
+
+      it "supports only writing records with errors" do
+        errfile = source.write_errors(summary, only_errors: true)
+        new_source = described_class.new(errfile, importer_class.config)
+        expect(new_source.rows.map {|r| r["_errors"] }).to eq [
+          # nil,                              # 0, excluded
+          "foo was invalid",                  # 1
+          "foo was invalid, bar was invalid", # 2
+        ]
+      end
     end
   end
 

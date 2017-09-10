@@ -36,7 +36,7 @@ class Importu::Sources::CSV
     end
   end
 
-  def write_errors(summary)
+  def write_errors(summary, only_errors: false)
     return unless summary.itemized_errors.any?
 
     header = @header.fields | ["_errors"]
@@ -51,7 +51,9 @@ class Importu::Sources::CSV
           ? itemized_errors[index].join(", ")
           : nil
 
-        writer << row.merge("_errors" => errors).values_at(*header)
+        if errors || !only_errors
+          writer << row.merge("_errors" => errors).values_at(*header)
+        end
       end
 
       file.rewind

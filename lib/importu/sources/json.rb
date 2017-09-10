@@ -21,17 +21,19 @@ class Importu::Sources::JSON
     end
   end
 
-  def write_errors(summary)
+  def write_errors(summary, only_errors: false)
     return unless summary.itemized_errors.any?
 
     itemized_errors = summary.itemized_errors
-    updated_rows = rows.map.with_index do |row, index|
+    updated_rows = rows.each.with_index.with_object([]) do |(row,index), acc|
       if itemized_errors.key?(index)
-        row.merge("_errors" => itemized_errors[index].join(", "))
+        acc << row.merge("_errors" => itemized_errors[index].join(", "))
+      elsif only_errors
+        # Requested to only include rows with new errors, row has none
       elsif row.key?("_errors")
-        row.dup.tap {|r| r.delete("_errors") }
+        acc << row.dup.tap {|r| r.delete("_errors") }
       else
-        row
+        acc << row
       end
     end
 

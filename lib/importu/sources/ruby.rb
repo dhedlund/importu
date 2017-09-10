@@ -14,7 +14,7 @@ class Importu::Sources::Ruby
     end
   end
 
-  def write_errors(summary)
+  def write_errors(summary, only_errors: false)
   end
 
 end
