@@ -25,6 +25,27 @@ RSpec.describe Importu::Definition do
     end
   end
 
+  describe "#before_save" do
+    let(:foo_block) { Proc.new {} }
+
+    it "updates the [:backend][:before_save] config" do
+      expect { definition.before_save(&foo_block) }
+        .to change { definition.config[:backend][:before_save] }
+        .to(foo_block)
+    end
+
+    it "inherits config from ancestor" do
+      ancestor.before_save(&foo_block)
+      expect(definition.config[:backend][:before_save]).to eq foo_block
+    end
+
+    it "does not affect ancestor config" do
+      ancestor.before_save(&foo_block)
+      expect { definition.before_save {} }
+        .to_not change { ancestor.config }
+    end
+  end
+
   describe "#config" do
     it "returns a config hash of the definition" do
       expect(definition.config).to include(:converters, :fields)
@@ -195,48 +216,6 @@ RSpec.describe Importu::Definition do
       expect { definition.model("Foo", backend: :oven) }
         .to change { definition.config[:backend][:name] }
         .to(:oven)
-    end
-  end
-
-  describe "#preprocess" do
-    let(:foo_block) { Proc.new {} }
-
-    it "updates the :preprocess config" do
-      expect { definition.preprocess(&foo_block) }
-        .to change { definition.config[:preprocess] }
-        .to(foo_block)
-    end
-
-    it "inherits config from ancestor" do
-      ancestor.preprocess(&foo_block)
-      expect(definition.config[:preprocess]).to eq foo_block
-    end
-
-    it "does not affect ancestor config" do
-      ancestor.preprocess(&foo_block)
-      expect { definition.preprocess {} }
-        .to_not change { ancestor.config }
-    end
-  end
-
-  describe "#postprocess" do
-    let(:foo_block) { Proc.new {} }
-
-    it "updates the :postprocess config" do
-      expect { definition.postprocess(&foo_block) }
-        .to change { definition.config[:postprocess] }
-        .to(foo_block)
-    end
-
-    it "inherits config from ancestor" do
-      ancestor.postprocess(&foo_block)
-      expect(definition.config[:postprocess]).to eq foo_block
-    end
-
-    it "does not affect ancestor config" do
-      ancestor.postprocess(&foo_block)
-      expect { definition.postprocess {} }
-        .to_not change { ancestor.config }
     end
   end
 

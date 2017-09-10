@@ -86,14 +86,12 @@ module Importu::Definition
     }
   end
 
-  # gets executed just before record converted to object
-  def preprocess(&block)
-    @config = { **config, preprocess: block }
-  end
-
-  # gets executed just after record converted to object
-  def postprocess(&block)
-    @config = { **config, postprocess: block }
+  # FIXME: backend-specific setting, should be mixed in from somewhere else.
+  # Block to execute just before saving the model object to the database.
+  def before_save(&block)
+    @config = { **config,
+      backend: { **config[:backend], before_save: block }
+    }
   end
 
   # FIXME: source-specific setting, here until we have a way to define
@@ -113,9 +111,8 @@ module Importu::Definition
         name: nil,
         model: nil,
         finder_fields: [[:id]],
+        before_save: nil,
       },
-      preprocess: nil,
-      postprocess: nil,
       records_xpath: nil,
       converters: {
         raw: raw_converter,

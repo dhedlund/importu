@@ -33,7 +33,6 @@ RSpec.describe "ActiveRecord Backend", :active_record do
       JSON.parse(serialized)
     end
 
-
     it "imports new book records" do
       expect { importer.import! }.to change { Book.count }.by(3)
     end
@@ -46,6 +45,19 @@ RSpec.describe "ActiveRecord Backend", :active_record do
     it "correctly saves imported data in the model" do
       importer.import!
       expect(models_json).to match_array expected_model_json("books1")
+    end
+
+    context "when a before_save callback is defined" do
+      let(:importer_class) do
+        Class.new(super()) do
+          before_save { object.title = object.title.upcase }
+        end
+      end
+
+      it "runs callback before saving" do
+        importer.import!
+        Book.first.title == Book.first.title.upcase
+      end
     end
   end
 

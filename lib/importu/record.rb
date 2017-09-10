@@ -3,7 +3,6 @@ class Importu::Record
   extend Forwardable
 
   attr_reader :data
-  attr_reader :preprocessor, :postprocessor # FIXME: remove
 
   def initialize(data, context, fields:, **)
     @data = data

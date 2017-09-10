@@ -7,11 +7,10 @@ class Importu::Backends::ActiveRecord
     model < ActiveRecord::Base # Inherits from
   end
 
-  def initialize(model:, finder_fields:, preprocessor: nil, postprocessor: nil, **)
+  def initialize(model:, finder_fields:, before_save: nil, **)
     @model = model.is_a?(String) ? self.class.const_get(model) : model
     @finder_fields = finder_fields
-    @preprocessor = preprocessor
-    @postprocessor = postprocessor
+    @before_save = before_save
   end
 
   def find(record)
@@ -50,9 +49,8 @@ class Importu::Backends::ActiveRecord
 
   private def perform_assignment(record, object, action)
     AssignmentContext.new(record, object, action).tap do |context|
-      context.apply(&@preprocessor)
       context.assign_values
-      context.apply(&@postprocessor)
+      context.apply(&@before_save)
     end
   end
 
