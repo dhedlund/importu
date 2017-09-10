@@ -94,7 +94,8 @@ class Importu::Backends::ActiveRecord
 
     private def raise_unassignable_fields!(field_names)
       unassignable = field_names.reject {|n| object.respond_to?("#{n}=") }
-      raise "model does not support assigning fields: " + unassignable.join(", ")
+      raise Importu::UnassignableFields, "model does not support assigning " +
+        "all fields: " + unassignable.join(", ")
     end
   end
 

@@ -47,6 +47,14 @@ RSpec.describe "ActiveRecord Backend", :active_record do
       expect(models_json).to match_array expected_model_json("books1")
     end
 
+    context "when definition includes non-abstract fields not on model" do
+      let(:importer_class) { Class.new(super()) { fields(:foo, :bar) { "blah" } } }
+
+      it "raises an UnassignableFields error" do
+        expect { importer.import! }.to raise_error(Importu::UnassignableFields)
+      end
+    end
+
     context "when creating records" do
       context "when create actions are not allowed" do
         let(:importer_class) { Class.new(super()) { allow_actions :update } }

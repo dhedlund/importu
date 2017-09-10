@@ -9,6 +9,7 @@ module Importu
   class InvalidInput < ImportuException; end
   class BackendNotRegistered < ImportuException; end
   class BackendMatchError < ImportuException; end
+  class UnassignableFields < ImportuException; end
 
   class InvalidRecord < ImportuException
     attr_reader :validation_errors
