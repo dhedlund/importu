@@ -47,6 +47,39 @@ RSpec.describe "ActiveRecord Backend", :active_record do
       expect(models_json).to match_array expected_model_json("books1")
     end
 
+    context "when creating records" do
+      context "when create actions are not allowed" do
+        let(:importer_class) { Class.new(super()) { allow_actions :update } }
+
+        it "marks each record creation as inavlid" do
+          summary = importer.import!
+          expect(summary.created).to eq 0
+          expect(summary.invalid).to eq 3
+        end
+      end
+    end
+
+    context "when updating records" do
+      before { importer.import! }
+
+      context "and there are no changes" do
+        it "marks each record as unchanged" do
+          summary = importer.import!
+          expect(summary.unchanged).to eq 3
+        end
+      end
+
+      context "when updates actions are not allowed" do
+        let(:importer_class) { Class.new(super()) { allow_actions :create } }
+
+        it "marks each record update as inavlid" do
+          summary = importer.import!
+          expect(summary.updated).to eq 0
+          expect(summary.invalid).to eq 3
+        end
+      end
+    end
+
     context "when a before_save callback is defined" do
       let(:importer_class) do
         Class.new(super()) do

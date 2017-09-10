@@ -20,7 +20,7 @@ class Importu::Backends::ActiveRecord
       if field_group.respond_to?(:call) # proc
         object = @model.instance_exec(record, &field_group).first
       else
-        conditions = Hash[field_group.map {|f| [f, record[f]]}]
+        conditions = Hash[Array(field_group).map {|f| [f, record[f]]}]
         object = @model.where(conditions).first
       end
 
@@ -38,13 +38,11 @@ class Importu::Backends::ActiveRecord
     object = @model.new
     perform_assignment(record, object, :create)
     save(record, object)
-    :created
   end
 
   def update(record, object)
     perform_assignment(record, object, :update)
     save(record, object)
-    :updated
   end
 
   private def perform_assignment(record, object, action)
@@ -56,19 +54,19 @@ class Importu::Backends::ActiveRecord
 
   private def save(record, object)
     return :unchanged unless object.changed?
+    new_record = object.new_record?
 
     begin
       object.save!
-
     rescue ActiveRecord::RecordInvalid
       error_msgs = object.errors.map do |name,message|
-        name = (record.field_definitions[name]||{})[:label]
         name == "base" ? message : "#{name} #{message}"
       end.join(", ")
 
       raise Importu::InvalidRecord, error_msgs, object.errors.full_messages
     end
 
+    new_record ? :created : :updated
   end
 
   class AssignmentContext

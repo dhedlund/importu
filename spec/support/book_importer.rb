@@ -5,6 +5,8 @@ module BookImporterDefinition
     base.class_eval do
       allow_actions :create, :update
 
+      find_by :isbn10
+
       fields :title, :isbn10, :pages, :release_date, :authors
 
       field :pages, required: false, &convert_to(:integer)

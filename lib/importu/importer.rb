@@ -48,9 +48,9 @@ class Importu::Importer
   private def enforce_allowed_actions!(action)
     allowed_actions = config[:allowed_actions]
     if action == :create && !allowed_actions.include?(:create)
-      raise Importu::InvalidRecord, "#{model} not found"
+      raise Importu::InvalidRecord, "not allowed to create record"
     elsif action == :update && !allowed_actions.include?(:update)
-      raise Importu::InvalidRecord, "existing #{model} found"
+      raise Importu::InvalidRecord, "not allowed to update record"
     end
   end
 
@@ -74,7 +74,6 @@ class Importu::Importer
     rescue Importu::InvalidRecord => e
       errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
       summary.record(:invalid, index: index, errors: errors)
-      raise
     end
   end
 
