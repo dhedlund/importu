@@ -146,7 +146,7 @@ where `type` is one of the types below.
 | :integer  | Coerces value to an integer. Must look like an integer ("1.0" is invalid). |
 | :raw      | Do nothing. Value will be passed through as-is from the source value. |
 | :string   | Coerces value to a string, trimming leading a trailing whitespaces. |
-| :trimmed  | Trims leading and trailing whitespace if value is a string, otherwise leave as-is. |
+| :trimmed  | Trims leading and trailing whitespace if value is a string, otherwise leave as-is. Empty strings are converted to nil. |
 
 Built-in converters can be overridden by creating a custom converter using
 the same name as the built-in converter. Overriding a converter in one import
@@ -158,7 +158,7 @@ All built-in converters are defined using the same method as custom
 converters. See `lib/importu/converters.rb` for their implementation, which
 can be used as a guide for writing your own.
 
-```
+```ruby
 class BookImporter < Importu::Importer
   converter :varchar do |field_name, length: 255|
     value = trimmed(field_name)
@@ -183,6 +183,37 @@ definitions, they can be defined in a mixin and then included at the top of
 each definition or in a class that the imports inherit from. Importu takes
 this approach with its default converters, so you can look at the built-in
 converters as an example.
+
+### Default Converter
+
+By default, importu uses the `:trimmed` converter unless a converter has been
+explicitly defined for the field. This should work for the vast majority of use
+cases, but there are some cases where the default isn't exactly what you
+wanted.
+
+1. If you have a couple fields that cannot have their values trimmed, consider
+changing those fields to use the :raw converter.
+
+2. If your opinion of trimmed is different than importu's, you can override the
+built-in :trimmed converter to match your preferred behavior.
+
+3. If you never want any fields to have the :trimmed converter applied, you can
+change the default converter to use the :raw converter:
+```ruby
+class BookImporter < Importu::Importer
+  converter :default, &convert_to(:raw)
+end
+```
+
+4. If you want to raise an error if a converter is not explicitly set for each
+field:
+```ruby
+class BookImporter < Importu::Importer
+  converter :default do |name|
+    raise ArgumentError, "converter not defined for field #{name}"
+  end
+end
+```
 
 
 ## Backends
