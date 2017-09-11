@@ -55,6 +55,8 @@ RSpec.describe Importu::Backends do
       end
 
       context "and no backends support the model" do
+        before { registry.register(:backend1, unsupported) }
+
         it "raises a BackendMatch error" do
           expect { registry.from_config!(config) }
             .to raise_error(Importu::BackendMatchError)

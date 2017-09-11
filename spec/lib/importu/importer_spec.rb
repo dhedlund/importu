@@ -32,7 +32,7 @@ RSpec.describe Importu::Importer do
   describe "#import!" do
     context "when a backend is specified at initialization" do
       subject(:importer) { importer_class.new(source, backend: backend) }
-      let(:backend) { DummyBackend.new(importer_class) }
+      let(:backend) { DummyBackend.new(importer_class.config[:backend]) }
 
       it "uses the backend from initialization" do
         expect(Importu::Importer).to_not receive(:backend_registry)
