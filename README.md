@@ -1,9 +1,12 @@
 ## Overview
+
 Importu is a framework and DSL for simplifying the process of importing
 structured data into your application.  It is also a tool for separating
 import-related business logic from the rest of your code.
 
+
 ## Example
+
 Assuming you have the following data in the file `data.csv`:
 ```
 "isbn10","title","author","release_date","pages"
@@ -121,7 +124,70 @@ class BookImporter < Importu::Importer
 end
 ```
 
+## Converters
+
+### Built-in Converters
+
+Importu comes with several built-in converters for the most common ruby
+data types and data cleanup operations. Assigning a converter to your fields
+ensures that the value can be translated to the desired type or a validation
+error will be generated and the record flagged as invalid.
+
+To use a converter, add `&convert_to(type)` to the end of a field definition,
+where `type` is one of the types below.
+
+| Type      | Description |
+| :boolean  | Coerces value to a boolean. Must be true, yes, 1, false, no, 0. Case-insensitive. |
+| :date     | Coerces value to a date. Tries to guess format unless `format: ...` is provided. |
+| :datetime | Coerces value to a datetime. Tries to guess format unless `format: ...` is provided. |
+| :decimal  | Coerces value to a BigDecimal. |
+| :float    | Coerces value to a Float. |
+| :integer  | Coerces value to an integer. Must look like an integer ("1.0" is invalid). |
+| :raw      | Do nothing. Value will be passed through as-is from the source value. |
+| :string   | Coerces value to a string, trimming leading a trailing whitespaces. |
+| :trimmed  | Trims leading and trailing whitespace if value is a string, otherwise leave as-is. |
+
+Built-in converters can be overridden by creating a custom converter using
+the same name as the built-in converter. Overriding a converter in one import
+definition will not affect any converters outside of that definition.
+
+### Custom Converters
+
+All built-in converters are defined using the same method as custom
+converters. See `lib/importu/converters.rb` for their implementation, which
+can be used as a guide for writing your own.
+
+```
+class BookImporter < Importu::Importer
+  converter :varchar do |field_name, length: 255|
+    value = trimmed(field_name)
+    value.nil? ? nil : String(value).slice(0, length)
+
+    # Instead of taking the first 255 characters, you may prefer to raise
+    # an error that enforces values from source data cannot exceed length.
+    # raise ArgumentError, "cannot exceed "#{length}" if value.length > length
+  end
+
+  fields :title, :author, &convert_to(:varchar)
+  fields :title, &convert_to(:varchar, length: 50)
+end
+```
+
+To raise an error from within a converter, raise an `ArgumentError` with a
+message. That field will then be marked as invalid on the record and the
+message will be used as the validation error message.
+
+If you would like to use the same custom converters across multiple import
+definitions, they can be defined in a mixin and then included at the top of
+each definition or in a class that the imports inherit from. Importu takes
+this approach with its default converters, so you can look at the built-in
+converters as an example.
+
+
+## Backends
+
 ### Rails / ActiveRecord
+
 If you define a model in the importer definition and the importer fields are
 named the same as the attributes in your model, Importu can iterate through and
 create or update records for you:
