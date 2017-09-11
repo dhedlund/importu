@@ -137,6 +137,7 @@ To use a converter, add `&convert_to(type)` to the end of a field definition,
 where `type` is one of the types below.
 
 | Type      | Description |
+|-----------|-------------|
 | :boolean  | Coerces value to a boolean. Must be true, yes, 1, false, no, 0. Case-insensitive. |
 | :date     | Coerces value to a date. Tries to guess format unless `format: ...` is provided. |
 | :datetime | Coerces value to a datetime. Tries to guess format unless `format: ...` is provided. |
