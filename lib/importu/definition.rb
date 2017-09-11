@@ -18,6 +18,17 @@ module Importu::Definition
     @config = { **config, allowed_actions: actions }
   end
 
+  # Source types that are allowed to be autodetected from an input file.
+  # When an input file is given during importer initialization, the list
+  # of allowed sources will be checked, in order, for one that is compatible
+  # with the input file.
+  #
+  # allow_sources :csv
+  # allow_sources :csv, :json, :xml
+  def allow_sources(*sources)
+    @config = { **config, allowed_sources: sources }
+  end
+
   def convert_to(type, **options)
     converter = config[:converters].fetch(type)
     ConverterStub.for(type, options)
@@ -105,12 +116,29 @@ module Importu::Definition
     }
   end
 
+  # Define source-specific options. When autodetecting sources from the
+  # `allowed_sources` list, these options will be passed to the source
+  # during initialization.
+  #
+  # source :xml, records_xpath: "//books"
+  # source :csv, col_sep: "\t"
+  def source(type, **props, &block)
+    source = config[:sources].fetch(type, {})
+
+    @config = { **config,
+      sources: { **config[:sources],
+        type => { **source, **props }
+      }
+    }
+  end
+
   # @!visibility private
   def default_config
     raw_converter = ->(n) { raw_value(n) }
 
     {
       allowed_actions: [:create],
+      allowed_sources: [:csv],
       backend: {
         name: nil,
         model: nil,

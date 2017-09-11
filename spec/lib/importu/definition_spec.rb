@@ -25,6 +25,25 @@ RSpec.describe Importu::Definition do
     end
   end
 
+  describe "#allow_sources" do
+    it "updates the :allowed_actions config" do
+      expect { definition.allow_sources(:json, :xml) }
+        .to change { definition.config[:allowed_sources] }
+        .to([:json, :xml])
+    end
+
+    it "inherits config from ancestor" do
+      ancestor.allow_sources(:csv, :json)
+      expect(definition.config[:allowed_sources]).to eq [:csv, :json]
+    end
+
+    it "does not affect ancestor config" do
+      ancestor.allow_sources(:csv, :json)
+      expect { definition.allow_sources(:json, :xml) }
+        .to_not change { ancestor.config }
+    end
+  end
+
   describe "#before_save" do
     let(:foo_block) { Proc.new {} }
 
@@ -53,6 +72,10 @@ RSpec.describe Importu::Definition do
 
     it "[:allowed_actions] defaults to only allow :create" do
       expect(definition.config[:allowed_actions]).to eq [:create]
+    end
+
+    it "[:allowed_sources] defaults to only allow :csv" do
+      expect(definition.config[:allowed_sources]).to eq [:csv]
     end
 
     it "[:backend][:finder_fields] defaults to searching by :id" do
@@ -237,6 +260,30 @@ RSpec.describe Importu::Definition do
       ancestor.records_xpath("//books")
       expect { definition.records_xpath("//pages") }
         .to_not change { ancestor.config }
+    end
+  end
+
+  describe "#source" do
+    let(:converter) { Proc.new {} }
+
+    it "updates the :sources config" do
+      definition.source(:xml, records_xpath: "//people")
+      expect(definition.config[:sources][:xml])
+        .to include(records_xpath: "//people")
+    end
+
+    it "inherits config from ancestors" do
+      ancestor.source(:xml, records_xpath: "//animals")
+      expect(definition.config[:sources][:xml])
+        .to include(records_xpath: "//animals")
+    end
+
+    it "does not affect ancestor config" do
+      ancestor.source(:xml, records_xpath: "//animals")
+      expect { definition.source(:xml, records_xpath: "//people") }
+        .to_not change { ancestor.config }
+      expect(definition.config[:sources][:xml])
+        .to include(records_xpath: "//people")
     end
   end
 
