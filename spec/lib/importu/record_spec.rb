@@ -73,6 +73,21 @@ RSpec.describe Importu::Record do
     end
   end
 
+  describe "#errors" do
+    it "returns []" do
+      expect(record.errors).to eq []
+    end
+
+    context "when one or more values could not be converted" do
+      let(:data) { super().merge!("balloons" => "many", "flying" => "maybe") }
+
+      it "returns list of field parse errors for failed conversions" do
+        expect(record.errors.map(&:field_name))
+          .to match_array([:balloons, :flying])
+      end
+    end
+  end
+
   describe "#to_hash" do
     it "returns data with field converters applied" do
       expect(record.to_hash).to eq(pilot: "Nena", balloons: 99, flying: true)
@@ -80,6 +95,37 @@ RSpec.describe Importu::Record do
 
     it "does not try to recovert the data each time (returns same has)" do
       expect(record.to_hash.object_id).to eq record.to_hash.object_id
+    end
+
+    context "when one or more values could not be converted" do
+      let(:data) { super().merge!("flying" => "maybe") }
+
+      it "raises an InvalidRecord error with errors from field conversion" do
+        expect { record.to_hash }.to raise_error(Importu::InvalidRecord)
+
+        begin
+          record.to_hash
+        rescue Importu::InvalidRecord => e
+          expect(e.validation_errors.count).to eq 1
+          expect(e.validation_errors.first.field_name).to eq :flying
+        end
+      end
+    end
+  end
+
+  describe "#valid?" do
+    context "when all values can be converted successfully" do
+      it "returns true" do
+        expect(record).to be_valid
+      end
+    end
+
+    context "when one or more values could not be converted" do
+      let(:data) { super().merge!("flying" => "maybe") }
+
+      it "returns false" do
+        expect(record).to_not be_valid
+      end
     end
   end
 

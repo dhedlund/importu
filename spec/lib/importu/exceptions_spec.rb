@@ -34,7 +34,7 @@ RSpec.describe Importu::ImportuException do
   end
 
   describe Importu::FieldParseError do
-    subject(:exception) { Importu::FieldParseError.new }
+    subject(:exception) { Importu::FieldParseError.new(:foo, "is invalid") }
 
     it "should be a subclass of Importu::InvalidRecord" do
       exception.class.ancestors.include?(Importu::InvalidRecord)

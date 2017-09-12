@@ -62,7 +62,7 @@ class Importu::Summary
       # Strip parts of error that might be specific to record. Values within
       # parens is assumed to be data, e.g. "Dupe record found (sysnum 5489x)".
       # Originally done due to being an ActiveRecord convention.
-      normalized_error = error.gsub(/ *\([^)]+\) *$/, "")
+      normalized_error = error.to_s.gsub(/ *\([^)]+\) *$/, "")
       @validation_errors[normalized_error] += 1
     end
 

@@ -62,6 +62,19 @@ RSpec.describe Importu::Importer do
         animal: "llama", name: "Nathan", age: 3
       })
     end
+
+    context "when one of the records is invalid" do
+      before { data.first["age"] = "old" }
+
+      it "returns the invalid record" do
+        expect(importer.records.first).to_not be_valid
+      end
+
+      it "raises an exception when converted record value is accessed" do
+        expect { importer.records.first["animal"] }
+          .to raise_error(Importu::InvalidRecord)
+      end
+    end
   end
 
   describe "#source" do

@@ -20,7 +20,20 @@ module Importu
     end
   end
 
-  class FieldParseError < InvalidRecord; end
+  class FieldParseError < InvalidRecord
+    attr_reader :field_name
+
+    def initialize(field_name, message)
+      @field_name = field_name
+      @message = message
+      super(message)
+    end
+
+    def to_s
+      "#{@field_name}: #{@message}"
+    end
+  end
+
   class DuplicateRecord < InvalidRecord; end
 
   class MissingField < InvalidRecord

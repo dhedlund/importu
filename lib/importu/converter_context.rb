@@ -23,7 +23,7 @@ class Importu::ConverterContext
       value = instance_exec(name, &definition[:converter])
     rescue ArgumentError => e
       # conversion of field value most likely failed
-      raise Importu::FieldParseError, "#{name}: #{e.message}"
+      raise Importu::FieldParseError.new(name, e.message)
     end
 
     if value.nil? && definition[:required]
