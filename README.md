@@ -1,8 +1,21 @@
 ## Overview
 
-Importu is a framework and DSL for simplifying the process of importing
-structured data into your application.  It is also a tool for separating
-import-related business logic from the rest of your code.
+Importu simplifies the process of defining and sharing contracts that
+structured data must conform to in order to be importable into your
+application.
+
+The project's primary goal is to make it possible to define an importer in a
+way that reads like a contract or specification, with the ability to separate
+rules from control flow. The source format may already be decided by a business
+client, or may require a joint partnership in agreeing on the desired format.
+Importu makes it possible to define an importer that can parallel a separate
+specification document, or used as the specification that can be shared
+and tested locally by any party that wants to make data available to you.
+
+Secondary goals include providing reusable source parsers and adapters to
+get data into your application. Importu is designed to be modular and
+composable; it should be possible to write your own behaviors or write
+glue code to hook into other import-related gems.
 
 
 ## Example
