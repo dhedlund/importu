@@ -55,6 +55,21 @@ RSpec.describe "ActiveRecord Backend", :active_record do
       end
     end
 
+    context "when model has validation errors" do
+      let(:importer_class) { Class.new(super()) { field :isbn10 { "foo" } } }
+
+      it "marks each record creation as invalid" do
+        summary = importer.import!
+        expect(summary.created).to eq 0
+        expect(summary.invalid).to eq 3
+      end
+
+      it "includes validation errors in summary" do
+        summary = importer.import!
+        expect(summary.validation_errors.any? {|msg,_| msg =~ /isbn10/ }).to be true
+      end
+    end
+
     context "when creating records" do
       context "when create actions are not allowed" do
         let(:importer_class) { Class.new(super()) { allow_actions :update } }
