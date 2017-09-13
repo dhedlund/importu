@@ -14,7 +14,7 @@ module FixturesHelper
   def expected_record_json!(name, records)
     # Dump and re-parse to ensure everything is JSON types w/ string keys
     record_json = JSON.parse(JSON.dump(records.map(&:to_hash)))
-    expect(record_json).to eq expected_record_json("books1")
+    expect(record_json).to eq expected_record_json(name)
   end
 
   def expected_summary_json(name)

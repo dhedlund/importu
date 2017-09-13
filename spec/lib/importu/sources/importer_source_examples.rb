@@ -53,7 +53,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
     end
 
     context "when input contains multiple valid rows" do
-      let(:input) { infile("books1", format) }
+      let(:input) { infile("books-valid", format) }
 
       it "returns rows parsed from source data" do
         expect(source.rows.count).to eq 3
@@ -62,7 +62,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
   end
 
   describe "#write_errors" do
-    subject(:source) { described_class.new(infile("books1", format), source_config) }
+    subject(:source) { described_class.new(infile("books-valid", format), source_config) }
     let(:importer_class) { Class.new(super()) { include BookImporterDefinition } }
 
     context "when there are no errors during import" do
@@ -142,10 +142,10 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
     let(:importer_class) { Class.new(super()) { include BookImporterDefinition } }
 
     context "when source data is valid" do
-      let(:input) { infile("books1", format) }
+      let(:input) { infile("books-valid", format) }
 
       it "returns records parsed from source data" do
-        expected_record_json!("books1", importer.records)
+        expected_record_json!("books-valid", importer.records)
       end
 
       it "returns same records on subsequent invocations (rewinds)" do
@@ -167,11 +167,11 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
     end
 
     context "when source data is valid" do
-      let(:input) { infile("books1", format) }
+      let(:input) { infile("books-valid", format) }
 
       it "returns a summary with expected results" do
         summary = importer.import!
-        expected_summary_json!("books1", summary)
+        expected_summary_json!("books-valid", summary)
       end
     end
   end

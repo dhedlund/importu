@@ -5,7 +5,7 @@ require "importu/importer"
 require "importu/sources/csv"
 
 RSpec.describe "ActiveRecord Backend", :active_record do
-  let(:source) { Importu::Sources::CSV.new(infile("books1", :csv)) }
+  let(:source) { Importu::Sources::CSV.new(infile("books-valid", :csv)) }
   subject(:importer) { importer_class.new(source) }
 
   let!(:model) do
@@ -39,12 +39,12 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
     it "correctly summarizes import statistics" do
       summary = importer.import!
-      expected_summary_json!("books1", summary)
+      expected_summary_json!("books-valid", summary)
     end
 
     it "correctly saves imported data in the model" do
       importer.import!
-      expect(models_json).to match_array expected_model_json("books1")
+      expect(models_json).to match_array expected_model_json("books-valid")
     end
 
     context "when definition includes non-abstract fields not on model" do
