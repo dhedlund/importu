@@ -1,4 +1,5 @@
 require "tempfile"
+require "set"
 
 require "importu/backends"
 require "importu/converter_context"
@@ -23,6 +24,7 @@ class Importu::Importer
     @source = source
     @backend = backend
     @context = Importu::ConverterContext.with_config(config)
+    @encountered = Set.new
   end
 
   def config
@@ -30,6 +32,7 @@ class Importu::Importer
   end
 
   def import!
+    @encountered.clear
     summary = Importu::Summary.new
     records.each.with_index do |record, idx|
       import_record(record, idx, summary)
@@ -60,15 +63,14 @@ class Importu::Importer
 
       if object.nil?
         enforce_allowed_actions!(:create)
-        result = backend.create(record)
-        # FIXME: mark_encountered(object) ?
+        result, object = backend.create(record)
       else
+        check_duplicate!(backend, object)
         enforce_allowed_actions!(:update)
-        check_duplicate!(backend, object) # FIXME: Should come before action enforcement?
-        result = backend.update(record, object)
-        # FIXME: mark_encountered(object) ?
+        result, object = backend.update(record, object)
       end
 
+      mark_encountered(object)
       summary.record(result, index: index)
 
     rescue Importu::InvalidRecord => e
@@ -79,9 +81,17 @@ class Importu::Importer
 
   private def check_duplicate!(backend, object)
     object_key = backend.object_key(object) or return
-    if ((@encountered||=Hash.new(0))[object_key] += 1) > 1
+
+    if @encountered.include?(object_key)
       raise Importu::DuplicateRecord, "matches a previously imported record"
     end
+
+    @encountered.add(object_key)
+  end
+
+  private def mark_encountered(object)
+    object_key = backend.object_key(object) or return
+    @encountered.add(object_key)
   end
 
   private def backend

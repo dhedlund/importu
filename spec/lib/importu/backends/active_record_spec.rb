@@ -80,6 +80,15 @@ RSpec.describe "ActiveRecord Backend", :active_record do
           expect(summary.invalid).to eq 3
         end
       end
+
+      context "when duplicate records in source file" do
+        let(:source) { Importu::Sources::CSV.new(infile("books-duplicates", :csv)) }
+
+        it  "marks the three duplicate records as invalid" do
+          summary = importer.import!
+          expected_summary_json!("books-duplicates", summary)
+        end
+      end
     end
 
     context "when updating records" do

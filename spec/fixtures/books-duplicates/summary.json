@@ -1,0 +1,10 @@
+{
+  "created": 3,
+  "updated": 0,
+  "unchanged": 0,
+  "invalid": 3,
+  "total": 6,
+  "validation_errors": {
+    "DuplicateRecord: matches a previously imported record": 3
+  }
+}

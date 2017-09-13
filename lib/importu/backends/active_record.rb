@@ -53,7 +53,7 @@ class Importu::Backends::ActiveRecord
   end
 
   private def save(record, object)
-    return :unchanged unless object.changed?
+    return [:unchanged, object] unless object.changed?
     new_record = object.new_record?
 
     begin
@@ -66,7 +66,7 @@ class Importu::Backends::ActiveRecord
       raise Importu::InvalidRecord, error_msgs, object.errors.full_messages
     end
 
-    new_record ? :created : :updated
+    [(new_record ? :created : :updated), object]
   end
 
   class AssignmentContext
