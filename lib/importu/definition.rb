@@ -81,7 +81,7 @@ module Importu::Definition
   # find_by :id, [:name, :date] # try name/date combo if no id match
   # find_by nil # never try to look up records, assume :create
   # find_by do |record|
-  #   where(foo: record[:name].downcase)
+  #   find_by(foo: record[:name].downcase)
   # end
   def find_by(*field_groups, &block)
     finder_fields = block ? [block] : field_groups.compact

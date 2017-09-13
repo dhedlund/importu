@@ -86,6 +86,26 @@ RSpec.describe "ActiveRecord Backend", :active_record do
           expect(summary.invalid).to eq 3
         end
       end
+
+      context "when a find_by block is used" do
+        let(:importer_class) do
+          Class.new(super()) do
+            find_by do |record|
+              find_by(title: record[:title])
+            end
+          end
+        end
+
+        it "executes the find_by block in context of the model" do
+          expect(Book)
+            .to receive(:find_by).with(title: anything())
+            .at_least(3).times
+            .and_call_original
+
+          summary = importer.import!
+          expect(summary.unchanged).to eq 3
+        end
+      end
     end
 
     context "when a before_save callback is defined" do

@@ -18,7 +18,7 @@ class Importu::Backends::ActiveRecord
 
     @finder_fields.each do |field_group|
       if field_group.respond_to?(:call) # proc
-        object = @model.instance_exec(record, &field_group).first
+        object = @model.instance_exec(record, &field_group)
       else
         conditions = Hash[Array(field_group).map {|f| [f, record[f]]}]
         object = @model.where(conditions).first
