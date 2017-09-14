@@ -84,7 +84,10 @@ module Importu::Definition
   #   find_by(foo: record[:name].downcase)
   # end
   def find_by(*field_groups, &block)
-    finder_fields = block ? [block] : field_groups.compact
+    finder_fields = [*field_groups, block].compact.map do |field_group|
+      field_group.respond_to?(:call) ? field_group : Array(field_group)
+    end
+
     @config = { **config,
       backend: { **config[:backend], finder_fields: finder_fields }
     }

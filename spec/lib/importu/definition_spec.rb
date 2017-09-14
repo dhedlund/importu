@@ -188,13 +188,13 @@ RSpec.describe Importu::Definition do
     it "updates the [:backend][:finder_fields] config" do
       expect { definition.find_by(:foo, [:bar, :baz]) }
         .to change { definition.config[:backend][:finder_fields] }
-        .to([:foo, [:bar, :baz]])
+        .to([[:foo], [:bar, :baz]])
     end
 
     it "inherits config from ancestor" do
       ancestor.find_by(:foo, [:bar, :baz])
       expect(definition.config[:backend][:finder_fields])
-        .to eq [:foo, [:bar, :baz]]
+        .to eq [[:foo], [:bar, :baz]]
     end
 
     it "does not affect ancestor config" do
