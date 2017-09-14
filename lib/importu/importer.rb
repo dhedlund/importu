@@ -14,14 +14,21 @@ class Importu::Importer
 
   attr_reader :source, :context
 
-  def self.backend_registry
-    Importu::Backends.registry
-  end
-
   def initialize(source, backend: nil)
     @source = source
     @backend = backend
     @context = Importu::ConverterContext.with_config(config)
+  end
+
+  def self.backend_middleware
+    [
+      EnforceAllowedActionsProxy,
+      Importu::DuplicateManager::BackendProxy,
+    ]
+  end
+
+  def self.backend_registry
+    Importu::Backends.registry
   end
 
   def config
@@ -30,7 +37,7 @@ class Importu::Importer
 
   def import!
     summary = Importu::Summary.new
-    backend = with_dupe_detection(@backend || backend_from_config)
+    backend = with_middleware(@backend || backend_from_config)
 
     records.each.with_index do |record, idx|
       import_record(backend, record, idx, summary)
@@ -51,26 +58,13 @@ class Importu::Importer
     backend_class.new(config[:backend])
   end
 
-  private def enforce_allowed_actions!(action)
-    allowed_actions = config[:backend][:allowed_actions]
-    if action == :create && !allowed_actions.include?(:create)
-      raise Importu::InvalidRecord, "not allowed to create record"
-    elsif action == :update && !allowed_actions.include?(:update)
-      raise Importu::InvalidRecord, "not allowed to update record"
-    end
-  end
-
   private def import_record(backend, record, index, summary)
     begin
       object = backend.find(record)
 
-      if object.nil?
-        enforce_allowed_actions!(:create)
-        result, object = backend.create(record)
-      else
-        enforce_allowed_actions!(:update)
-        result, object = backend.update(record, object)
-      end
+      result, object = object.nil? \
+        ? backend.create(record)
+        : backend.update(record, object)
 
       summary.record(result, index: index)
 
@@ -80,8 +74,34 @@ class Importu::Importer
     end
   end
 
-  private def with_dupe_detection(backend)
-    Importu::DuplicateManager::BackendProxy.new(backend, config[:backend])
+  private def with_middleware(orig_backend)
+    self.class.backend_middleware.inject(orig_backend) do |backend,middleware|
+      middleware.new(backend, config[:backend])
+    end
+  end
+
+  class EnforceAllowedActionsProxy < SimpleDelegator
+
+    def initialize(backend, allowed_actions:, **)
+      super(backend)
+      @allowed_actions = allowed_actions
+    end
+
+    def create(record)
+      if @allowed_actions.include?(:create)
+        super
+      else
+        raise Importu::InvalidRecord, "not allowed to create record"
+      end
+    end
+
+    def update(record, object)
+      if @allowed_actions.include?(:update)
+        super
+      else
+        raise Importu::InvalidRecord, "not allowed to update record"
+      end
+    end
   end
 
 end
