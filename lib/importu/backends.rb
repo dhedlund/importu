@@ -1,6 +1,15 @@
+require "importu/backends/middleware/enforce_allowed_actions"
+require "importu/backends/middleware/duplicate_manager_proxy"
 require "importu/exceptions"
 
 class Importu::Backends
+  def self.middleware
+    [
+      Importu::Backends::Middleware::EnforceAllowedActions,
+      Importu::Backends::Middleware::DuplicateManagerProxy,
+    ]
+  end
+
   def self.registry
     @registry ||= self.new
   end

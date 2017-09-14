@@ -16,7 +16,7 @@ module Importu::Definition
   #   :update - if an existing record found, update its attributes
   def allow_actions(*actions)
     @config = { **config,
-      backend: { **config[:backend], allowed_actions: actions }
+      backend: { **config[:backend], allowed_actions: actions.compact }
     }
   end
 
