@@ -76,7 +76,7 @@ module Importu::Definition
     names.each {|name| field(name, props, &block) }
   end
 
-  # find_by :id # match against a single field, :id (default)
+  # find_by :id # match against a single field
   # find_by [:name, :date] # match against multiple fields
   # find_by :id, [:name, :date] # try name/date combo if no id match
   # find_by nil # never try to look up records, assume :create
@@ -145,7 +145,7 @@ module Importu::Definition
       backend: {
         name: nil,
         model: nil,
-        finder_fields: [[:id]],
+        finder_fields: [],
         before_save: nil,
       },
       sources: {

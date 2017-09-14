@@ -78,8 +78,8 @@ RSpec.describe Importu::Definition do
       expect(definition.config[:allowed_sources]).to eq [:csv]
     end
 
-    it "[:backend][:finder_fields] defaults to searching by :id" do
-      expect(definition.config[:backend][:finder_fields]).to eq [[:id]]
+    it "[:backend][:finder_fields] defaults to no fields" do
+      expect(definition.config[:backend][:finder_fields]).to eq []
     end
   end
 
@@ -211,6 +211,7 @@ RSpec.describe Importu::Definition do
     end
 
     it "allows clearing all finder fields" do
+      ancestor.find_by(:foo, [:bar, :baz])
       expect { definition.find_by(nil) }
         .to change { definition.config[:backend][:finder_fields] }
         .to([])
