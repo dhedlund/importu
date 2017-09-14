@@ -1,4 +1,5 @@
 require "multi_json"
+require "tempfile"
 
 require "importu/exceptions"
 require "importu/sources"

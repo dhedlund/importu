@@ -1,4 +1,5 @@
 require "nokogiri"
+require "tempfile"
 
 require "importu/exceptions"
 require "importu/sources"

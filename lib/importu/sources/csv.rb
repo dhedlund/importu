@@ -1,4 +1,5 @@
 require "csv"
+require "tempfile"
 
 require "importu/exceptions"
 require "importu/sources"
