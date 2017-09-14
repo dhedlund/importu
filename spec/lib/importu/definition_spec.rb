@@ -243,27 +243,6 @@ RSpec.describe Importu::Definition do
     end
   end
 
-  describe "#records_xpath" do
-    let(:foo_block) { Proc.new {} }
-
-    it "updates the [:sources][:xml][:records_xpath] config" do
-      expect { definition.records_xpath("//books") }
-        .to change { definition.config[:sources][:xml][:records_xpath] }
-        .to("//books")
-    end
-
-    it "inherits config from ancestor" do
-      ancestor.records_xpath("//books")
-      expect(definition.config[:sources][:xml][:records_xpath]).to eq "//books"
-    end
-
-    it "does not affect ancestor config" do
-      ancestor.records_xpath("//books")
-      expect { definition.records_xpath("//pages") }
-        .to_not change { ancestor.config }
-    end
-  end
-
   describe "#source" do
     let(:converter) { Proc.new {} }
 

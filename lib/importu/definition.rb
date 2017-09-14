@@ -110,17 +110,6 @@ module Importu::Definition
     }
   end
 
-  # FIXME: source-specific setting, here until we have a way to define
-  # source and backend-specific configurations from their own classes.
-  # Should also have value moved into a [:sources][:xml] field.
-  def records_xpath(xpath)
-    @config = { **config,
-      sources: { **config[:sources],
-        xml: { **config[:sources][:xml], records_xpath: xpath }
-      }
-    }
-  end
-
   # Define source-specific options. When autodetecting sources from the
   # `allowed_sources` list, these options will be passed to the source
   # during initialization.
