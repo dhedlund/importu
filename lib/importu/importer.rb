@@ -32,13 +32,11 @@ class Importu::Importer
   end
 
   def import!
-    duplicates = Importu::DuplicateManager.new(
-      finder_fields: config[:backend][:finder_fields],
-    )
-
     summary = Importu::Summary.new
+    backend = with_dupe_detection(@backend || backend_from_config)
+
     records.each.with_index do |record, idx|
-      import_record(record, idx, summary, duplicates)
+      import_record(backend, record, idx, summary)
     end
     summary
   end
@@ -51,6 +49,11 @@ class Importu::Importer
     end
   end
 
+  private def backend_from_config
+    backend_class = self.class.backend_registry.from_config!(config[:backend])
+    backend_class.new(config[:backend])
+  end
+
   private def enforce_allowed_actions!(action)
     allowed_actions = config[:allowed_actions]
     if action == :create && !allowed_actions.include?(:create)
@@ -60,17 +63,14 @@ class Importu::Importer
     end
   end
 
-  private def import_record(record, index, summary, duplicates)
+  private def import_record(backend, record, index, summary)
     begin
-      duplicates.check_record!(record)
       object = backend.find(record)
 
       if object.nil?
         enforce_allowed_actions!(:create)
         result, object = backend.create(record)
-        duplicates.check_object!(backend.unique_id(object)) # Add as encountered
       else
-        duplicates.check_object!(backend.unique_id(object))
         enforce_allowed_actions!(:update)
         result, object = backend.update(record, object)
       end
@@ -83,11 +83,8 @@ class Importu::Importer
     end
   end
 
-  private def backend
-    @backend ||= begin
-      backend_class = self.class.backend_registry.from_config!(config[:backend])
-      backend_class.new(config[:backend])
-    end
+  private def with_dupe_detection(backend)
+    Importu::DuplicateManager::BackendProxy.new(backend, config[:backend])
   end
 
 end
