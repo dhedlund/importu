@@ -5,6 +5,7 @@ require "importu/backends"
 require "importu/converter_context"
 require "importu/converters"
 require "importu/definition"
+require "importu/duplicate_manager"
 require "importu/exceptions"
 require "importu/record"
 require "importu/summary"
@@ -24,7 +25,6 @@ class Importu::Importer
     @source = source
     @backend = backend
     @context = Importu::ConverterContext.with_config(config)
-    @encountered = Set.new
   end
 
   def config
@@ -32,10 +32,13 @@ class Importu::Importer
   end
 
   def import!
-    @encountered.clear
+    duplicates = Importu::DuplicateManager.new(
+      finder_fields: config[:backend][:finder_fields],
+    )
+
     summary = Importu::Summary.new
     records.each.with_index do |record, idx|
-      import_record(record, idx, summary)
+      import_record(record, idx, summary, duplicates)
     end
     summary
   end
@@ -57,41 +60,27 @@ class Importu::Importer
     end
   end
 
-  private def import_record(record, index, summary)
+  private def import_record(record, index, summary, duplicates)
     begin
+      duplicates.check_record!(record)
       object = backend.find(record)
 
       if object.nil?
         enforce_allowed_actions!(:create)
         result, object = backend.create(record)
+        duplicates.check_object!(backend.unique_id(object)) # Add as encountered
       else
-        check_duplicate!(backend, object)
+        duplicates.check_object!(backend.unique_id(object))
         enforce_allowed_actions!(:update)
         result, object = backend.update(record, object)
       end
 
-      mark_encountered(object)
       summary.record(result, index: index)
 
     rescue Importu::InvalidRecord => e
       errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
       summary.record(:invalid, index: index, errors: errors)
     end
-  end
-
-  private def check_duplicate!(backend, object)
-    object_key = backend.object_key(object) or return
-
-    if @encountered.include?(object_key)
-      raise Importu::DuplicateRecord, "matches a previously imported record"
-    end
-
-    @encountered.add(object_key)
-  end
-
-  private def mark_encountered(object)
-    object_key = backend.object_key(object) or return
-    @encountered.add(object_key)
   end
 
   private def backend

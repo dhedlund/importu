@@ -28,7 +28,8 @@ class Importu::Backends::ActiveRecord
     nil
   end
 
-  def object_key(object)
+  # The unique id representing the object in the database, if one exists.
+  def unique_id(object)
     object.respond_to?(:id) ? object.id : nil
   end
 

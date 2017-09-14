@@ -5,6 +5,6 @@
   "invalid": 3,
   "total": 6,
   "validation_errors": {
-    "DuplicateRecord: matches a previously imported record": 3
+    "DuplicateRecord: matches a previous record": 3
   }
 }

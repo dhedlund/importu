@@ -12,7 +12,7 @@ class DummyBackend
     nil
   end
 
-  def object_key(object)
+  def unique_id(object)
     nil
   end
 
