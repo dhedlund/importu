@@ -55,7 +55,7 @@ class Importu::Importer
   end
 
   private def enforce_allowed_actions!(action)
-    allowed_actions = config[:allowed_actions]
+    allowed_actions = config[:backend][:allowed_actions]
     if action == :create && !allowed_actions.include?(:create)
       raise Importu::InvalidRecord, "not allowed to create record"
     elsif action == :update && !allowed_actions.include?(:update)

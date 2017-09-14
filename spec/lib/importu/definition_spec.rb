@@ -7,15 +7,15 @@ RSpec.describe Importu::Definition do
   let(:ancestor) { Class.new { extend Importu::Definition } }
 
   describe "#allow_actions" do
-    it "updates the :allowed_actions config" do
+    it "updates the [:backend][:allowed_actions] config" do
       expect { definition.allow_actions(:create, :update) }
-        .to change { definition.config[:allowed_actions] }
+        .to change { definition.config[:backend][:allowed_actions] }
         .to([:create, :update])
     end
 
     it "inherits config from ancestor" do
       ancestor.allow_actions(:update)
-      expect(definition.config[:allowed_actions]).to eq [:update]
+      expect(definition.config[:backend][:allowed_actions]).to eq [:update]
     end
 
     it "does not affect ancestor config" do
@@ -26,7 +26,7 @@ RSpec.describe Importu::Definition do
   end
 
   describe "#allow_sources" do
-    it "updates the :allowed_actions config" do
+    it "updates the :allowed_sources config" do
       expect { definition.allow_sources(:json, :xml) }
         .to change { definition.config[:allowed_sources] }
         .to([:json, :xml])
@@ -70,8 +70,8 @@ RSpec.describe Importu::Definition do
       expect(definition.config).to include(:converters, :fields)
     end
 
-    it "[:allowed_actions] defaults to only allow :create" do
-      expect(definition.config[:allowed_actions]).to eq [:create]
+    it "[:backend][:allowed_actions] defaults to only allow :create" do
+      expect(definition.config[:backend][:allowed_actions]).to eq [:create]
     end
 
     it "[:allowed_sources] defaults to only allow :csv" do

@@ -15,7 +15,9 @@ module Importu::Definition
   #   :create - if an existing record can't be found, we can create it
   #   :update - if an existing record found, update its attributes
   def allow_actions(*actions)
-    @config = { **config, allowed_actions: actions }
+    @config = { **config,
+      backend: { **config[:backend], allowed_actions: actions }
+    }
   end
 
   # Source types that are allowed to be autodetected from an input file.
@@ -140,13 +142,13 @@ module Importu::Definition
     raw_converter = ->(n) { raw_value(n) }
 
     {
-      allowed_actions: [:create],
       allowed_sources: [:csv],
       backend: {
         name: nil,
         model: nil,
         finder_fields: [],
         before_save: nil,
+        allowed_actions: [:create],
       },
       sources: {
         csv: {},
