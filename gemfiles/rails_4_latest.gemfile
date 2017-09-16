@@ -3,6 +3,7 @@
 source "http://rubygems.org"
 
 gem "pry"
+gem "coveralls", require: false
 gem "sqlite3"
 gem "database_cleaner"
 gem "activerecord", "~> 4.2"
