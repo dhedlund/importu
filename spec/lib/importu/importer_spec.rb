@@ -61,6 +61,18 @@ RSpec.describe Importu::Importer do
         importer.import!
       end
     end
+
+    context "when a custom recorder/summarizer is specified" do
+      subject(:importer) { importer_class.new(source, backend: backend) }
+      let(:backend) { DummyBackend.new(importer_class.config[:backend]) }
+
+      it "records status of each record import" do
+        recorder = instance_double("Importu::Summary")
+        expect(recorder).to receive(:record).exactly(3).times
+
+        importer.import!(recorder)
+      end
+    end
   end
 
   describe "#records" do

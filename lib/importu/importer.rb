@@ -27,14 +27,13 @@ class Importu::Importer
     @definition.config
   end
 
-  def import!
-    summary = Importu::Summary.new
+  def import!(recorder = Importu::Summary.new)
     backend = with_middleware(@backend || backend_from_config)
 
     records.each.with_index do |record, idx|
-      import_record(backend, record, idx, summary)
+      import_record(backend, record, idx, recorder)
     end
-    summary
+    recorder
   end
 
   def records
@@ -46,7 +45,7 @@ class Importu::Importer
     backend_class.new(config[:backend])
   end
 
-  private def import_record(backend, record, index, summary)
+  private def import_record(backend, record, index, recorder)
     begin
       object = backend.find(record)
 
@@ -54,11 +53,11 @@ class Importu::Importer
         ? backend.create(record)
         : backend.update(record, object)
 
-      summary.record(result, index: index)
+      recorder.record(result, index: index)
 
     rescue Importu::InvalidRecord => e
       errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
-      summary.record(:invalid, index: index, errors: errors)
+      recorder.record(:invalid, index: index, errors: errors)
     end
   end
 
