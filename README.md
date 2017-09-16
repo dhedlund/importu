@@ -1,8 +1,17 @@
-## Overview
+# Importu
+
+[![Build Status](https://travis-ci.org/dhedlund/importu.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dhedlund/importu/badge.svg?branch=travis-test)](https://coveralls.io/github/dhedlund/importu?branch=master)
+
+[gem]: https://rubygems.org/gems/importu
+[travis]: https://travis-ci.org/dhedlund/importu
+[coveralls]: https://coveralls.io/r/dhedlund/importu
 
 Importu simplifies the process of defining and sharing contracts that
 structured data must conform to in order to be importable into your
 application.
+
+## Goals
 
 The project's primary goal is to make it possible to define an importer in a
 way that reads like a contract or specification, with the ability to separate
