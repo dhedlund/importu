@@ -1,6 +1,7 @@
 require "spec_helper"
 
 require "importu/backends/middleware/enforce_allowed_actions"
+require "importu/definition"
 
 RSpec.describe Importu::Backends::Middleware::EnforceAllowedActions do
   subject(:middleware) { described_class.new(dummy_backend, backend_config) }
@@ -9,8 +10,7 @@ RSpec.describe Importu::Backends::Middleware::EnforceAllowedActions do
   let(:backend_config) { definition.config[:backend] }
 
   let(:definition) do
-    Class.new do
-      extend Importu::Definition
+    Class.new(Importu::Definition) do
       allow_actions nil
       fields :foo, :bar, :baz
     end

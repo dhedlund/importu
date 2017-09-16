@@ -7,7 +7,7 @@ require "importu/summary"
 
 class Importu::Importer
 
-  extend Importu::Definition
+  extend Importu::ConfigDSL
   include Importu::Converters
 
   attr_reader :source

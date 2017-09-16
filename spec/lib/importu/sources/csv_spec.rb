@@ -1,6 +1,6 @@
 require "spec_helper"
 
-require "importu/importer"
+require "importu/definition"
 require "importu/sources/csv"
 
 require_relative "importer_source_examples"
@@ -8,8 +8,8 @@ require_relative "importer_source_examples"
 RSpec.describe Importu::Sources::CSV do
   it_behaves_like "importer source", :csv do
     subject(:source) { described_class.new(input, source_config) }
-    let(:importer_class) { Class.new(Importu::Importer) }
-    let(:source_config) { importer_class.config[:sources][:csv] }
+    let(:definition) { Class.new(Importu::Definition) }
+    let(:source_config) { definition.config[:sources][:csv] }
   end
 
   describe "#initialize" do

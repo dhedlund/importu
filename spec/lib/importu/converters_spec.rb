@@ -1,19 +1,13 @@
 require "spec_helper"
 
 require "importu/converter_context"
-require "importu/converters"
 require "importu/definition"
 
 RSpec.describe "Importu Converters" do
   subject(:context) { Importu::ConverterContext.with_config(definition.config).new(data) }
-  let(:data) { { "field1" => " value1 ", "field2" => "value2" } }
+  let(:definition) { Class.new(Importu::Definition) }
 
-  let(:definition) do
-    Class.new do
-      extend Importu::Definition
-      include Importu::Converters
-    end
-  end
+  let(:data) { { "field1" => " value1 ", "field2" => "value2" } }
 
   describe ":raw converter" do
     let(:definition) { Class.new(super()) { fields :field1, :field3 } }

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 require "importu/backends"
-require "importu/importer"
+require "importu/definition"
 
 RSpec.describe Importu::Backends do
   subject(:registry) { described_class.new }
@@ -19,11 +19,11 @@ RSpec.describe Importu::Backends do
 
   describe "#from_config!" do
     let!(:model) { stub_const("MyModelGuest", Class.new) }
-    let(:config) { importer_class.config[:backend] }
+    let(:config) { definition.config[:backend] }
 
     context "when a model backend is specified" do
-      let(:importer_class) do
-        Class.new(Importu::Importer) do
+      let(:definition) do
+        Class.new(Importu::Definition) do
           model "MyModelGuest", backend: :cherry_scones
         end
       end
@@ -48,8 +48,8 @@ RSpec.describe Importu::Backends do
       let(:supported) { Class.new { def self.supported_by_model?(*); true; end } }
       let(:unsupported) { Class.new { def self.supported_by_model?(*); false; end } }
 
-      let(:importer_class) do
-        Class.new(Importu::Importer) do
+      let(:definition) do
+        Class.new(Importu::Definition) do
           model "MyModelGuest"
         end
       end

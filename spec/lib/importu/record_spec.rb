@@ -1,7 +1,6 @@
 require "spec_helper"
 
 require "importu/converter_context"
-require "importu/converters"
 require "importu/definition"
 require "importu/record"
 
@@ -10,9 +9,7 @@ RSpec.describe Importu::Record do
   let(:context) { Importu::ConverterContext.with_config(definition.config) }
 
   let(:definition) do
-    Class.new do
-      extend Importu::Definition
-      include Importu::Converters
+    Class.new(Importu::Definition) do
       field :pilot
       field :balloons, &convert_to(:integer)
       field :flying, &convert_to(:boolean)
@@ -135,9 +132,7 @@ RSpec.describe Importu::Record::Iterator do
   subject(:iterator) { described_class.new(rows, definition.config) }
 
   let(:definition) do
-    Class.new do
-      extend Importu::Definition
-      include Importu::Converters
+    Class.new(Importu::Definition) do
       fields :animal, :name, :age, required: true
       field :age, &convert_to(:integer)
     end

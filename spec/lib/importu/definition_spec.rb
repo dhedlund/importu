@@ -4,7 +4,7 @@ require "importu/definition"
 
 RSpec.describe Importu::Definition do
   subject(:definition) { Class.new(ancestor) }
-  let(:ancestor) { Class.new { extend Importu::Definition } }
+  let(:ancestor) { Class.new(Importu::Definition) }
 
   describe "#allow_actions" do
     it "updates the [:backend][:allowed_actions] config" do

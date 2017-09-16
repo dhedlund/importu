@@ -1,12 +1,11 @@
 require "importu/exceptions"
-require "importu/importer"
 require "importu/summary"
 
 # Implement the following in specs that use this example:
 #
 #   subject(:source) { described_class.new(input, source_config) }
-#   let(:importer_class) { Class.new(Importu::Importer) }
-#   let(:source_config) { importer_class.config[:sources][:csv] }
+#   let(:definition) { Class.new(Importu::Definition) }
+#   let(:source_config) { definition.config[:sources][:csv] }
 #
 RSpec.shared_examples "importer source" do |format, exclude: []|
   describe "#initialize" do
@@ -63,7 +62,6 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
 
   describe "#write_errors" do
     subject(:source) { described_class.new(infile("books-valid", format), source_config) }
-    let(:importer_class) { Class.new(super()) { include BookImporterDefinition } }
 
     context "when there are no errors during import" do
       let(:summary) { Importu::Summary.new }
@@ -138,8 +136,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
   end
 
   describe "Importer#records (usable as a record source?)" do
-    subject(:importer) { importer_class.new(source) }
-    let(:importer_class) { Class.new(super()) { include BookImporterDefinition } }
+    subject(:importer) { BookImporter.new(source) }
 
     context "when source data is valid" do
       let(:input) { infile("books-valid", format) }
@@ -160,9 +157,8 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
     let(:importer_class) do
       stub_const("Book", Class.new)
 
-      Class.new(super()) do
+      Class.new(BookImporter) do
         model "Book", backend: :dummy
-        include BookImporterDefinition
       end
     end
 

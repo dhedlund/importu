@@ -1,5 +1,8 @@
 require "spec_helper"
 
+require "importu/backends/middleware/duplicate_manager_proxy"
+require "importu/definition"
+
 RSpec.describe Importu::Backends::Middleware::DuplicateManagerProxy do
   subject(:middleware) { described_class.new(dummy_backend, backend_config) }
 
@@ -7,8 +10,7 @@ RSpec.describe Importu::Backends::Middleware::DuplicateManagerProxy do
   let(:backend_config) { definition.config[:backend] }
 
   let(:definition) do
-    Class.new do
-      extend Importu::Definition
+    Class.new(Importu::Definition) do
       fields :foo, :bar, :baz
       find_by :foo, :bar
     end
