@@ -9,4 +9,6 @@ install:
   - bundle install
   - bundle exec appraisal install
 
-script: bundle exec appraisal bundle exec rspec spec
+script:
+  - bundle exec appraisal rspec spec
+  - bundle exec rake coveralls:push

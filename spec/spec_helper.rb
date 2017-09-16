@@ -15,8 +15,6 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require "simplecov"
-require "coveralls"
-Coveralls.wear!
 
 require "active_record" if Gem.loaded_specs.has_key?("activerecord")
 
