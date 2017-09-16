@@ -1,0 +1,12 @@
+language: ruby
+
+rvm:
+ - 2.2
+ - 2.3
+ - 2.4
+
+install:
+  - bundle install
+  - bundle exec appraisal install
+
+script: bundle exec appraisal bundle exec rspec spec
