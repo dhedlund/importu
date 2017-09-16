@@ -1,3 +1,6 @@
+require "importu/converter_context"
+require "importu/exceptions"
+
 class Importu::Record
 
   extend Forwardable
@@ -50,6 +53,21 @@ class Importu::Record
         hash[name] = @context.field_value(name)
       rescue Importu::FieldParseError => e
         @errors << e
+      end
+    end
+  end
+
+  class Iterator < Enumerator
+    def initialize(rows, converters:, fields:, **)
+      context = Importu::ConverterContext.with_config(
+        converters: converters,
+        fields: fields,
+      )
+
+      super() do |yielder|
+        rows.each do |row|
+          yielder.yield Importu::Record.new(row, context, fields: fields)
+        end
       end
     end
   end

@@ -1,8 +1,6 @@
 require "importu/backends"
-require "importu/converter_context"
 require "importu/converters"
 require "importu/definition"
-require "importu/duplicate_manager"
 require "importu/exceptions"
 require "importu/record"
 require "importu/summary"
@@ -12,7 +10,7 @@ class Importu::Importer
   extend Importu::Definition
   include Importu::Converters
 
-  attr_reader :source, :context
+  attr_reader :source
 
   def initialize(source, backend: nil)
     @source = source
@@ -39,11 +37,7 @@ class Importu::Importer
   end
 
   def records
-    Enumerator.new do |yielder|
-      @source.rows.each do |data|
-        yielder.yield Importu::Record.new(data, context, config)
-      end
-    end
+    Importu::Record::Iterator.new(@source.rows, config)
   end
 
   private def backend_from_config

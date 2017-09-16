@@ -52,28 +52,12 @@ RSpec.describe Importu::Importer do
   end
 
   describe "#records" do
-    it "returns the same number of records as source data" do
-      expect(importer.records.count).to eq 3
-    end
-
     it "returns record objects with conversions applied" do
-      record = importer.records.first
-      expect(record.to_hash).to eq({
-        animal: "llama", name: "Nathan", age: 3
-      })
-    end
-
-    context "when one of the records is invalid" do
-      before { data.first["age"] = "old" }
-
-      it "returns the invalid record" do
-        expect(importer.records.first).to_not be_valid
-      end
-
-      it "raises an exception when converted record value is accessed" do
-        expect { importer.records.first["animal"] }
-          .to raise_error(Importu::InvalidRecord)
-      end
+      expect(importer.records.map(&:to_hash)).to eq([
+        { animal: "llama",    name: "Nathan",   age: 3 },
+        { animal: "aardvark", name: "Stella",   age: 2 },
+        { animal: "crow",     name: "Hamilton", age: 6 },
+      ])
     end
   end
 

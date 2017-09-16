@@ -130,3 +130,48 @@ RSpec.describe Importu::Record do
   end
 
 end
+
+RSpec.describe Importu::Record::Iterator do
+  subject(:iterator) { described_class.new(rows, definition.config) }
+
+  let(:definition) do
+    Class.new do
+      extend Importu::Definition
+      include Importu::Converters
+      fields :animal, :name, :age, required: true
+      field :age, &convert_to(:integer)
+    end
+  end
+
+  let(:rows) do
+    [
+      { "animal" => "llama",    "name" => "Nathan",   "age" => "3" },
+      { "animal" => "aardvark", "name" => "Stella",   "age" => "2" },
+      { "animal" => "crow",     "name" => "Hamilton", "age" => "6" },
+    ]
+  end
+
+  it "returns the same number of records as source data" do
+    expect(iterator.count).to eq 3
+  end
+
+  it "returns record objects with conversions applied" do
+    expect(iterator.first.to_hash).to eq({
+      animal: "llama", name: "Nathan", age: 3
+    })
+  end
+
+  context "when one of the records is invalid" do
+    before { rows.first["age"] = "old" }
+
+    it "returns the invalid record" do
+      expect(iterator.first).to_not be_valid
+    end
+
+    it "raises an exception when converted record value is accessed" do
+      expect { iterator.first["animal"] }
+        .to raise_error(Importu::InvalidRecord)
+    end
+  end
+
+end
