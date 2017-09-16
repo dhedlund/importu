@@ -12,9 +12,10 @@ class Importu::Importer
 
   attr_reader :source
 
-  def initialize(source, backend: nil)
+  def initialize(source, backend: nil, definition: nil)
     @source = source
     @backend = backend
+    @definition = definition || self.class
     @context = Importu::ConverterContext.with_config(config)
   end
 
@@ -23,7 +24,7 @@ class Importu::Importer
   end
 
   def config
-    self.class.config
+    @definition.config
   end
 
   def import!

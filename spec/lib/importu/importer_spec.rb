@@ -1,5 +1,6 @@
 require "spec_helper"
 
+require "importu/definition"
 require "importu/importer"
 require "importu/sources/ruby"
 
@@ -26,6 +27,17 @@ RSpec.describe Importu::Importer do
   describe "#config" do
     it "returns the configuration of the import definition" do
       expect(importer.config[:fields]).to include(:animal, :name, :age)
+    end
+
+    context "when a definition is specified at initialization" do
+      subject(:importer) { importer_class.new(source, definition: definition) }
+      let(:definition) do
+        Class.new(Importu::Definition) { fields :species, :extinction_date }
+      end
+
+      it "uses the definition from initialization" do
+        expect(importer.config[:fields]).to include(:species, :extinction_date)
+      end
     end
   end
 
