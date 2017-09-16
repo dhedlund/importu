@@ -1,7 +1,8 @@
 # Importu
 
-[![Build Status](https://travis-ci.org/dhedlund/importu.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/dhedlund/importu/badge.svg?branch=travis-test)](https://coveralls.io/github/dhedlund/importu?branch=master)
+[![Gem Version](http://img.shields.io/gem/v/importu.svg)][gem]
+[![Build Status](https://img.shields.io/travis/dhedlund/importu.svg)][travis]
+[![Coverage Status](https://img.shields.io/coveralls/dhedlund/importu.svg)][coveralls]
 
 [gem]: https://rubygems.org/gems/importu
 [travis]: https://travis-ci.org/dhedlund/importu
