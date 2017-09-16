@@ -56,7 +56,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
     end
 
     context "when model has validation errors" do
-      let(:importer_class) { Class.new(super()) { field :isbn10 { "foo" } } }
+      let(:importer_class) { Class.new(super()) { field(:isbn10) { "foo" } } }
 
       it "marks each record creation as invalid" do
         summary = importer.import!
