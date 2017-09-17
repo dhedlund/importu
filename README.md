@@ -171,6 +171,16 @@ where `type` is one of the types below.
 | :string   | Coerces value to a string, trimming leading a trailing whitespaces. |
 | :trimmed  | Trims leading and trailing whitespace if value is a string, otherwise leave as-is. Empty strings are converted to nil. |
 
+Some converters, such as :date and :datetime, accept optional arguments. To
+pass arguments to a converter, add them after the converter's type, For
+example, `&convert_to(:date, format: "%Y-%m-%d")` will force date parsing to
+use the "YYYY-MM-DD" format.
+
+| Type      | Argument | Default      | Description |
+|-----------|----------|--------------|-------------|
+| :date     | :format  | _autodetect_ | Parse value using a [specific format](http://ruby-doc.org/stdlib-2.4.1/libdoc/date/rdoc/Date.html#method-i-strftime).
+| :datetime | :format  | _autodetect_ | Parse value using a [specific format](http://ruby-doc.org/stdlib-2.4.1/libdoc/date/rdoc/DateTime.html#method-i-strftime).
+
 Built-in converters can be overridden by creating a custom converter using
 the same name as the built-in converter. Overriding a converter in one import
 definition will not affect any converters outside of that definition.
