@@ -8,8 +8,11 @@ Gem::Specification.new do |s|
   s.authors     = ["Daniel Hedlund"]
   s.email       = ["daniel@digitree.org"]
   s.homepage    = "https://github.com/dhedlund/importu"
-  s.summary     = "A framework for importing data"
-  s.description = "Importu is a framework for importing data"
+  s.summary     = "Because an import should be defined by a contract, not " +
+                  "a sequence of commands"
+  s.description = "Importu simplifies the process of defining and sharing " +
+                  "contracts that structured data must conform to in order " +
+                  "to be importable into your application."
 
   s.files            = `git ls-files`.split("\n")
   s.test_files       = `git ls-files -- {test,spec,features}/*`.split("\n")
