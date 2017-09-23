@@ -40,7 +40,6 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     rake (12.0.0)
-    rdoc (5.1.0)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -71,6 +70,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
+    yard (0.9.9)
 
 PLATFORMS
   ruby
@@ -81,9 +81,9 @@ DEPENDENCIES
   coveralls
   importu!
   pry
-  rdoc
   rspec (~> 3.6)
   simplecov (~> 0.14)
+  yard
 
 BUNDLED WITH
    1.15.4
