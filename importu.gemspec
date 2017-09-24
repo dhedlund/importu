@@ -31,6 +31,5 @@ Gem::Specification.new do |s|
   # YARD Documentation
   s.add_development_dependency "redcarpet" # For README.md
   s.add_development_dependency "yard"
-  s.add_development_dependency "yardstick"
 
 end

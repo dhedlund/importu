@@ -1,0 +1,36 @@
+---
+# Minimum documentation coverage required for verifications to pass
+threshold: 55
+
+# Specify if the coverage summary should be displayed
+verbose: true
+
+# List of paths to measure. List may contain paths to files or globs
+path:
+  - lib/**/*.rb
+
+# Specify if the threshold should match the coverage
+require_exact_threshold: false
+
+# Rules that get applied to each source code file
+rules:
+  # Restrict method summary to 80 characters. This is annoying because where
+  # else are you supposed to be able to describe the behavior of the method
+  # or instructions on replacing it with your own implementation?
+  Summary::Length:
+    enabled: false
+    exclude: []
+
+  # Make sure summary does not end with a period. This is annoying because
+  # as soon as you have multiple sentences, a missing period looks incorrect.
+  Summary::Delimiter:
+    enabled: false
+    exclude: []
+
+  # Require summary to appear on one line in comments. Even if we left the
+  # 80 character restriction, this would be annoying because methods and
+  # attributes are often indented so you lose quite a few characters from
+  # a possible description without breaking the 80 character terminal width.
+  Summary::SingleLine:
+    enabled: false
+    exclude: []
