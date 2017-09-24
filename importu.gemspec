@@ -27,7 +27,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec",        ["~> 3.6"]
   s.add_development_dependency "simplecov",    ["~> 0.14"]
   s.add_development_dependency "appraisal"
-  s.add_development_dependency "redcarpet"
+
+  # YARD Documentation
+  s.add_development_dependency "redcarpet" # For README.md
   s.add_development_dependency "yard"
+  s.add_development_dependency "yardstick"
 
 end

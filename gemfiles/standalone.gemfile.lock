@@ -72,6 +72,8 @@ GEM
       unf_ext
     unf_ext (0.0.7.4)
     yard (0.9.9)
+    yardstick (0.9.9)
+      yard (~> 0.8, >= 0.8.7.2)
 
 PLATFORMS
   ruby
@@ -86,6 +88,7 @@ DEPENDENCIES
   rspec (~> 3.6)
   simplecov (~> 0.14)
   yard
+  yardstick
 
 BUNDLED WITH
    1.15.4
