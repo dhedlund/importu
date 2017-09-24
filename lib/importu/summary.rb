@@ -1,3 +1,8 @@
+# Records and aggregates results from an import. Each time the importer
+# finishes processing a record, it makes a call back to the summarizer
+# to record the progress made so far. That may be successfully creating
+# or updating a record, or recording the fact that something went wrong
+# during the attempt.
 class Importu::Summary
 
   # The number of times a :created result was recorded
