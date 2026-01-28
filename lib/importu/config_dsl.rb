@@ -1,16 +1,44 @@
 # frozen_string_literal: true
 
-# DSL methods for configuring importers. These methods are available as class
-# methods when extending this module, allowing declarative configuration of
-# fields, converters, backends, and sources.
+# DSL methods for configuring importers.
 #
-# @example Basic usage
+# These methods define your import specification: what fields to extract,
+# how to convert them, where to persist, and what actions are allowed.
+#
+# ## Field Definition
+# - {#field} - Define a single field with options
+# - {#fields} - Define multiple fields at once
+# - {#converter} - Create a custom converter
+# - {#convert_to} - Reference a built-in or custom converter
+#
+# ## Persistence
+# - {#model} - Connect to a model class for persistence
+# - {#find_by} - Specify how to find existing records
+# - {#allow_actions} - Control create/update permissions
+# - {#before_save} - Hook to modify records before saving
+#
+# ## Source Configuration
+# - {#source} - Configure source-specific options
+# - {#allow_sources} - Restrict allowed source types
+#
+# @example Complete importer definition
 #   class BookImporter < Importu::Importer
-#     fields :title, :author, :isbn
-#     field :pages, &convert_to(:integer)
+#     # Fields
+#     fields :title, :author
+#     field :isbn, label: "ISBN-10"
+#     field :pages, required: false, &convert_to(:integer)
+#     field :price, &convert_to(:decimal)
+#
+#     # Persistence
 #     model "Book"
+#     allow_actions :create, :update
+#     find_by :isbn
+#
+#     # Hooks
+#     before_save { object.title = object.title.titleize }
 #   end
 #
+# @see Importu::Converters for built-in converters
 # @api public
 module Importu::ConfigDSL
 
