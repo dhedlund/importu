@@ -255,9 +255,8 @@ Naming/BlockForwarding:
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
-# Performance cops - keep most enabled but disable a few
 Performance/RedundantMerge:
-  Enabled: false
+  Enabled: true
 
 # Allow existing case indentation style
 Layout/CaseIndentation:

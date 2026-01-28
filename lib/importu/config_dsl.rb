@@ -134,7 +134,7 @@ module Importu::ConfigDSL
   # @api public
   def field(name, **props, &block)
     field = config[:fields].fetch(name, field_defaults(name))
-    props.merge!(converter: block) if block
+    props[:converter] = block if block
 
     @config = { **config,
       fields: { **config[:fields],
