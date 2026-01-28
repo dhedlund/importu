@@ -28,6 +28,9 @@ Layout/MultilineOperationIndentation:
 Layout/MultilineHashBraceLayout:
   Enabled: false
 
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
 Layout/EmptyLinesAroundBlockBody:
   Enabled: false
 

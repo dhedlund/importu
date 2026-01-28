@@ -125,7 +125,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
           expect(Book)
             .to receive(:find_by).with(title: anything)
             .at_least(3).times
-                                 .and_call_original
+            .and_call_original
 
           summary = importer.import!
           expect(summary.unchanged).to eq 3
