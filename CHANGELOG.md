@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- Add csv and bigdecimal as gem dependencies (no longer default gems in Ruby 3.4+)
+
 ### Fixed
 
 - Remove phantom require for nonexistent backends/ruby file

@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
 
   s.licenses = ["MIT"]
   
+  s.add_dependency "bigdecimal"
+  s.add_dependency "csv"
   s.add_dependency "multi_json",    ["~> 1.0"]
   s.add_dependency "nokogiri"
 
