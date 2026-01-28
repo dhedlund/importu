@@ -1,4 +1,5 @@
 require "bigdecimal"
+require "date"
 
 module Importu::Converters
   def self.included(base)
