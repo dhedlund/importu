@@ -65,7 +65,7 @@ class Importu::DuplicateManager
   # @api public
   def check_record!(record)
     results = @finder_fields.map do |field_group|
-      conditions = field_group.map {|f| [f, record.fetch(f)] }.to_h
+      conditions = field_group.to_h {|f| [f, record.fetch(f)] }
       @encountered.add?(conditions) ? :added : :duplicate
     rescue KeyError
       # Field group key not defined on record, always nil so invalid
