@@ -110,11 +110,9 @@ class Importu::Record
 
   private def ensure_record_hash
     @record_hash ||= @field_definitions.each_with_object({}) do |(name, _), hash|
-      begin
-        hash[name] = @context.field_value(name)
-      rescue Importu::FieldParseError => e
-        @errors << e
-      end
+      hash[name] = @context.field_value(name)
+    rescue Importu::FieldParseError => e
+      @errors << e
     end
   end
 

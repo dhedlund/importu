@@ -19,11 +19,9 @@ module Importu::ConfigDSL
   # @return [Hash] the configuration hash
   # @api semipublic
   def config
-    @config ||= begin
-      superclass.respond_to?(:config) \
-        ? superclass.config
-        : default_config
-    end
+    @config ||= superclass.respond_to?(:config) \
+      ? superclass.config
+      : default_config
   end
 
   # Specifies which persistence actions are allowed during import.

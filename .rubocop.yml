@@ -180,9 +180,8 @@ Style/Proc:
 Style/HashExcept:
   Enabled: false
 
-# Keep existing begin blocks
 Style/RedundantBegin:
-  Enabled: false
+  Enabled: true
 
 # Keep existing self assignment patterns
 Style/RedundantSelfAssignmentBranch:

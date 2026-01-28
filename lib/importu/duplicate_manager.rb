@@ -65,13 +65,11 @@ class Importu::DuplicateManager
   # @api public
   def check_record!(record)
     results = @finder_fields.map do |field_group|
-      begin
-        conditions = Hash[field_group.map {|f| [f, record.fetch(f)] }]
-        @encountered.add?(conditions) ? :added : :duplicate
-      rescue KeyError
-        # Field group key not defined on record, always nil so invalid
-        :skipped
-      end
+      conditions = Hash[field_group.map {|f| [f, record.fetch(f)] }]
+      @encountered.add?(conditions) ? :added : :duplicate
+    rescue KeyError
+      # Field group key not defined on record, always nil so invalid
+      :skipped
     end
 
     duplicate_record! if results.include?(:duplicate)

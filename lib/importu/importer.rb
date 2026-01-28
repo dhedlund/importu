@@ -140,18 +140,16 @@ class Importu::Importer
   #
   # @api private
   private def import_record(backend, record, index, recorder)
-    begin
-      object = backend.find(record)
+    object = backend.find(record)
 
-      result, _object = object.nil? \
-        ? backend.create(record)
-        : backend.update(record, object)
+    result, _object = object.nil? \
+      ? backend.create(record)
+      : backend.update(record, object)
 
-      recorder.record(result, index: index)
-    rescue Importu::InvalidRecord => e
-      errors = e.validation_errors || ["#{e.name}: #{e.message}"]
-      recorder.record(:invalid, index: index, errors: errors)
-    end
+    recorder.record(result, index: index)
+  rescue Importu::InvalidRecord => e
+    errors = e.validation_errors || ["#{e.name}: #{e.message}"]
+    recorder.record(:invalid, index: index, errors: errors)
   end
 
   # Wraps the configured backend with additional behaviors, such as duplicate
