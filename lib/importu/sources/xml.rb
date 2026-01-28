@@ -50,9 +50,8 @@ class Importu::Sources::XML
   #
   # @param infile [String, IO] file path or IO object to read from
   # @param records_xpath [String] XPath expression to select record elements
-  # @param xml_options [Hash] options passed to Nokogiri (currently unused)
   # @raise [Importu::InvalidInput] if the XML is malformed or empty
-  def initialize(infile, records_xpath:, xml_options: {}, **)
+  def initialize(infile, records_xpath:, **)
     @owns_handle = !infile.respond_to?(:readline)
     @infile = @owns_handle ? File.open(infile, "rb") : infile
     @records_xpath = records_xpath
