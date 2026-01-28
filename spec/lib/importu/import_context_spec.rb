@@ -107,6 +107,63 @@ RSpec.describe Importu::ConverterContext do
     end
   end
 
+  describe "field cross-references" do
+    context "when a field converter references another field" do
+      let(:definition) do
+        Class.new(super()) do
+          field :first_name
+          field :last_name
+          field :full_name, abstract: true do
+            "#{field_value(:first_name)} #{field_value(:last_name)}"
+          end
+        end
+      end
+
+      let(:data) { { "first_name" => "Arthur", "last_name" => "Dent" } }
+
+      it "can access other field values" do
+        expect(context.field_value(:full_name)).to eq "Arthur Dent"
+      end
+    end
+
+    context "when a field references a field with a converter" do
+      let(:definition) do
+        Class.new(super()) do
+          field :price, &convert_to(:decimal)
+          field :quantity, &convert_to(:integer)
+          field :total, abstract: true do
+            field_value(:price) * field_value(:quantity)
+          end
+        end
+      end
+
+      let(:data) { { "price" => "19.99", "quantity" => "3" } }
+
+      it "receives the converted value, not raw" do
+        expect(context.field_value(:total)).to eq BigDecimal("59.97")
+      end
+    end
+
+    context "when a referenced field is missing" do
+      let(:definition) do
+        Class.new(super()) do
+          field :first_name
+          field :last_name
+          field :full_name, abstract: true do
+            "#{field_value(:first_name)} #{field_value(:last_name)}"
+          end
+        end
+      end
+
+      let(:data) { { "first_name" => "Arthur" } }
+
+      it "raises MissingField for the referenced field" do
+        expect { context.field_value(:full_name) }
+          .to raise_error(Importu::MissingField)
+      end
+    end
+  end
+
   describe "#raw_value" do
     let(:definition) { Class.new(super()) { field :field1 } }
     let(:data) { { "field1" => "zippy" } }
