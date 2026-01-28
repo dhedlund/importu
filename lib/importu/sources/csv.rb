@@ -14,9 +14,24 @@ require "importu/sources"
 #   source = Importu::Sources::CSV.new("data.csv")
 #   source.rows.each { |row| puts row["name"] }
 #
-# @example With options
+# @example From a string
+#   csv_data = "name,email\nAlice,alice@example.com"
+#   source = Importu::Sources::CSV.new(StringIO.new(csv_data))
+#
+# @example With semicolon delimiter
 #   source = Importu::Sources::CSV.new("data.csv", csv_options: { col_sep: ";" })
 #
+# @example With tab delimiter
+#   source = Importu::Sources::CSV.new("data.tsv", csv_options: { col_sep: "\t" })
+#
+# @example Common csv_options
+#   csv_options: {
+#     col_sep: ";",        # Column separator (default: ",")
+#     quote_char: "'",     # Quote character (default: '"')
+#     encoding: "UTF-8",   # File encoding
+#   }
+#
+# @see https://ruby-doc.org/stdlib/libdoc/csv/rdoc/CSV.html Ruby CSV documentation
 # @api public
 class Importu::Sources::CSV
   # Creates a new CSV source.

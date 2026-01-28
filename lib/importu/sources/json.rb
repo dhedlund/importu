@@ -14,6 +14,20 @@ require "importu/sources"
 #   source = Importu::Sources::JSON.new("data.json")
 #   source.rows.each { |row| puts row["name"] }
 #
+# @example Expected JSON format
+#   # data.json
+#   [
+#     { "name": "Alice", "email": "alice@example.com" },
+#     { "name": "Bob", "email": "bob@example.com" }
+#   ]
+#
+# @example From a string
+#   json_data = '[{"name": "Alice"}, {"name": "Bob"}]'
+#   source = Importu::Sources::JSON.new(StringIO.new(json_data))
+#
+# @note The entire JSON file is loaded into memory. For very large files,
+#   consider using CSV or a streaming JSON parser.
+#
 # @api public
 class Importu::Sources::JSON
   # Creates a new JSON source.

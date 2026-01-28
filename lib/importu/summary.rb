@@ -1,9 +1,38 @@
 # frozen_string_literal: true
-# Records and aggregates results from an import. Each time the importer
-# finishes processing a record, it makes a call back to the summarizer
-# to record the progress made so far. That may be successfully creating
-# or updating a record, or recording the fact that something went wrong
-# during the attempt.
+
+# Records and aggregates results from an import.
+#
+# The Summary tracks counts for each result type (created, updated, unchanged,
+# invalid) and collects validation errors for reporting.
+#
+# @example Basic usage
+#   summary = importer.import!
+#
+#   puts "Processed #{summary.total} records"
+#   puts "Created: #{summary.created}, Updated: #{summary.updated}"
+#   puts "Failed: #{summary.invalid}"
+#
+# @example Checking for errors
+#   if summary.invalid > 0
+#     puts "Errors encountered:"
+#     summary.validation_errors.each do |message, count|
+#       puts "  #{message}: #{count} occurrences"
+#     end
+#   end
+#
+# @example Getting detailed errors by record
+#   summary.itemized_errors.each do |index, errors|
+#     puts "Record #{index} failed: #{errors.map(&:to_s).join(', ')}"
+#   end
+#
+# @example Human-readable output
+#   puts summary.result_msg
+#
+# @example Machine-readable output (for JSON APIs, etc.)
+#   summary.to_hash  # => { created: 5, updated: 2, ... }
+#
+# @see Importu::Importer#import!
+# @api public
 class Importu::Summary
 
   # The number of times a :created result was recorded

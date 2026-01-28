@@ -11,10 +11,39 @@ require "importu/sources"
 # Each matching element becomes a row, with child elements and attributes
 # as fields.
 #
+# ## Field Extraction
+# For each matching element:
+# - XML attributes become fields (e.g., `<book id="123">` → `{ "id" => "123" }`)
+# - Child element text becomes fields (e.g., `<title>Ruby</title>` → `{ "title" => "Ruby" }`)
+#
 # @example Basic usage
 #   source = Importu::Sources::XML.new("data.xml", records_xpath: "//book")
 #   source.rows.each { |row| puts row["title"] }
 #
+# @example Expected XML format
+#   # data.xml
+#   <library>
+#     <book id="1">
+#       <title>The Ruby Way</title>
+#       <author>Hal Fulton</author>
+#     </book>
+#     <book id="2">
+#       <title>Programming Ruby</title>
+#       <author>Dave Thomas</author>
+#     </book>
+#   </library>
+#
+# @example Resulting rows
+#   # With records_xpath: "//book"
+#   { "id" => "1", "title" => "The Ruby Way", "author" => "Hal Fulton" }
+#   { "id" => "2", "title" => "Programming Ruby", "author" => "Dave Thomas" }
+#
+# @example Configure in importer
+#   class BookImporter < Importu::Importer
+#     source :xml, records_xpath: "//book"
+#   end
+#
+# @note Requires the nokogiri gem.
 # @api public
 class Importu::Sources::XML
   # Creates a new XML source.
