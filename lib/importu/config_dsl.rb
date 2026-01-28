@@ -177,13 +177,14 @@ module Importu::ConfigDSL
   class ConverterStub < Proc
     attr_reader :type, :options
 
-    def initialize(type, options)
+    def initialize(type, options, &block)
       @type, @options = type, options
+      super(&block)
     end
 
     def self.for(type, **options)
       block = options.any? \
-        ? ->(n) { send(type, n, options) }
+        ? ->(n) { send(type, n, **options) }
         : ->(n) { send(type, n) }
 
       new(type, options, &block)
