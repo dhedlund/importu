@@ -197,9 +197,8 @@ Gemspec/RequireMFA:
 Gemspec/OrderedDependencies:
   Enabled: false
 
-# Maintain original expand_path style
 Style/ExpandPathArguments:
-  Enabled: false
+  Enabled: true
 
 # Allow unused arguments (common in DSL code)
 Lint/UnusedBlockArgument:
