@@ -44,6 +44,19 @@ RSpec.describe "Importu Converters" do
       allow(context).to receive(:raw_value).and_return(raw_val)
       expect(context.trimmed(:field1)).to eq raw_val
     end
+
+    it "handles unicode strings with leading/trailing whitespace" do
+      allow(context).to receive(:raw_value).and_return("  \u00e9l\u00e8ve  ")
+      expect(context.trimmed(:field1)).to eq "\u00e9l\u00e8ve"
+    end
+
+    # NOTE: Ruby's String#strip only handles ASCII whitespace. Unicode whitespace
+    # characters like ideographic space (U+3000) or non-breaking space (U+00A0)
+    # are not stripped. This documents the current behavior.
+    it "does not strip unicode whitespace characters (uses String#strip)" do
+      allow(context).to receive(:raw_value).and_return("\u00a0test\u3000")
+      expect(context.trimmed(:field1)).to eq "\u00a0test\u3000"
+    end
   end
 
   describe ":string converter" do
@@ -61,6 +74,11 @@ RSpec.describe "Importu Converters" do
       trimmed_val = Time.now
       definition.converter(:trimmed) {|*| trimmed_val }
       expect(context.string(:field1)).to eq trimmed_val.to_s
+    end
+
+    it "preserves unicode characters in string" do
+      definition.converter(:trimmed) {|*| "\u00e9l\u00e8ve \u4e2d\u6587" }
+      expect(context.string(:field1)).to eq "\u00e9l\u00e8ve \u4e2d\u6587"
     end
   end
 
@@ -210,6 +228,15 @@ RSpec.describe "Importu Converters" do
     it "treats values as case-insensitive" do
       definition.converter(:trimmed) {|*| "TrUE" }
       expect(context.boolean(:field1)).to eq true
+    end
+
+    # NOTE: The boolean converter receives values AFTER trimming, so whitespace
+    # around boolean values should already be stripped. If raw values with
+    # whitespace need to work, they should use the :trimmed converter first.
+    # This test documents that behavior - " true " without trimming will fail.
+    it "does not handle whitespace (expects trimmed input)" do
+      definition.converter(:trimmed) {|*| " true " }
+      expect { context.boolean(:field1) }.to raise_error(ArgumentError)
     end
   end
 
