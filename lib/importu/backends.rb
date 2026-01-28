@@ -16,7 +16,7 @@ class Importu::Backends
   end
 
   def initialize
-    @registered = Hash.new do |hash, key|
+    @registered = Hash.new do |_hash, key|
       raise Importu::BackendNotRegistered, key
     end
   end
@@ -40,7 +40,7 @@ class Importu::Backends
   end
 
   private def detect_from_model(model)
-    matched = @registered.select do |name, backend|
+    matched = @registered.select do |_name, backend|
       backend.supported_by_model?(model) rescue false
     end
 

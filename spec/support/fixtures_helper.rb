@@ -32,7 +32,7 @@ module FixturesHelper
   end
 
   private def load_fixture_json(*path_parts)
-    @fixture_json_cache ||= Hash.new do |hash, name|
+    @fixture_json_cache ||= Hash.new do |_hash, _name|
       data = File.read(File.join(fixtures_path, *path_parts))
       JSON.parse(data)
     end

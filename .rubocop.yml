@@ -199,9 +199,8 @@ Gemspec/OrderedDependencies:
 Style/ExpandPathArguments:
   Enabled: true
 
-# Allow unused arguments (common in DSL code)
 Lint/UnusedBlockArgument:
-  Enabled: false
+  Enabled: true
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
