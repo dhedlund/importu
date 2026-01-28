@@ -6,9 +6,52 @@
 [gem]: https://rubygems.org/gems/importu
 [ci]: https://github.com/dhedlund/importu/actions/workflows/ci.yml
 
-Importu simplifies the process of defining and sharing contracts that
-structured data must conform to in order to be importable into your
-application.
+Importu is a declarative data import library for Ruby. Define importers that
+read like specifications - with fields, converters, and validation rules -
+then parse CSV, JSON, or XML with consistent error handling.
+
+## Table of Contents
+
+- [Goals](#goals)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Example](#example)
+- [Sources](#sources) (CSV, JSON, XML, Ruby)
+- [Converters](#converters)
+- [Backends](#backends) (ActiveRecord)
+- [Error Handling](#error-handling)
+- [Contributing](#contributing)
+
+For working examples, see the [importu-examples](https://github.com/dhedlund/importu-examples) repository.
+
+## Goals
+
+**Primary goal:** Importers that read like specifications.
+
+- Define fields, converters, and rules declaratively
+- Separate what the data should look like from how you process it
+- Use the importer as the contract shared with data providers
+
+**Secondary goals:**
+
+- Reusable parsers for common formats (CSV, JSON, XML)
+- Modular design - extend or replace components as needed
+
+## Installation
+
+Add to your Gemfile:
+
+```ruby
+gem "importu"
+```
+
+Then run `bundle install`.
+
+Or install directly:
+
+```bash
+gem install importu
+```
 
 ## Requirements
 
@@ -36,22 +79,6 @@ importer.records.each do |record|
 end
 ```
 
-## Goals
-
-The project's primary goal is to make it possible to define an importer in a
-way that reads like a contract or specification, with the ability to separate
-rules from control flow. The source format may already be decided by a business
-client, or may require a joint partnership in agreeing on the desired format.
-Importu makes it possible to define an importer that can parallel a separate
-specification document, or used as the specification that can be shared
-and tested locally by any party that wants to make data available to you.
-
-Secondary goals include providing reusable source parsers and adapters to
-get data into your application. Importu is designed to be modular and
-composable; it should be possible to write your own behaviors or write
-glue code to hook into other import-related gems.
-
-
 ## Example
 
 Assuming you have the following data in the file `data.csv`:
@@ -74,7 +101,7 @@ And then load that data in your application:
 ```ruby
 require "importu"
 
-filename = File.expand_path("../data.csv", __FILE__)
+filename = File.expand_path("data.csv", __dir__)
 importer = BookImporter.new(Importu::Sources::CSV.new(filename))
 
 # importer.records returns an Enumerable
@@ -180,12 +207,17 @@ provides an enumerator of row hashes.
 
 ```ruby
 source = Importu::Sources::CSV.new("data.csv")
-# or with options
-source = Importu::Sources::CSV.new("data.csv", col_sep: ";", encoding: "ISO-8859-1")
+
+# With custom options
+source = Importu::Sources::CSV.new("data.csv", csv_options: {
+  col_sep: ";",
+  encoding: "ISO-8859-1"
+})
 ```
 
-CSV options are passed directly to Ruby's CSV library. Common options include
-`col_sep`, `quote_char`, `encoding`, and `headers` (defaults to true).
+Options inside `csv_options` are passed directly to Ruby's
+[CSV library](https://ruby-doc.org/stdlib/libdoc/csv/rdoc/CSV.html).
+Common options include `col_sep`, `quote_char`, and `encoding`.
 
 ### JSON
 
@@ -253,8 +285,8 @@ use the "YYYY-MM-DD" format.
 
 | Type      | Argument | Default      | Description |
 |-----------|----------|--------------|-------------|
-| :date     | :format  | _autodetect_ | Parse value using a [specific format](http://ruby-doc.org/stdlib-2.4.1/libdoc/date/rdoc/Date.html#method-i-strftime).
-| :datetime | :format  | _autodetect_ | Parse value using a [specific format](http://ruby-doc.org/stdlib-2.4.1/libdoc/date/rdoc/DateTime.html#method-i-strftime).
+| :date     | :format  | _autodetect_ | Parse value using a [strftime format](https://ruby-doc.org/stdlib/libdoc/date/rdoc/Date.html#method-i-strftime).
+| :datetime | :format  | _autodetect_ | Parse value using a [strftime format](https://ruby-doc.org/stdlib/libdoc/date/rdoc/DateTime.html#method-i-strftime).
 
 Built-in converters can be overridden by creating a custom converter using
 the same name as the built-in converter. Overriding a converter in one import
@@ -339,7 +371,7 @@ class BookImporter < Importu::Importer
   # ...
 end
 
-filename = File.expand_path("../data.csv", __FILE__)
+filename = File.expand_path("data.csv", __dir__)
 importer = BookImporter.new(Importu::Sources::CSV.new(filename))
 
 summary = importer.import!
@@ -397,6 +429,109 @@ class BookImporter < Importu::Importer
   find_by do |record|  # Custom lookup logic
     find_by(title: record[:title].downcase)
   end
+end
+```
+
+### Before Save Hook
+
+Use `before_save` to modify records just before they're saved:
+
+```ruby
+class BookImporter < Importu::Importer
+  model "Book"
+
+  before_save do
+    # `object` is the model instance, `record` is the import data, `action` is :create or :update
+    object.title = object.title.titleize
+    object.imported_at = Time.current
+    object.created_by = "importer" if action == :create
+  end
+end
+```
+
+### Controlling Field Assignment
+
+By default, all fields are assigned on both create and update. You can
+control this per-field:
+
+```ruby
+class BookImporter < Importu::Importer
+  model "Book"
+  allow_actions :create, :update
+
+  field :isbn10                        # Assigned on create and update (default)
+  field :created_by, update: false     # Only assigned on create
+  field :updated_by, create: false     # Only assigned on update
+end
+```
+
+## Error Handling
+
+### Checking Individual Records
+
+Records can have conversion errors (invalid data types, missing required
+fields). Check validity before processing:
+
+```ruby
+importer.records.each do |record|
+  if record.valid?
+    process(record.to_hash)
+  else
+    record.errors.each { |e| puts e.to_s }
+  end
+end
+```
+
+### Import Summary
+
+When using `import!` with a backend, the returned summary contains aggregate
+results and error details:
+
+```ruby
+summary = importer.import!
+
+# Aggregate counts
+puts "Total: #{summary.total}"
+puts "Created: #{summary.created}"
+puts "Updated: #{summary.updated}"
+puts "Unchanged: #{summary.unchanged}"
+puts "Invalid: #{summary.invalid}"
+
+# Human-readable output
+puts summary.result_msg
+
+# Machine-readable output (for JSON APIs, etc.)
+summary.to_hash
+```
+
+### Error Details
+
+```ruby
+# Aggregated error counts
+summary.validation_errors.each do |message, count|
+  puts "#{message}: #{count} occurrences"
+end
+
+# Errors by record index (0-based)
+summary.itemized_errors.each do |index, errors|
+  puts "Record #{index}: #{errors.map(&:to_s).join(', ')}"
+end
+```
+
+### Generating Error Reports
+
+All file-based sources can generate a copy of the input with errors appended,
+useful for returning to data providers:
+
+```ruby
+summary = importer.import!
+
+if summary.invalid > 0
+  error_file = source.write_errors(summary)
+  # error_file is a Tempfile with "_errors" column/field added
+
+  # To include only rows that had errors:
+  error_file = source.write_errors(summary, only_errors: true)
 end
 ```
 
