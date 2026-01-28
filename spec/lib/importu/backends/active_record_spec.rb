@@ -10,7 +10,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
   let!(:model) do
     stub_const("Book", Class.new(ActiveRecord::Base) do
-      serialize :authors, Array
+      serialize :authors, type: Array
       validates :title, :authors, :isbn10, :release_date, presence: true
       validates :isbn10, length: { is: 10 }, uniqueness: true
     end)
@@ -23,7 +23,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
   end
 
   around(:each) do |example|
-    require "database_cleaner"
+    require "database_cleaner-active_record"
     DatabaseCleaner.cleaning { example.run }
   end
 
@@ -66,7 +66,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
       it "includes validation errors in summary" do
         summary = importer.import!
-        expect(summary.validation_errors.any? {|msg,_| msg =~ /isbn10/ }).to be true
+        expect(summary.validation_errors.any? {|msg,_| msg =~ /isbn10/i }).to be true
       end
     end
 
