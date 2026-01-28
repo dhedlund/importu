@@ -36,6 +36,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency "simplecov",    "~> 0.22"
   s.add_development_dependency "appraisal"
 
+  # Code Quality
+  s.add_development_dependency "rubocop", "~> 1.60"
+  s.add_development_dependency "rubocop-performance", "~> 1.20"
+
   # YARD Documentation
   s.add_development_dependency "redcarpet" # For README.md
   s.add_development_dependency "yard"

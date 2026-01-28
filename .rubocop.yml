@@ -1,0 +1,315 @@
+plugins:
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "gemfiles/**/*"
+    - "vendor/**/*"
+
+# Match existing style: allow flexible layout
+Layout/HashAlignment:
+  Enabled: false
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: false
+
+Layout/FirstArrayElementIndentation:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
+Layout/MultilineOperationIndentation:
+  Enabled: false
+
+Layout/MultilineHashBraceLayout:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+# Allow one-liner methods for simple accessors
+Style/SingleLineMethods:
+  Enabled: false
+
+# Match existing style: allow compact empty class bodies
+Style/EmptyMethod:
+  EnforcedStyle: compact
+
+# Allow trailing comma in multiline for cleaner diffs
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+# Match existing style: prefer double quotes
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Match existing style: allow proc { } and -> { } based on context
+Style/Lambda:
+  EnforcedStyle: literal
+
+# Allow raising with string message directly
+Style/RaiseArgs:
+  Enabled: false
+
+# Disable guard clause enforcement (existing style is mixed)
+Style/GuardClause:
+  Enabled: false
+
+# Match existing style: allow explicit return in short methods
+Style/RedundantReturn:
+  Enabled: false
+
+# Match existing style: use && and || over and/or
+Style/AndOr:
+  EnforcedStyle: always
+
+# Match existing style: allow conditional assignment
+Style/ConditionalAssignment:
+  Enabled: false
+
+# Allow rescuing StandardError explicitly
+Style/RescueStandardError:
+  Enabled: false
+
+# Match existing style: allow `private def` syntax
+Style/AccessModifierDeclarations:
+  EnforcedStyle: inline
+
+# Disable overly pedantic cops
+Style/Documentation:
+  Enabled: false
+
+Style/DocumentationMethod:
+  Enabled: false
+
+# Match existing style: allow compact module/class definitions
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Match existing style: allow rescue modifier for simple cases
+Style/RescueModifier:
+  Enabled: false
+
+# Match existing style: allow string concatenation
+Style/StringConcatenation:
+  Enabled: false
+
+Style/LineEndConcatenation:
+  Enabled: false
+
+# Match existing style: allow word arrays with quotes
+Style/WordArray:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+# Match existing style: allow hash rocket for alignment
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+# Allow explicit self where it aids readability
+Style/RedundantSelf:
+  Enabled: false
+
+# Allow redundant :: for top-level constants (clearer intent)
+Style/RedundantConstantBase:
+  Enabled: false
+
+# Allow block comments for larger sections
+Style/BlockComments:
+  Enabled: false
+
+# Allow multiline if modifier
+Style/MultilineIfModifier:
+  Enabled: false
+
+# Allow has_key? for clarity
+Style/PreferredHashMethods:
+  Enabled: false
+
+# Allow empty string interpolation
+Style/EmptyStringInsideInterpolation:
+  Enabled: false
+
+# Allow multiline ternary (matches existing style)
+Style/MultilineTernaryOperator:
+  Enabled: false
+
+# Allow Hash[] style (matches existing style)
+Style/HashConversion:
+  Enabled: false
+
+# Allow parallel assignment (matches existing style)
+Style/ParallelAssignment:
+  Enabled: false
+
+# Allow Proc.new style (matches existing style)
+Style/Proc:
+  Enabled: false
+
+# Allow existing except pattern
+Style/HashExcept:
+  Enabled: false
+
+# Keep existing begin blocks
+Style/RedundantBegin:
+  Enabled: false
+
+# Keep existing self assignment patterns
+Style/RedundantSelfAssignmentBranch:
+  Enabled: false
+
+# Gemspec settings
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+# Maintain original expand_path style
+Style/ExpandPathArguments:
+  Enabled: false
+
+# Allow unused arguments (common in DSL code)
+Lint/UnusedBlockArgument:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+# Allow useless assignment (sometimes intentional for documentation)
+Lint/UselessAssignment:
+  Enabled: false
+
+# Allow 1.times for spec clarity
+Lint/UselessTimes:
+  Enabled: false
+
+# Allow existing block association style
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+# Allow percent string arrays with quotes
+Lint/PercentStringArray:
+  Enabled: false
+
+# Metrics
+Metrics/BlockLength:
+  Max: 60
+  Exclude:
+    - "spec/**/*"
+    - "*.gemspec"
+    - "lib/importu/converters.rb"  # Converter definitions are intentionally grouped
+
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - "lib/importu/converters.rb"  # Converter definitions are intentionally grouped
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/ModuleLength:
+  Max: 150
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Naming
+Naming/BlockForwarding:
+  Enabled: false
+
+# Allow memoization with different variable names (intentional pattern)
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+# Performance cops - keep most enabled but disable a few
+Performance/RedundantMerge:
+  Enabled: false
+
+# Allow existing case indentation style
+Layout/CaseIndentation:
+  Enabled: false
+
+# Allow assignment in condition (idiomatic Ruby pattern)
+Lint/AssignmentInCondition:
+  Enabled: false
+
+# Allow missing super in custom exceptions (intentional)
+Lint/MissingSuper:
+  Enabled: false
+
+# Allow empty blocks in specs (intentional DSL usage)
+Lint/EmptyBlock:
+  Enabled: false
+
+# Keep existing argument forwarding style
+Style/ArgumentsForwarding:
+  Enabled: false
+
+# Allow if modifier to be optional
+Style/IfUnlessModifier:
+  Enabled: false
+
+# Allow existing next/break style
+Style/Next:
+  Enabled: false
+
+# Allow trailing commas in method calls (existing style)
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+# Allow semicolons in one-liners (existing test style)
+Style/Semicolon:
+  Enabled: false
+
+# Allow flexible hash brace spacing
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: false
+
+# Skip frozen_string_literal for now (task #10)
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Allow simple heredoc delimiters
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+# Allow slight overruns in specs
+Layout/LineLength:
+  Max: 105

@@ -41,5 +41,8 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
       - name: Verify YARD documentation coverage
         run: bundle exec yardstick verify
