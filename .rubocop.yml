@@ -164,9 +164,8 @@ Style/EmptyStringInsideInterpolation:
 Style/MultilineTernaryOperator:
   Enabled: false
 
-# Allow Hash[] style (matches existing style)
 Style/HashConversion:
-  Enabled: false
+  Enabled: true
 
 # Allow parallel assignment (matches existing style)
 Style/ParallelAssignment:

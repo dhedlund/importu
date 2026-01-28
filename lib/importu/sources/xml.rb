@@ -20,10 +20,10 @@ class Importu::Sources::XML
   def rows
     Enumerator.new do |yielder|
       reader.xpath(@records_xpath).each do |xml|
-        data = Hash[[
+        data = [
           *xml.attribute_nodes.map {|a| [a.node_name, a.content] },
           *xml.elements.map {|e| [e.name, e.content]},
-        ]]
+        ].to_h
         yielder.yield(data)
       end
     end

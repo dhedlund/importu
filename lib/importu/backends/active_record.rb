@@ -19,7 +19,7 @@ class Importu::Backends::ActiveRecord
       if field_group.respond_to?(:call) # proc
         object = @model.instance_exec(record, &field_group)
       else
-        conditions = Hash[field_group.map {|f| [f, record[f]]}]
+        conditions = field_group.map {|f| [f, record[f]]}.to_h
         object = @model.where(conditions).first
       end
 
