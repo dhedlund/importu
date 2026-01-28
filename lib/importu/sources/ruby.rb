@@ -36,4 +36,11 @@ class Importu::Sources::Ruby
   # @return [nil] always returns nil
   def write_errors(summary, only_errors: false); end
 
+  # No-op for Ruby source (no file handles to close).
+  #
+  # Provided for API consistency with file-based sources.
+  #
+  # @return [void]
+  def close; end
+
 end

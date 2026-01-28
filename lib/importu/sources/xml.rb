@@ -53,7 +53,8 @@ class Importu::Sources::XML
   # @param xml_options [Hash] options passed to Nokogiri (currently unused)
   # @raise [Importu::InvalidInput] if the XML is malformed or empty
   def initialize(infile, records_xpath:, xml_options: {}, **)
-    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
+    @owns_handle = !infile.respond_to?(:readline)
+    @infile = @owns_handle ? File.open(infile, "rb") : infile
     @records_xpath = records_xpath
 
     if reader.root.nil?
@@ -61,6 +62,20 @@ class Importu::Sources::XML
     elsif reader.errors.any?
       raise Importu::InvalidInput, reader.errors.join("\n")
     end
+  rescue StandardError
+    close
+    raise
+  end
+
+  # Closes the underlying file handle if opened by this source.
+  #
+  # Safe to call multiple times. Only closes handles that were opened
+  # by this source (not IO objects passed in).
+  #
+  # @return [void]
+  def close
+    return unless @owns_handle && @infile && !@infile.closed?
+    @infile.close
   end
 
   # Returns an enumerator that yields each matching element as a hash.

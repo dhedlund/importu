@@ -40,7 +40,8 @@ class Importu::Sources::CSV
   # @param csv_options [Hash] options passed to Ruby's CSV parser
   # @raise [Importu::InvalidInput] if the CSV is malformed or empty
   def initialize(infile, csv_options: {}, **)
-    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
+    @owns_handle = !infile.respond_to?(:readline)
+    @infile = @owns_handle ? File.open(infile, "rb") : infile
 
     @csv_options = {
       headers:        true,
@@ -59,6 +60,20 @@ class Importu::Sources::CSV
     if @header.nil?
       raise Importu::InvalidInput, "Empty document"
     end
+  rescue StandardError
+    close
+    raise
+  end
+
+  # Closes the underlying file handle if opened by this source.
+  #
+  # Safe to call multiple times. Only closes handles that were opened
+  # by this source (not IO objects passed in).
+  #
+  # @return [void]
+  def close
+    return unless @owns_handle && @infile && !@infile.closed?
+    @infile.close
   end
 
   # Returns an enumerator that yields each row as a hash.

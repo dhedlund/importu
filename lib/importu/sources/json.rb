@@ -35,18 +35,33 @@ class Importu::Sources::JSON
   # @param infile [String, IO] file path or IO object to read from
   # @raise [Importu::InvalidInput] if the JSON is malformed or empty
   def initialize(infile, **)
-    @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
+    owns_handle = !infile.respond_to?(:readline)
+    @infile = owns_handle ? File.open(infile, "rb") : infile
 
     begin
       @infile.rewind
       @reader = ::JSON.parse(@infile.read)
     rescue ::JSON::ParserError => e
       raise Importu::InvalidInput, e.message
+    ensure
+      # JSON loads entire content into memory, so we can close immediately
+      @infile.close if owns_handle && @infile && !@infile.closed?
     end
 
     if @reader.nil?
       raise Importu::InvalidInput, "Empty document"
     end
+  end
+
+  # Closes any resources held by this source.
+  #
+  # For JSON sources, the file is already closed after initialization
+  # since the entire content is loaded into memory. This method is
+  # provided for API consistency with other sources.
+  #
+  # @return [void]
+  def close
+    # JSON source closes file immediately after reading into memory
   end
 
   # Returns an enumerator that yields each element as a hash.
