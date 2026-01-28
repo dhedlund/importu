@@ -14,6 +14,10 @@ class Importu::Sources::JSON
     rescue MultiJson::DecodeError => e
       raise Importu::InvalidInput, e.message
     end
+
+    if @reader.nil?
+      raise Importu::InvalidInput, "Empty document"
+    end
   end
 
   def rows
