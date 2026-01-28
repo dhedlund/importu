@@ -92,7 +92,7 @@ class Importu::Sources::XML
     return unless summary.itemized_errors.any?
 
     @infile.rewind
-    writer = Nokogiri::XML(@infile)
+    writer = Nokogiri::XML(@infile) { |config| config.nonet }
     writer.xpath("//_errors").remove
 
     itemized_errors = summary.itemized_errors
@@ -113,7 +113,7 @@ class Importu::Sources::XML
   end
 
   private def reader
-    @reader ||= Nokogiri::XML(@infile)
+    @reader ||= Nokogiri::XML(@infile) { |config| config.nonet }
   end
 
 end
