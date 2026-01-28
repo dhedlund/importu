@@ -17,13 +17,11 @@ class Importu::Sources::CSV
     }.merge(csv_options)
 
     begin
-      @reader = ::CSV.new(@infile, @csv_options)
+      @reader = ::CSV.new(@infile, **@csv_options)
       @header = @reader.readline
     rescue CSV::MalformedCSVError => ex
       raise Importu::InvalidInput, ex.message
     end
-
-    @data_pos = @infile.pos
 
     if @header.nil?
       raise Importu::InvalidInput, "Empty document"
@@ -31,9 +29,10 @@ class Importu::Sources::CSV
   end
 
   def rows
-    @infile.pos = @data_pos
+    @infile.rewind
+    reader = ::CSV.new(@infile, **@csv_options)
     Enumerator.new do |yielder|
-      @reader.each {|row| yielder.yield(row.to_hash) }
+      reader.each {|row| yielder.yield(row.to_hash) unless row.header_row? }
     end
   end
 
@@ -44,7 +43,7 @@ class Importu::Sources::CSV
     itemized_errors = summary.itemized_errors
 
     Tempfile.new("import").tap do |file|
-      writer = CSV.new(file, @csv_options)
+      writer = CSV.new(file, **@csv_options)
       writer << header
 
       rows.each.with_index do |row, index|
