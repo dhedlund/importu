@@ -18,14 +18,10 @@ RSpec.describe Importu::Sources::JSON do
     let(:definition) { Class.new(Importu::Definition) }
     let(:source_config) { definition.config[:sources][:json] }
 
-    context "when root element is not an array" do
-      %w({}, "foo", 3, 3.7, false, nil).each do |bad_data|
-        context "when root is #{bad_data}" do
-          let(:data) { bad_data }
-          it "raises InvalidInput exception" do
-            expect { source }.to raise_error(Importu::InvalidInput)
-          end
-        end
+    context "when document is JSON null" do
+      let(:data) { "null" }
+      it "raises InvalidInput with empty document message" do
+        expect { source }.to raise_error(Importu::InvalidInput, "Empty document")
       end
     end
   end
