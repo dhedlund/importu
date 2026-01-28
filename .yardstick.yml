@@ -21,8 +21,8 @@ rules:
     enabled: false
     exclude: []
 
-  # Make sure summary does not end with a period. This is annoying because
-  # as soon as you have multiple sentences, a missing period looks incorrect.
+  # Summary should not end with a period. This is a YARD convention but
+  # conflicts with natural documentation style when using multiple sentences.
   Summary::Delimiter:
     enabled: false
     exclude: []
