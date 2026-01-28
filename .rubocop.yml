@@ -216,9 +216,9 @@ Lint/UselessAssignment:
 Lint/UselessTimes:
   Enabled: false
 
-# Allow existing block association style
 Lint/AmbiguousBlockAssociation:
-  Enabled: false
+  Exclude:
+    - "spec/**/*"
 
 # Allow percent string arrays with quotes
 Lint/PercentStringArray:
