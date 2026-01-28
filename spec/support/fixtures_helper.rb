@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module FixturesHelper
   def infile(name, ext)
     File.join(fixtures_path, name, "infile.#{ext}")

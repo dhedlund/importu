@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Records and aggregates results from an import. Each time the importer
 # finishes processing a record, it makes a call back to the summarizer
 # to record the progress made so far. That may be successfully creating

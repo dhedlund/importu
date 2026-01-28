@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 appraise "standalone" do
   # w/o any frameworks
 end

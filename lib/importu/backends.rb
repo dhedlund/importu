@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/backends/middleware/enforce_allowed_actions"
 require "importu/backends/middleware/duplicate_manager_proxy"
 require "importu/exceptions"

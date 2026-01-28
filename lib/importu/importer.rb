@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/backends"
 require "importu/converters"
 require "importu/definition"

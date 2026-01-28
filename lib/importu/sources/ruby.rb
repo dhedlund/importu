@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/sources"
 
 # Supports a plain array of hashes as source data, or an enumerable that

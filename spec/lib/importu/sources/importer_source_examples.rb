@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/exceptions"
 require "importu/summary"
 

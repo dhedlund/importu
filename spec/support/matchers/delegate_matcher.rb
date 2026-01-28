@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # https://gist.github.com/807456
 
 # RSpec matcher to spec delegations.

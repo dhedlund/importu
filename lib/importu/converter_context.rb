@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/exceptions"
 
 # Provides a limited environment in which field conversion can occur. Exists

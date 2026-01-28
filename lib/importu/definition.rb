@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "importu/config_dsl"
 require "importu/converters"
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "simplecov"
 
 # Make each appraisal have a unique simplecov name. Needed to allow merging

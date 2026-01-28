@@ -302,9 +302,9 @@ Style/Semicolon:
 Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
 
-# Skip frozen_string_literal for now (task #10)
+# Enforce frozen_string_literal
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true
 
 # Allow simple heredoc delimiters
 Naming/HeredocDelimiterNaming:
