@@ -1,6 +1,23 @@
 # frozen_string_literal: true
+
+# DSL methods for configuring importers. These methods are available as class
+# methods when extending this module, allowing declarative configuration of
+# fields, converters, backends, and sources.
+#
+# @example Basic usage
+#   class BookImporter < Importu::Importer
+#     fields :title, :author, :isbn
+#     field :pages, &convert_to(:integer)
+#     model "Book"
+#   end
+#
+# @api public
 module Importu::ConfigDSL
 
+  # Returns the current configuration hash for this importer.
+  #
+  # @return [Hash] the configuration hash
+  # @api semipublic
   def config
     @config ||= begin
       superclass.respond_to?(:config) \
@@ -9,56 +26,114 @@ module Importu::ConfigDSL
     end
   end
 
-  # allow_actions :create
-  # allow_actions :create, :update
+  # Specifies which persistence actions are allowed during import.
   #
-  # allow actions:
-  #   :create - if an existing record can't be found, we can create it
-  #   :update - if an existing record found, update its attributes
+  # @param actions [Array<Symbol>] the actions to allow (:create and/or :update)
+  # @return [void]
+  #
+  # @example Allow only creating new records (default)
+  #   allow_actions :create
+  #
+  # @example Allow both creating and updating
+  #   allow_actions :create, :update
+  #
+  # @api public
   def allow_actions(*actions)
     @config = { **config,
       backend: { **config[:backend], allowed_actions: actions.compact }
     }
   end
 
-  # Source types that are allowed to be autodetected from an input file.
-  # When an input file is given during importer initialization, the list
-  # of allowed sources will be checked, in order, for one that is compatible
-  # with the input file.
+  # Specifies which source types are allowed for this importer.
   #
-  # allow_sources :csv
-  # allow_sources :csv, :json, :xml
+  # @param sources [Array<Symbol>] the source types to allow (:csv, :json, :xml, :ruby)
+  # @return [void]
+  #
+  # @example Allow only CSV (default)
+  #   allow_sources :csv
+  #
+  # @example Allow multiple source types
+  #   allow_sources :csv, :json, :xml
+  #
+  # @api public
   def allow_sources(*sources)
     @config = { **config, allowed_sources: sources }
   end
 
+  # Creates a converter reference for use with field definitions.
+  #
+  # @param type [Symbol] the converter type (:string, :integer, :date, etc.)
+  # @param options [Hash] converter-specific options
+  # @return [ConverterStub] a callable that applies the converter
+  #
+  # @example Basic usage
+  #   field :pages, &convert_to(:integer)
+  #
+  # @example With options
+  #   field :release_date, &convert_to(:date, format: "%Y-%m-%d")
+  #
+  # @api public
   def convert_to(type, **options)
     converter = config[:converters].fetch(type)
     ConverterStub.for(type, **options)
   end
 
-  # converter(:uppercase) do |name|
-  #   value = raw(name)
-  #   value.respond_to?(:upcase) ? value.upcase : value
-  # end
+  # Defines a custom converter for use in field definitions.
   #
-  # converter(:varchar) do |name, length: 255|
-  #   value = raw(name)
-  #   value.is_a?(String) ? name.slice(0, length) : value
-  # end
+  # @param name [Symbol] the converter name
+  # @yield [field_name, **options] block that performs the conversion
+  # @yieldparam field_name [Symbol] the field being converted
+  # @yieldparam options [Hash] any options passed to convert_to
+  # @yieldreturn the converted value
+  # @return [void]
   #
-  # converter :default, &convert_to(:varchar, length: 255)
+  # @example Simple converter
+  #   converter(:uppercase) do |name|
+  #     value = raw(name)
+  #     value.respond_to?(:upcase) ? value.upcase : value
+  #   end
+  #
+  # @example Converter with options
+  #   converter(:varchar) do |name, length: 255|
+  #     value = trimmed(name)
+  #     value.nil? ? nil : String(value).slice(0, length)
+  #   end
+  #
+  # @api public
   def converter(name, &block)
     @config = { **config,
       converters: { **config[:converters], name => block }
     }
   end
 
-  # field  :field1, label: "Field 1"
+  # Defines a single field with its configuration.
   #
-  # field(s) definition options:
-  #   :label - header/label/key/element name used in input file (default: field name)
-  #   :required - must be present in input file (values can be blank, default: true)
+  # @param name [Symbol] the field name (used as the key in record hashes)
+  # @param props [Hash] field options
+  # @option props [String] :label the column/key name in source data (default: field name as string)
+  # @option props [Boolean] :required whether the field must be present (default: true)
+  # @option props [Boolean] :abstract whether the field is computed, not from source (default: false)
+  # @option props [Object] :default value to use when field is nil and not required
+  # @option props [Boolean] :create include this field when creating records (default: true)
+  # @option props [Boolean] :update include this field when updating records (default: true)
+  # @yield [field_name] optional block for custom conversion logic
+  # @return [void]
+  #
+  # @example Basic field
+  #   field :title
+  #
+  # @example Field with label mapping
+  #   field :authors, label: "author"
+  #
+  # @example Field with converter
+  #   field :pages, &convert_to(:integer)
+  #
+  # @example Field with custom conversion block
+  #   field :authors do
+  #     trimmed(:authors).to_s.split(", ")
+  #   end
+  #
+  # @api public
   def field(name, **props, &block)
     field = config[:fields].fetch(name, field_defaults(name))
     props.merge!(converter: block) if block
@@ -70,22 +145,46 @@ module Importu::ConfigDSL
     }
   end
 
-  # fields :field1, :field2, :field3
-  # fields :field1, :field2, convert_to(:integer)
-  # fields :field1, :field2 do |data,definition|
-  #   Time.strptime(data[definition[:label]], "%d/%m/%Y")
-  # end
+  # Defines multiple fields with the same configuration.
+  #
+  # @param names [Array<Symbol>] the field names
+  # @param props [Hash] field options (see {#field} for available options)
+  # @yield optional block for custom conversion (applied to all fields)
+  # @return [void]
+  #
+  # @example Multiple fields
+  #   fields :title, :author, :isbn
+  #
+  # @example Multiple fields with shared converter
+  #   fields :pages, :quantity, &convert_to(:integer)
+  #
+  # @api public
   def fields(*names, **props, &block)
     names.each {|name| field(name, **props, &block) }
   end
 
-  # find_by :id # match against a single field
-  # find_by [:name, :date] # match against multiple fields
-  # find_by :id, [:name, :date] # try name/date combo if no id match
-  # find_by nil # never try to look up records, assume :create
-  # find_by do |record|
-  #   find_by(foo: record[:name].downcase)
-  # end
+  # Specifies how to find existing records for updates.
+  #
+  # @param field_groups [Array<Symbol, Array<Symbol>>] fields to match against
+  # @yield [record] optional block for custom lookup logic
+  # @yieldparam record [Importu::Record] the record being imported
+  # @return [void]
+  #
+  # @example Single field lookup
+  #   find_by :isbn
+  #
+  # @example Multiple fields (all must match)
+  #   find_by :title, :author
+  #
+  # @example Multiple field groups (tried in order)
+  #   find_by :isbn, [:title, :author]
+  #
+  # @example Custom lookup block
+  #   find_by do |record|
+  #     find_by(title: record[:title].downcase)
+  #   end
+  #
+  # @api public
   def find_by(*field_groups, &block)
     finder_fields = [*field_groups, block].compact.map do |field_group|
       field_group.respond_to?(:call) ? field_group : Array(field_group)
@@ -132,12 +231,19 @@ module Importu::ConfigDSL
     }
   end
 
-  # Define source-specific options. When autodetecting sources from the
-  # `allowed_sources` list, these options will be passed to the source
-  # during initialization.
+  # Configures source-specific options.
   #
-  # source :xml, records_xpath: "//books"
-  # source :csv, col_sep: "\t"
+  # @param type [Symbol] the source type (:csv, :json, :xml, :ruby)
+  # @param props [Hash] source-specific options
+  # @return [void]
+  #
+  # @example XML source with xpath
+  #   source :xml, records_xpath: "//book"
+  #
+  # @example CSV source with custom delimiter
+  #   source :csv, col_sep: "\t"
+  #
+  # @api public
   def source(type, **props, &block)
     source = config[:sources].fetch(type, {})
 

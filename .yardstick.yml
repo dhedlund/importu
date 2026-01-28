@@ -1,6 +1,6 @@
 ---
 # Minimum documentation coverage required for verifications to pass
-threshold: 55
+threshold: 70
 
 # Specify if the coverage summary should be displayed
 verbose: true
