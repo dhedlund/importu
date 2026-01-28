@@ -2,7 +2,7 @@
 require "importu/backends"
 
 class DummyBackend
-  def self.supported_by_definition?(definition)
+  def self.supported_by_definition?(_definition)
     false
   end
 

@@ -207,7 +207,7 @@ Lint/UnusedBlockArgument:
   Enabled: false
 
 Lint/UnusedMethodArgument:
-  Enabled: false
+  AllowUnusedKeywordArguments: true
 
 # Allow useless assignment (sometimes intentional for documentation)
 Lint/UselessAssignment:

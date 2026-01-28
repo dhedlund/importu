@@ -244,7 +244,7 @@ module Importu::ConfigDSL
   #   source :csv, col_sep: "\t"
   #
   # @api public
-  def source(type, **props, &block)
+  def source(type, **props)
     source = config[:sources].fetch(type, {})
 
     @config = { **config,

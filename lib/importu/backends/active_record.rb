@@ -52,7 +52,7 @@ class Importu::Backends::ActiveRecord
     end
   end
 
-  private def save(record, object)
+  private def save(_record, object)
     return [:unchanged, object] unless object.changed?
     new_record = object.new_record?
 
