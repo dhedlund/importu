@@ -45,4 +45,4 @@ jobs:
         run: bundle exec rubocop
 
       - name: Verify YARD documentation coverage
-        run: bundle exec yardstick verify
+        run: bundle exec rake yardstick
