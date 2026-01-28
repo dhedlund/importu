@@ -1,16 +1,40 @@
 # Importu
 
 [![Gem Version](http://img.shields.io/gem/v/importu.svg)][gem]
-[![Build Status](https://img.shields.io/travis/dhedlund/importu.svg)][travis]
-[![Coverage Status](https://img.shields.io/coveralls/dhedlund/importu.svg)][coveralls]
+[![CI](https://github.com/dhedlund/importu/actions/workflows/ci.yml/badge.svg)][ci]
 
 [gem]: https://rubygems.org/gems/importu
-[travis]: https://travis-ci.org/dhedlund/importu
-[coveralls]: https://coveralls.io/r/dhedlund/importu
+[ci]: https://github.com/dhedlund/importu/actions/workflows/ci.yml
 
 Importu simplifies the process of defining and sharing contracts that
 structured data must conform to in order to be importable into your
 application.
+
+## Requirements
+
+- Ruby >= 3.1
+- Rails >= 7.2 (optional, for ActiveRecord backend)
+- nokogiri (optional, for XML source)
+
+## Quick Start
+
+```ruby
+require "importu"
+
+# Define an importer with the fields you expect
+class BookImporter < Importu::Importer
+  fields :title, :author, :isbn10
+end
+
+# Create a source and importer
+source = Importu::Sources::CSV.new("books.csv")
+importer = BookImporter.new(source)
+
+# Iterate over records
+importer.records.each do |record|
+  puts "#{record[:title]} by #{record[:author]}"
+end
+```
 
 ## Goals
 
@@ -147,6 +171,57 @@ class BookImporter < Importu::Importer
 end
 ```
 
+## Sources
+
+Importu supports multiple source formats. Each source parses input data and
+provides an enumerator of row hashes.
+
+### CSV
+
+```ruby
+source = Importu::Sources::CSV.new("data.csv")
+# or with options
+source = Importu::Sources::CSV.new("data.csv", col_sep: ";", encoding: "ISO-8859-1")
+```
+
+CSV options are passed directly to Ruby's CSV library. Common options include
+`col_sep`, `quote_char`, `encoding`, and `headers` (defaults to true).
+
+### JSON
+
+```ruby
+source = Importu::Sources::JSON.new("data.json")
+```
+
+The JSON file must have an array as the root element. The entire file is loaded
+into memory, so this source is not suitable for very large files.
+
+### XML
+
+```ruby
+# records_xpath is required
+source = Importu::Sources::XML.new("data.xml", records_xpath: "//book")
+```
+
+The `records_xpath` option specifies which elements to treat as records. Each
+matching element becomes a row, with child elements and attributes becoming
+fields.
+
+### Ruby
+
+```ruby
+data = [
+  { "name" => "Alice", "email" => "alice@example.com" },
+  { "name" => "Bob", "email" => "bob@example.com" }
+]
+source = Importu::Sources::Ruby.new(data)
+```
+
+Accepts an array of hashes or any enumerable that yields objects responding to
+`to_hash`. Useful for importing data already in memory or from other Ruby
+sources.
+
+
 ## Converters
 
 ### Built-in Converters
@@ -280,6 +355,49 @@ summary = importer.import!
 summary.total # => 3
 summary.created # => 0
 summary.unchanged # => 3
+```
+
+### Allowed Actions
+
+By default, importers only allow creating new records. If you want to update
+existing records, you must explicitly allow it:
+
+```ruby
+class BookImporter < Importu::Importer
+  model "Book"
+  allow_actions :create, :update  # Allow both creating and updating
+
+  find_by :isbn10  # Find existing records by ISBN
+  # ...
+end
+```
+
+If an action is not allowed, the record will be marked as invalid with an error
+message explaining which action was rejected.
+
+| Configuration | Behavior |
+|---------------|----------|
+| `allow_actions :create` | Only create new records (default) |
+| `allow_actions :update` | Only update existing records |
+| `allow_actions :create, :update` | Create new records and update existing ones |
+
+### Finding Existing Records
+
+Use `find_by` to specify which fields identify existing records:
+
+```ruby
+class BookImporter < Importu::Importer
+  model "Book"
+  allow_actions :create, :update
+
+  find_by :isbn10  # Single field
+  # or
+  find_by :title, :author  # Multiple fields (all must match)
+  # or
+  find_by do |record|  # Custom lookup logic
+    find_by(title: record[:title].downcase)
+  end
+end
 ```
 
 ## Contributing
