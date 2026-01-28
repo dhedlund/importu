@@ -282,19 +282,7 @@ summary.created # => 0
 summary.unchanged # => 3
 ```
 
-## Development
+## Contributing
 
-Importu uses the [appraisal](https://github.com/thoughtbot/appraisal) gem to
-test against multiple frameworks and versions. To run the entire test suite:
-
-```bash
-bundle exec appraisal bundle exec rspec spec
-```
-
-If any changes are made to the `importu.gemspec`, `Gemfile` or `Appraisals`
-file, you should re-run the following command to update appraisal generated
-under the `gemfiles/` directory:
-
-```bash
-bundle exec appraisal install
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, running tests,
+and guidelines for submitting changes.

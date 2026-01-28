@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add CONTRIBUTING.md with development setup and architecture overview
 - Add explicit `backend: :auto` option for discoverable backend auto-detection
 
 ### Changed
