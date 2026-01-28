@@ -28,7 +28,7 @@ class Importu::ConverterContext
     end
 
     if value.nil? && definition[:required]
-      raise Importu::MissingField, definition
+      raise Importu::MissingField.new(definition, available_fields: @data.keys)
     else
       value.nil? ? definition[:default] : value
     end

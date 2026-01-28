@@ -105,6 +105,32 @@ RSpec.describe Importu::ImportuException do
           expect(exception.message).to match(/foo_field_2/)
         end
       end
+
+      context "when available_fields is provided" do
+        subject(:exception) do
+          Importu::MissingField.new(definition, available_fields: ["name", "email", "phone"])
+        end
+
+        it "lists available fields" do
+          expect(exception.message).to match(/available fields: name, email, phone/)
+        end
+      end
+
+      context "when available_fields is empty" do
+        subject(:exception) do
+          Importu::MissingField.new(definition, available_fields: [])
+        end
+
+        it "does not include available fields section" do
+          expect(exception.message).not_to match(/available fields/)
+        end
+      end
+
+      context "when available_fields is not provided" do
+        it "does not include available fields section" do
+          expect(exception.message).not_to match(/available fields/)
+        end
+      end
     end
   end
 

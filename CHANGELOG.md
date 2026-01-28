@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve MissingField error to include available fields from source data
 - Improve error messages when create/update actions are not allowed (now includes fix guidance)
 - Document before_save as a backend hook that backends may choose to honor
 - Extract AR-specific error normalization from Summary into ActiveRecord backend

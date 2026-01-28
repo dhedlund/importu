@@ -39,15 +39,20 @@ module Importu
   class DuplicateRecord < InvalidRecord; end
 
   class MissingField < InvalidRecord
-    attr_reader :definition
+    attr_reader :definition, :available_fields
 
-    def initialize(definition)
+    def initialize(definition, available_fields: nil)
       @definition = definition
+      @available_fields = available_fields
     end
 
     def message
       field = definition[:label] || definition[:name]
-      "missing field \"#{field}\" from source data"
+      msg = "missing field \"#{field}\" from source data"
+      if available_fields&.any?
+        msg += "; available fields: #{available_fields.join(", ")}"
+      end
+      msg
     end
   end
 end
