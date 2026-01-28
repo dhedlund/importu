@@ -4,5 +4,6 @@ source "http://rubygems.org"
 
 gem "pry"
 gem "coveralls", require: false
+gem "yardstick", branch: "default-config-yml", require: false, git: "https://github.com/dhedlund/yardstick"
 
 gemspec path: "../"

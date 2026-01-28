@@ -2,14 +2,20 @@ appraise "standalone" do
   # w/o any frameworks
 end
 
-appraise "rails-4-latest" do
-  gem "sqlite3"
-  gem "database_cleaner"
-  gem "activerecord", "~> 4.2"
+appraise "rails-7-2" do
+  gem "sqlite3", "~> 2.0"
+  gem "database_cleaner-active_record"
+  gem "activerecord", "~> 7.2.0"
 end
 
-appraise "rails-5-latest" do
-  gem "sqlite3"
-  gem "database_cleaner"
-  gem "activerecord", "~> 5.1"
+appraise "rails-8-0" do
+  gem "sqlite3", "~> 2.0"
+  gem "database_cleaner-active_record"
+  gem "activerecord", "~> 8.0.0"
+end
+
+appraise "rails-8-1" do
+  gem "sqlite3", "~> 2.0"
+  gem "database_cleaner-active_record"
+  gem "activerecord", "~> 8.1.0"
 end
