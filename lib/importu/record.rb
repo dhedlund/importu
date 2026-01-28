@@ -16,7 +16,7 @@ class Importu::Record
   end
 
   def assignable_fields_for(action)
-    @field_definitions.each_with_object([]) do |(name,definition),acc|
+    @field_definitions.each_with_object([]) do |(name, definition), acc|
       if definition[action] == true && definition[:abstract] == false
         acc << name
       end
@@ -48,7 +48,7 @@ class Importu::Record
   delegate (Hash.public_instance_methods - public_instance_methods) => :to_hash
 
   private def ensure_record_hash
-    @record_hash ||= @field_definitions.each_with_object({}) do |(name,_),hash|
+    @record_hash ||= @field_definitions.each_with_object({}) do |(name, _), hash|
       begin
         hash[name] = @context.field_value(name)
       rescue Importu::FieldParseError => e

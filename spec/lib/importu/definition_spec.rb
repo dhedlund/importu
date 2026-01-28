@@ -85,8 +85,8 @@ RSpec.describe Importu::Definition do
 
   describe "#convert_to" do
     let!(:converter) do
-      definition.converter :foo do |name,**options|
-        "foo(#{name}, {#{options.map {|k,v| "#{k}:#{v}"}.join(",")}})"
+      definition.converter :foo do |name, **options|
+        "foo(#{name}, {#{options.map {|k, v| "#{k}:#{v}"}.join(",")}})"
       end
     end
 

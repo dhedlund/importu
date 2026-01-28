@@ -66,7 +66,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
       it "includes validation errors in summary" do
         summary = importer.import!
-        expect(summary.validation_errors.any? {|msg,_| msg =~ /isbn10/i }).to be true
+        expect(summary.validation_errors.any? {|msg, _| msg =~ /isbn10/i }).to be true
       end
     end
 
@@ -84,7 +84,7 @@ RSpec.describe "ActiveRecord Backend", :active_record do
       context "when duplicate records in source file" do
         let(:source) { Importu::Sources::CSV.new(infile("books-duplicates", :csv)) }
 
-        it  "marks the three duplicate records as invalid" do
+        it "marks the three duplicate records as invalid" do
           summary = importer.import!
           expected_summary_json!("books-duplicates", summary)
         end
@@ -122,9 +122,9 @@ RSpec.describe "ActiveRecord Backend", :active_record do
 
         it "executes the find_by block in context of the model" do
           expect(Book)
-            .to receive(:find_by).with(title: anything())
+            .to receive(:find_by).with(title: anything)
             .at_least(3).times
-            .and_call_original
+                                 .and_call_original
 
           summary = importer.import!
           expect(summary.unchanged).to eq 3

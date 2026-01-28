@@ -22,7 +22,7 @@ RSpec::Matchers.define :delegate do |method|
     begin
       @delegator.send(@to)
     rescue NoMethodError
-      raise "#{@delegator} does not respond to #{@to}!" 
+      raise "#{@delegator} does not respond to #{@to}!"
     end
     allow(@delegator).to receive(@to).and_return double("receiver")
     allow(@delegator.send(@to)).to receive(method).and_return :called

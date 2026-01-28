@@ -147,9 +147,8 @@ class Importu::Importer
         : backend.update(record, object)
 
       recorder.record(result, index: index)
-
     rescue Importu::InvalidRecord => e
-      errors =  e.validation_errors || ["#{e.name}: #{e.message}"]
+      errors = e.validation_errors || ["#{e.name}: #{e.message}"]
       recorder.record(:invalid, index: index, errors: errors)
     end
   end
@@ -161,7 +160,7 @@ class Importu::Importer
   #
   # @api private
   private def with_middleware(orig_backend)
-    Importu::Backends.middleware.inject(orig_backend) do |backend,middleware|
+    Importu::Backends.middleware.inject(orig_backend) do |backend, middleware|
       middleware.new(backend, **config[:backend])
     end
   end

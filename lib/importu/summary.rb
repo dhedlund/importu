@@ -111,7 +111,7 @@ class Importu::Summary
     # Should stay ordered by index because rows are processed sequentially
     # and hashes preserve insertion order. Recorded errors without an index
     # will be ignored. Index is 0-based from first record.
-    @itemized_errors = Hash.new {|h,idx| h[idx] = [] }
+    @itemized_errors = Hash.new {|h, idx| h[idx] = [] }
   end
 
   # Record the result of an import. The result may be used for aggregated
@@ -141,7 +141,7 @@ class Importu::Summary
       when :created then @created += 1
       when :updated then @updated += 1
       when :unchanged then @unchanged += 1
-      when :invalid then
+      when :invalid
         @invalid += 1
         record_errors(errors, index: index)
     end
@@ -180,7 +180,7 @@ class Importu::Summary
 
     if validation_errors.any?
       msg << "\nValidation Errors:\n"
-      msg << validation_errors.map {|e,c| "  - #{e}: #{c}" }.join("\n")
+      msg << validation_errors.map {|e, c| "  - #{e}: #{c}" }.join("\n")
     end
 
     msg
@@ -222,7 +222,7 @@ class Importu::Summary
     }
   end
 
-  alias_method :to_s, :result_msg
+  alias to_s result_msg
 
   # Updates error attributes to include the newly encountered errors.
   #

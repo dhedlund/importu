@@ -16,7 +16,7 @@ RSpec.describe Importu::Record do
     end
   end
 
-  let(:data) { { "pilot" => "Nena",  "balloons" => "99", "flying" => "yes" } }
+  let(:data) { { "pilot" => "Nena", "balloons" => "99", "flying" => "yes" } }
 
   it "supports hash-like accessors" do
     expect(record[:pilot]).to eq "Nena"
@@ -32,7 +32,7 @@ RSpec.describe Importu::Record do
     expect(record.each.with_index.to_a) # enumerable is composable (#w_index)
       .to eq [[[:pilot, "Nena"], 0], [[:balloons, 99], 1], [[:flying, true], 2]]
 
-    expect(record.reduce([]) {|acc,(k,_)| acc << k }).to eq record.keys
+    expect(record.reduce([]) {|acc, (k, _)| acc << k }).to eq record.keys
   end
 
   describe "#assignable_fields_for" do

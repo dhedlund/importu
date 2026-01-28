@@ -1,4 +1,4 @@
-require 'simplecov'
+require "simplecov"
 
 # Make each appraisal have a unique simplecov name. Needed to allow merging
 # of results since each appraisal may only run a subset of relevant specs.

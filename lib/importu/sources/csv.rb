@@ -19,8 +19,8 @@ class Importu::Sources::CSV
     begin
       @reader = ::CSV.new(@infile, **@csv_options)
       @header = @reader.readline
-    rescue CSV::MalformedCSVError => ex
-      raise Importu::InvalidInput, ex.message
+    rescue CSV::MalformedCSVError => e
+      raise Importu::InvalidInput, e.message
     end
 
     if @header.nil?

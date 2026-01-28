@@ -96,7 +96,7 @@ RSpec.shared_examples "importer source" do |format, exclude: []|
         ]
 
         # Everything except "_errors" should match original input
-        expect(new_source.rows.map {|row| row.reject {|k,v| k == "_errors" } })
+        expect(new_source.rows.map {|row| row.reject {|k, v| k == "_errors" } })
           .to eq source.rows.to_a
       end
 

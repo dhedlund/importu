@@ -39,7 +39,7 @@ class DummyBackend
     if new_object == object
       [:unchanged, new_object]
     else
-      @objects[object[:id]-1] = new_object
+      @objects[object[:id] - 1] = new_object
       [:updated, new_object]
     end
   end

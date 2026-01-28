@@ -15,7 +15,7 @@ class Importu::Backends
   end
 
   def initialize
-    @registered = Hash.new do |hash,key|
+    @registered = Hash.new do |hash, key|
       raise Importu::BackendNotRegistered, key
     end
   end
@@ -38,7 +38,7 @@ class Importu::Backends
   end
 
   private def detect_from_model(model)
-    matched = @registered.select do |name,backend|
+    matched = @registered.select do |name, backend|
       backend.supported_by_model?(model) rescue false
     end
 
@@ -47,12 +47,12 @@ class Importu::Backends
     elsif matched.none?
       raise Importu::BackendMatchError, "No backends detected from importer " +
         "model. Try adding `backend: :mybackend` to your model definition. " +
-        "Known values are: " + names.map {|v|":#{v}"}.join(", ")
+        "Known values are: " + names.map {|v| ":#{v}"}.join(", ")
     else
       raise Importu::BackendMatchError, "Backend auto-detection is " +
         "ambiguous, multiple candidates match. Try adding `backend: " +
         ":mybackend` to your model definition. Matched backends are: " +
-        matched.keys.map {|v|":#{v}"}.join(", ")
+        matched.keys.map {|v| ":#{v}"}.join(", ")
     end
   end
 

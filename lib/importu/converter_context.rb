@@ -12,7 +12,7 @@ class Importu::ConverterContext
   def self.with_config(converters:, fields:, **)
     Class.new(self) do
       define_method(:field_definitions) { fields }
-      converters.each {|name,block| define_method(name, &block) }
+      converters.each {|name, block| define_method(name, &block) }
     end
   end
 

@@ -153,7 +153,7 @@ RSpec.describe Importu::Summary do
       end
 
       it "groups error messages by record index" do
-        summary.record(:invalid, index:  9, errors: ["foo", "bar"])
+        summary.record(:invalid, index: 9, errors: ["foo", "bar"])
         summary.record(:invalid, index: 11, errors: ["foo"])
         summary.record(:invalid, index: 11, errors: ["bar", "baz"])
         summary.record(:invalid, index: 17, errors: ["bar"])
