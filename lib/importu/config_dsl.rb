@@ -295,19 +295,34 @@ module Importu::ConfigDSL
     }
   end
 
-  # @!visibility private
-  # A proc-like object that stores info about how to call the converter
-  # in the future from within a ConverterContext. This allows subclassed
-  # definitions to override a converter's behavior and have it affect
-  # already defined fields.
+  # A proc-like object that stores converter type and options.
+  #
+  # This allows subclassed definitions to override a converter's behavior
+  # and have it affect already defined fields.
+  #
+  # @api private
   class ConverterStub < Proc
-    attr_reader :type, :options
+    # @return [Symbol] the converter type
+    attr_reader :type
 
+    # @return [Hash] the converter options
+    attr_reader :options
+
+    # Creates a new converter stub.
+    #
+    # @param type [Symbol] the converter type
+    # @param options [Hash] options to pass to the converter
+    # @param block [Proc] the converter implementation
     def initialize(type, options, &block)
       @type, @options = type, options
       super(&block)
     end
 
+    # Creates a stub that delegates to a named converter.
+    #
+    # @param type [Symbol] the converter type
+    # @param options [Hash] options to pass to the converter
+    # @return [ConverterStub] a new stub
     def self.for(type, **options)
       block = options.any? \
         ? ->(n) { send(type, n, **options) }
@@ -316,6 +331,10 @@ module Importu::ConfigDSL
       new(type, options, &block)
     end
 
+    # Compares stubs by type and options.
+    #
+    # @param other [ConverterStub] the other stub
+    # @return [Boolean] true if type and options match
     def ==(other)
       type == other.type && options == other.options
     end

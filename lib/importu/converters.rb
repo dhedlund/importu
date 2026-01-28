@@ -2,7 +2,22 @@
 require "bigdecimal"
 require "date"
 
+# Built-in converters for common data types.
+#
+# This module is automatically included in importers and provides converters
+# for boolean, date, datetime, decimal, float, integer, string, and trimmed.
+#
+# @example Using built-in converters
+#   field :pages, &convert_to(:integer)
+#   field :price, &convert_to(:decimal)
+#   field :published_on, &convert_to(:date, format: "%Y-%m-%d")
+#
+# @see Importu::ConfigDSL#converter
+# @api semipublic
 module Importu::Converters
+  # Defines built-in converters when included in a class.
+  #
+  # @api private
   def self.included(base)
     base.class_eval do
 
