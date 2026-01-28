@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix keyword argument splatting throughout codebase
 - Fix CSV source to create fresh reader on each rows call
 - Fix JSON source to handle empty documents
+- Fix ActiveRecord backend for Rails 7+ errors API
 
 ## [0.1.0] - 2017-09-25
 
