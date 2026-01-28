@@ -195,7 +195,7 @@ Gemspec/RequireMFA:
   Enabled: false
 
 Gemspec/OrderedDependencies:
-  Enabled: false
+  Enabled: true
 
 Style/ExpandPathArguments:
   Enabled: true

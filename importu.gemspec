@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-$LOAD_PATH.unshift File.expand_path('lib', __dir__)
+$LOAD_PATH.unshift File.expand_path("lib", __dir__)
 require "importu/version"
 
 Gem::Specification.new do |s|
@@ -32,10 +32,10 @@ Gem::Specification.new do |s|
   s.add_dependency "csv"
   s.add_dependency "nokogiri", ">= 1.13"
 
+  s.add_development_dependency "appraisal"
   s.add_development_dependency "bundler",      ">= 2.0"
   s.add_development_dependency "rspec",        "~> 3.12"
   s.add_development_dependency "simplecov",    "~> 0.22"
-  s.add_development_dependency "appraisal"
 
   # Code Quality
   s.add_development_dependency "rubocop", "~> 1.60"

@@ -21,7 +21,7 @@ require "active_record" if Gem.loaded_specs.has_key?("activerecord")
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[File.expand_path('support/**/*.rb', __dir__)].each {|f| require f }
+Dir[File.expand_path("support/**/*.rb", __dir__)].each {|f| require f }
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

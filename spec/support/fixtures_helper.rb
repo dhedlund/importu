@@ -28,7 +28,7 @@ module FixturesHelper
   end
 
   def fixtures_path
-    File.expand_path('../fixtures', __dir__)
+    File.expand_path("../fixtures", __dir__)
   end
 
   private def load_fixture_json(*path_parts)
