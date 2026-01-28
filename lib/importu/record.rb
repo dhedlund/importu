@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 require "importu/converter_context"
 require "importu/exceptions"
 
