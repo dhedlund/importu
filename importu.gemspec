@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "bigdecimal"
   s.add_dependency "csv"
-  s.add_dependency "nokogiri", ">= 1.13"
+  s.add_dependency "nokogiri", ">= 1.18.4"
 
   s.add_development_dependency "appraisal"
   s.add_development_dependency "bundler",      ">= 2.0"
