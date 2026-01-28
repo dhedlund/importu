@@ -12,7 +12,7 @@ class Importu::Backends
   end
 
   def self.registry
-    @registry ||= self.new
+    @registry ||= new
   end
 
   def initialize

@@ -136,9 +136,8 @@ Style/PercentLiteralDelimiters:
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
-# Allow explicit self where it aids readability
 Style/RedundantSelf:
-  Enabled: false
+  Enabled: true
 
 # Allow redundant :: for top-level constants (clearer intent)
 Style/RedundantConstantBase:
