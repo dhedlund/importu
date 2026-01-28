@@ -32,13 +32,13 @@ RSpec.describe Importu::Backends do
         let!(:backend) { registry.register(:cherry_scones, Class.new) }
 
         it "returns the backend" do
-          expect(registry.from_config!(config)).to eq backend
+          expect(registry.from_config!(**config)).to eq backend
         end
       end
 
       context "and the backend is not registered" do
         it "raises a BackendNotRegistered error" do
-          expect { registry.from_config!(config) }
+          expect { registry.from_config!(**config) }
             .to raise_error(Importu::BackendNotRegistered)
         end
       end
@@ -58,7 +58,7 @@ RSpec.describe Importu::Backends do
         before { registry.register(:backend1, unsupported) }
 
         it "raises a BackendMatch error" do
-          expect { registry.from_config!(config) }
+          expect { registry.from_config!(**config) }
             .to raise_error(Importu::BackendMatchError)
         end
       end
@@ -70,7 +70,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "returns the supported backend" do
-          expect(registry.from_config!(config)).to eq supported
+          expect(registry.from_config!(**config)).to eq supported
         end
       end
 
@@ -82,7 +82,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "raises a BackendMatch error" do
-          expect { registry.from_config!(config) }
+          expect { registry.from_config!(**config) }
             .to raise_error(Importu::BackendMatchError)
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe Importu::Backends do
         end
 
         it "ignores the backend" do
-          expect(registry.from_config!(config)).to eq supported
+          expect(registry.from_config!(**config)).to eq supported
         end
       end
     end

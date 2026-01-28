@@ -44,7 +44,7 @@ RSpec.describe Importu::Importer do
   describe "#import!" do
     context "when a backend is specified at initialization" do
       subject(:importer) { importer_class.new(source, backend: backend) }
-      let(:backend) { DummyBackend.new(importer_class.config[:backend]) }
+      let(:backend) { DummyBackend.new(**importer_class.config[:backend]) }
 
       it "uses the backend from initialization" do
         expect(Importu::Importer).to_not receive(:backend_registry)
@@ -64,7 +64,7 @@ RSpec.describe Importu::Importer do
 
     context "when a custom recorder/summarizer is specified" do
       subject(:importer) { importer_class.new(source, backend: backend) }
-      let(:backend) { DummyBackend.new(importer_class.config[:backend]) }
+      let(:backend) { DummyBackend.new(**importer_class.config[:backend]) }
 
       it "records status of each record import" do
         recorder = instance_double("Importu::Summary")

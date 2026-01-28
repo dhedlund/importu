@@ -40,7 +40,7 @@ class Importu::Importer
     @source = source
     @backend = backend
     @definition = definition || self.class
-    @context = Importu::ConverterContext.with_config(config)
+    @context = Importu::ConverterContext.with_config(**config)
   end
 
   # A registry of importer backends available for use.
@@ -116,7 +116,7 @@ class Importu::Importer
   #
   # @api public
   def records
-    Importu::Record::Iterator.new(@source.rows, config)
+    Importu::Record::Iterator.new(@source.rows, **config)
   end
 
   # Looks for a backend that is compatible with the definition used for
@@ -128,8 +128,8 @@ class Importu::Importer
   #
   # @api private
   private def backend_from_config
-    backend_class = self.class.backend_registry.from_config!(config[:backend])
-    backend_class.new(config[:backend])
+    backend_class = self.class.backend_registry.from_config!(**config[:backend])
+    backend_class.new(**config[:backend])
   end
 
   # Performs an import of a single record. Acts as a wrapper around behavior
@@ -162,7 +162,7 @@ class Importu::Importer
   # @api private
   private def with_middleware(orig_backend)
     Importu::Backends.middleware.inject(orig_backend) do |backend,middleware|
-      middleware.new(backend, config[:backend])
+      middleware.new(backend, **config[:backend])
     end
   end
 

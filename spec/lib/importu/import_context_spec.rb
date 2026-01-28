@@ -6,7 +6,7 @@ require "importu/exceptions"
 
 RSpec.describe Importu::ConverterContext do
   subject(:context) do
-    described_class.with_config(definition.config).new(data)
+    described_class.with_config(**definition.config).new(data)
   end
 
   let(:definition) { Class.new(Importu::Definition) }

@@ -4,9 +4,9 @@ require "importu/backends/middleware/duplicate_manager_proxy"
 require "importu/definition"
 
 RSpec.describe Importu::Backends::Middleware::DuplicateManagerProxy do
-  subject(:middleware) { described_class.new(dummy_backend, backend_config) }
+  subject(:middleware) { described_class.new(dummy_backend, **backend_config) }
 
-  let(:dummy_backend) { DummyBackend.new(backend_config) }
+  let(:dummy_backend) { DummyBackend.new(**backend_config) }
   let(:backend_config) { definition.config[:backend] }
 
   let(:definition) do

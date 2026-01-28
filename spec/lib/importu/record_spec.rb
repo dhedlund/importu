@@ -5,8 +5,8 @@ require "importu/definition"
 require "importu/record"
 
 RSpec.describe Importu::Record do
-  subject(:record) { Importu::Record.new(data, context, definition.config) }
-  let(:context) { Importu::ConverterContext.with_config(definition.config) }
+  subject(:record) { Importu::Record.new(data, context, **definition.config) }
+  let(:context) { Importu::ConverterContext.with_config(**definition.config) }
 
   let(:definition) do
     Class.new(Importu::Definition) do
@@ -129,7 +129,7 @@ RSpec.describe Importu::Record do
 end
 
 RSpec.describe Importu::Record::Iterator do
-  subject(:iterator) { described_class.new(rows, definition.config) }
+  subject(:iterator) { described_class.new(rows, **definition.config) }
 
   let(:definition) do
     Class.new(Importu::Definition) do

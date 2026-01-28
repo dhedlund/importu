@@ -4,7 +4,7 @@ require "importu/converter_context"
 require "importu/definition"
 
 RSpec.describe "Importu Converters" do
-  subject(:context) { Importu::ConverterContext.with_config(definition.config).new(data) }
+  subject(:context) { Importu::ConverterContext.with_config(**definition.config).new(data) }
   let(:definition) { Class.new(Importu::Definition) }
 
   let(:data) { { "field1" => " value1 ", "field2" => "value2" } }

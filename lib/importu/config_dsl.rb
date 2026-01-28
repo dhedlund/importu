@@ -33,7 +33,7 @@ module Importu::ConfigDSL
 
   def convert_to(type, **options)
     converter = config[:converters].fetch(type)
-    ConverterStub.for(type, options)
+    ConverterStub.for(type, **options)
   end
 
   # converter(:uppercase) do |name|
@@ -75,7 +75,7 @@ module Importu::ConfigDSL
   #   Time.strptime(data[definition[:label]], "%d/%m/%Y")
   # end
   def fields(*names, **props, &block)
-    names.each {|name| field(name, props, &block) }
+    names.each {|name| field(name, **props, &block) }
   end
 
   # find_by :id # match against a single field
