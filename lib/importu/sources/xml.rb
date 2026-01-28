@@ -5,7 +5,24 @@ require "tempfile"
 require "importu/exceptions"
 require "importu/sources"
 
+# Parses XML files as import source data.
+#
+# Requires an XPath expression to identify which elements represent records.
+# Each matching element becomes a row, with child elements and attributes
+# as fields.
+#
+# @example Basic usage
+#   source = Importu::Sources::XML.new("data.xml", records_xpath: "//book")
+#   source.rows.each { |row| puts row["title"] }
+#
+# @api public
 class Importu::Sources::XML
+  # Creates a new XML source.
+  #
+  # @param infile [String, IO] file path or IO object to read from
+  # @param records_xpath [String] XPath expression to select record elements
+  # @param xml_options [Hash] options passed to Nokogiri (currently unused)
+  # @raise [Importu::InvalidInput] if the XML is malformed or empty
   def initialize(infile, records_xpath:, xml_options: {}, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
     @records_xpath = records_xpath
@@ -17,6 +34,11 @@ class Importu::Sources::XML
     end
   end
 
+  # Returns an enumerator that yields each matching element as a hash.
+  #
+  # Element attributes and child element text content become hash keys.
+  #
+  # @return [Enumerator<Hash>] rows from matching XML elements
   def rows
     Enumerator.new do |yielder|
       reader.xpath(@records_xpath).each do |xml|
@@ -29,6 +51,14 @@ class Importu::Sources::XML
     end
   end
 
+  # Generates an XML file with error information appended.
+  #
+  # Creates a copy of the original data with an "_errors" child element
+  # containing any validation errors for each record.
+  #
+  # @param summary [Importu::Summary] the import summary containing errors
+  # @param only_errors [Boolean] if true, only include records that had errors
+  # @return [Tempfile, nil] temp file with error data, or nil if no errors
   def write_errors(summary, only_errors: false)
     return unless summary.itemized_errors.any?
 

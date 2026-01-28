@@ -5,7 +5,21 @@ require "tempfile"
 require "importu/exceptions"
 require "importu/sources"
 
+# Parses JSON files as import source data.
+#
+# The JSON must have an array as the root element. Each array element becomes
+# a row. The entire file is loaded into memory.
+#
+# @example Basic usage
+#   source = Importu::Sources::JSON.new("data.json")
+#   source.rows.each { |row| puts row["name"] }
+#
+# @api public
 class Importu::Sources::JSON
+  # Creates a new JSON source.
+  #
+  # @param infile [String, IO] file path or IO object to read from
+  # @raise [Importu::InvalidInput] if the JSON is malformed or empty
   def initialize(infile, **)
     @infile = infile.respond_to?(:readline) ? infile : File.open(infile, "rb")
 
@@ -21,12 +35,23 @@ class Importu::Sources::JSON
     end
   end
 
+  # Returns an enumerator that yields each element as a hash.
+  #
+  # @return [Enumerator<Hash>] rows from the JSON array
   def rows
     Enumerator.new do |yielder|
       @reader.each {|row| yielder.yield(row) }
     end
   end
 
+  # Generates a JSON file with error information appended.
+  #
+  # Creates a copy of the original data with an "_errors" key containing
+  # any validation errors for each row.
+  #
+  # @param summary [Importu::Summary] the import summary containing errors
+  # @param only_errors [Boolean] if true, only include rows that had errors
+  # @return [Tempfile, nil] temp file with error data, or nil if no errors
   def write_errors(summary, only_errors: false)
     return unless summary.itemized_errors.any?
 
