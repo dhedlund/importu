@@ -5,9 +5,15 @@ require "forwardable"
 require "importu/converter_context"
 require "importu/exceptions"
 
-# Represents a single record from the import source. Records lazily convert
-# field values on access and behave like hashes, supporting standard hash
-# methods like [], fetch, keys, values, and each.
+# Represents a single record from the import source.
+#
+# Records lazily convert field values on access and behave like hashes,
+# supporting standard hash methods like [], fetch, keys, values, and each.
+#
+# @example Iterating over records
+#   importer.records.each do |record|
+#     puts "#{record[:title]} by #{record[:author]}"
+#   end
 #
 # @example Accessing field values
 #   record[:title]        # => "The Ruby Programming Language"
@@ -15,8 +21,19 @@ require "importu/exceptions"
 #   record.keys           # => [:title, :author, :isbn]
 #
 # @example Converting to a plain hash
-#   record.to_hash # => { title: "...", author: "...", isbn: "..." }
+#   record.to_hash  # => { title: "...", author: "...", isbn: "..." }
 #
+# @example Accessing raw source data
+#   record.data     # => { "Title" => "...", "Author" => "..." }
+#
+# @example Checking for conversion errors
+#   if record.valid?
+#     process(record.to_hash)
+#   else
+#     record.errors.each { |e| puts e.to_s }
+#   end
+#
+# @see Importu::Importer#records
 # @api public
 class Importu::Record
 
