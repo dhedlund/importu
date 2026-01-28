@@ -9,44 +9,44 @@ bundle install
 bundle exec appraisal install
 ```
 
-## Running Tests
+## Running Checks
+
+The preflight task runs specs, RuboCop, and YARD coverage in one command:
 
 ```bash
-# Run all tests across all Rails versions
-bundle exec appraisal rspec
-
-# Run without Rails (standalone)
-bundle exec appraisal standalone rspec
-
-# Run against a specific Rails version
-bundle exec appraisal rails-8-1 rspec
-
-# Check code style
-bundle exec rubocop
-
-# Check documentation coverage
-bundle exec rake yardstick
+bundle exec rake preflight
 ```
 
-## Code Style
-
-RuboCop is configured to match the existing codebase patterns. Run it before
-submitting:
+To run checks individually:
 
 ```bash
-bundle exec rubocop
+bundle exec rspec              # Test suite (standalone, no Rails)
+bundle exec rubocop            # Code style
+bundle exec rake yardstick     # Documentation coverage
 ```
 
-When in doubt, match the style of surrounding code.
+To test against specific Rails versions:
+
+```bash
+bundle exec appraisal rspec              # All Rails versions
+bundle exec appraisal standalone rspec   # No Rails
+bundle exec appraisal rails-8-1 rspec    # Specific version
+```
 
 ## Pull Requests
 
-Before submitting a PR:
+Before submitting a PR, run the preflight checks:
 
-1. Ensure all tests pass across all appraisals
-2. Ensure RuboCop passes
-3. Add tests for new functionality
-4. Update CHANGELOG.md under `[Unreleased]` for user-facing changes
+```bash
+bundle exec rake preflight
+```
+
+This runs the test suite, RuboCop, and YARD coverage verification.
+
+Also:
+
+1. Add tests for new functionality
+2. Update CHANGELOG.md under `[Unreleased]` for user-facing changes
 
 ## Architecture Overview
 

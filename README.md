@@ -402,5 +402,10 @@ end
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, running tests,
-and guidelines for submitting changes.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
+
+Before submitting changes, run the preflight checks:
+
+```bash
+bundle exec rake preflight
+```
