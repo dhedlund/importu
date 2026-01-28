@@ -45,6 +45,22 @@ RSpec.describe Importu::Backends do
       end
     end
 
+    context "when backend is :auto" do
+      let(:supported) { Class.new { def self.supported_by_model?(*); true; end } }
+
+      let(:definition) do
+        Class.new(Importu::Definition) do
+          model "MyModelGuest", backend: :auto
+        end
+      end
+
+      before { registry.register(:backend1, supported) }
+
+      it "auto-detects the backend" do
+        expect(registry.from_config!(**config)).to eq supported
+      end
+    end
+
     context "when a model backend is not specified" do
       let(:supported) { Class.new { def self.supported_by_model?(*); true; end } }
       let(:unsupported) { Class.new { def self.supported_by_model?(*); false; end } }

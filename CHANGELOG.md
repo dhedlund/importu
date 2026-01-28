@@ -14,8 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace multi_json with stdlib json (JSON::ParserError instead of MultiJson::DecodeError)
 - Drop Rails 4.x and 5.x support; minimum is now Rails 7.2
 
+### Added
+
+- Add explicit `backend: :auto` option for discoverable backend auto-detection
+
 ### Changed
 
+- Document before_save as a backend hook that backends may choose to honor
 - Extract AR-specific error normalization from Summary into ActiveRecord backend
 - InvalidRecord now accepts normalized_message for aggregation-friendly error messages
 

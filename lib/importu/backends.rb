@@ -23,7 +23,8 @@ class Importu::Backends
 
   def from_config!(name:, model:, **)
     model = model.is_a?(String) ? self.class.const_get(model) : model
-    name ? lookup(name) : detect_from_model(model)
+    # Support :auto as an explicit way to request auto-detection (same as nil)
+    name && name != :auto ? lookup(name) : detect_from_model(model)
   end
 
   def lookup(name)

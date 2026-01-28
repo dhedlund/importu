@@ -96,15 +96,36 @@ module Importu::ConfigDSL
     }
   end
 
-  # FIXME: Can we make `backend` support :auto or :autodetect
+  # Associates the importer with a model class for persistence.
+  #
+  # model "Book"
+  # model "Book", backend: :active_record
+  # model "Book", backend: :auto  # explicit auto-detection (default behavior)
+  #
+  # The backend can be:
+  #   - nil or :auto - auto-detect from registered backends
+  #   - :active_record - use ActiveRecord backend explicitly
+  #   - Any other symbol registered with Importu::Backends.registry
   def model(name, backend: nil)
     @config = { **config,
       backend: { **config[:backend], name: backend, model: name }
     }
   end
 
-  # FIXME: backend-specific setting, should be mixed in from somewhere else.
-  # Block to execute just before saving the model object to the database.
+  # Defines a callback to execute just before saving a record.
+  #
+  # before_save { object.title = object.title.upcase }
+  # before_save { object.updated_by = "importer" }
+  #
+  # The block is executed in the context of an AssignmentContext, which
+  # provides access to:
+  #   - object: the model instance being saved
+  #   - record: the converted record data
+  #   - action: :create or :update
+  #
+  # This is a backend hook. Backends may choose to honor it or ignore it.
+  # The ActiveRecord backend executes it after assigning field values but
+  # before calling save!.
   def before_save(&block)
     @config = { **config,
       backend: { **config[:backend], before_save: block }
