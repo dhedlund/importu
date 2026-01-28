@@ -26,9 +26,12 @@ module Importu::Converters
 
       converter :datetime do |name, format: nil|
         if value = trimmed(name)
-          format \
-            ? DateTime.strptime(value, format).to_time.utc
-            : DateTime.parse(value).to_time.utc
+          dt = format \
+            ? DateTime.strptime(value, format)
+            : DateTime.parse(value)
+          # Convert DateTime to Time without triggering ActiveSupport deprecation
+          offset_seconds = (dt.offset * 86_400).to_i
+          Time.new(dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec, offset_seconds).utc
         end
       end
 

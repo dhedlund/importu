@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix datetime converter to avoid Rails deprecation warning
 - Remove phantom require for nonexistent backends/ruby file
 - Add explicit require for delegate stdlib
 - Add explicit require for date stdlib
