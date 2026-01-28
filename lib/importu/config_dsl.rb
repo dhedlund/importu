@@ -195,14 +195,27 @@ module Importu::ConfigDSL
 
   # Associates the importer with a model class for persistence.
   #
-  # model "Book"
-  # model "Book", backend: :active_record
-  # model "Book", backend: :auto  # explicit auto-detection (default behavior)
+  # @param name [String, Class] the model class or class name
+  # @param backend [Symbol, nil] the backend to use (:active_record, :auto, or nil)
+  # @return [void]
+  #
+  # @example Basic usage
+  #   model "Book"
+  #
+  # @example With explicit backend
+  #   model "Book", backend: :active_record
+  #
+  # @example With auto-detection (default behavior)
+  #   model "Book", backend: :auto
   #
   # The backend can be:
-  #   - nil or :auto - auto-detect from registered backends
-  #   - :active_record - use ActiveRecord backend explicitly
-  #   - Any other symbol registered with Importu::Backends.registry
+  # - nil or :auto - auto-detect from registered backends
+  # - :active_record - use ActiveRecord backend explicitly
+  # - Any other symbol registered with Importu::Backends.registry
+  #
+  # @see #allow_actions
+  # @see #find_by
+  # @api public
   def model(name, backend: nil)
     @config = { **config,
       backend: { **config[:backend], name: backend, model: name }
@@ -211,18 +224,33 @@ module Importu::ConfigDSL
 
   # Defines a callback to execute just before saving a record.
   #
-  # before_save { object.title = object.title.upcase }
-  # before_save { object.updated_by = "importer" }
-  #
   # The block is executed in the context of an AssignmentContext, which
   # provides access to:
-  #   - object: the model instance being saved
-  #   - record: the converted record data
-  #   - action: :create or :update
+  # - object: the model instance being saved
+  # - record: the converted record data
+  # - action: :create or :update
   #
   # This is a backend hook. Backends may choose to honor it or ignore it.
   # The ActiveRecord backend executes it after assigning field values but
   # before calling save!.
+  #
+  # @yield block to execute before saving
+  # @return [void]
+  #
+  # @example Normalize title before saving
+  #   before_save { object.title = object.title.titleize }
+  #
+  # @example Set audit field
+  #   before_save { object.imported_at = Time.current }
+  #
+  # @example Conditional logic based on action
+  #   before_save do
+  #     object.created_by = "importer" if action == :create
+  #     object.updated_by = "importer" if action == :update
+  #   end
+  #
+  # @see Importu::Backends::ActiveRecord::AssignmentContext
+  # @api public
   def before_save(&block)
     @config = { **config,
       backend: { **config[:backend], before_save: block }
