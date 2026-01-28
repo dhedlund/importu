@@ -1,4 +1,4 @@
-require "multi_json"
+require "json"
 require "tempfile"
 
 require "importu/exceptions"
@@ -10,8 +10,8 @@ class Importu::Sources::JSON
 
     begin
       @infile.rewind
-      @reader = MultiJson.load(@infile.read)
-    rescue MultiJson::DecodeError => e
+      @reader = ::JSON.parse(@infile.read)
+    rescue ::JSON::ParserError => e
       raise Importu::InvalidInput, e.message
     end
 

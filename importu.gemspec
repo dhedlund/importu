@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   
   s.add_dependency "bigdecimal"
   s.add_dependency "csv"
-  s.add_dependency "multi_json",    ["~> 1.0"]
   s.add_dependency "nokogiri"
 
   s.add_development_dependency "bundler",      [">= 1.0.0"]
