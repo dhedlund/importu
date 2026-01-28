@@ -33,6 +33,11 @@ RSpec.describe Importu::Backends::Middleware::EnforceAllowedActions do
         expect { middleware.create(foo: 1, bar: 1, baz: 1) }
           .to raise_error(Importu::InvalidRecord)
       end
+
+      it "includes guidance in the error message" do
+        expect { middleware.create(foo: 1, bar: 1, baz: 1) }
+          .to raise_error(/allow_actions :create/)
+      end
     end
   end
 
@@ -51,8 +56,13 @@ RSpec.describe Importu::Backends::Middleware::EnforceAllowedActions do
 
     context "when :update action is not allowed" do
       it "raises an InvalidError exception" do
-        expect { middleware.create(foo: 1, bar: 1, baz: 1) }
+        expect { middleware.update({foo: 2}, object) }
           .to raise_error(Importu::InvalidRecord)
+      end
+
+      it "includes guidance in the error message" do
+        expect { middleware.update({foo: 2}, object) }
+          .to raise_error(/allow_actions :create, :update/)
       end
     end
   end

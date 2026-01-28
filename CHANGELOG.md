@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve error messages when create/update actions are not allowed (now includes fix guidance)
 - Document before_save as a backend hook that backends may choose to honor
 - Extract AR-specific error normalization from Summary into ActiveRecord backend
 - InvalidRecord now accepts normalized_message for aggregation-friendly error messages

@@ -15,7 +15,8 @@ class Importu::Backends::Middleware::EnforceAllowedActions < SimpleDelegator
     if @allowed_actions.include?(:create)
       super
     else
-      raise Importu::InvalidRecord, "not allowed to create record"
+      raise Importu::InvalidRecord,
+            "create action not allowed; add `allow_actions :create` to your importer"
     end
   end
 
@@ -23,7 +24,8 @@ class Importu::Backends::Middleware::EnforceAllowedActions < SimpleDelegator
     if @allowed_actions.include?(:update)
       super
     else
-      raise Importu::InvalidRecord, "not allowed to update record"
+      raise Importu::InvalidRecord,
+            "update action not allowed; add `allow_actions :create, :update` to your importer"
     end
   end
 
