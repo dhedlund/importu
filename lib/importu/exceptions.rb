@@ -14,31 +14,57 @@ module Importu
 
   # Raised when an importer definition is invalid.
   #
+  # Common causes:
+  # - Referencing an undefined field in a converter
+  # - Using an unregistered converter type
+  #
   # @api public
   class InvalidDefinition < ImportuException; end
 
   # Raised when source data cannot be parsed.
+  #
+  # Common causes:
+  # - Malformed CSV, JSON, or XML
+  # - Empty source file
+  # - Encoding issues
   #
   # @api public
   class InvalidInput < ImportuException; end
 
   # Raised when a requested backend is not registered.
   #
+  # @example
+  #   model "Book", backend: :nonexistent  # raises BackendNotRegistered
+  #
   # @api public
   class BackendNotRegistered < ImportuException; end
 
   # Raised when no backend matches the configured model.
+  #
+  # This happens during auto-detection when no registered backend
+  # recognizes the model class, or when multiple backends match.
+  #
+  # @example Fix by specifying backend explicitly
+  #   model "Book", backend: :active_record
   #
   # @api public
   class BackendMatchError < ImportuException; end
 
   # Raised when fields cannot be assigned to the model.
   #
+  # This happens when the model doesn't have setter methods for
+  # all the fields defined in the importer.
+  #
   # @api public
   class UnassignableFields < ImportuException; end
 
   # Raised when a record fails validation during import.
   #
+  # This is the base class for record-level errors. The import continues
+  # processing other records; failed records are tracked in the Summary.
+  #
+  # @see Importu::Summary#validation_errors
+  # @see Importu::Summary#itemized_errors
   # @api public
   class InvalidRecord < ImportuException
     # @return [Array<String>, nil] validation error messages
@@ -60,6 +86,11 @@ module Importu
   end
 
   # Raised when a field value cannot be parsed or converted.
+  #
+  # Common causes:
+  # - Invalid date format: "not-a-date" for a date field
+  # - Invalid number: "abc" for an integer field
+  # - Invalid boolean: "maybe" for a boolean field
   #
   # @api public
   class FieldParseError < InvalidRecord
@@ -86,10 +117,21 @@ module Importu
 
   # Raised when a record is a duplicate of one already processed.
   #
+  # Duplicates are detected based on the find_by fields. If two records
+  # in the same import have matching finder field values, the second
+  # is marked as a duplicate.
+  #
+  # @see Importu::ConfigDSL#find_by
   # @api public
   class DuplicateRecord < InvalidRecord; end
 
   # Raised when a required field is missing from source data.
+  #
+  # By default, all fields are required. Use `required: false` to make
+  # a field optional.
+  #
+  # @example Making a field optional
+  #   field :notes, required: false
   #
   # @api public
   class MissingField < InvalidRecord

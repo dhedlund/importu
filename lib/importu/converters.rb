@@ -4,15 +4,55 @@ require "date"
 
 # Built-in converters for common data types.
 #
-# This module is automatically included in importers and provides converters
-# for boolean, date, datetime, decimal, float, integer, string, and trimmed.
+# This module is automatically included in importers and provides these converters:
 #
-# @example Using built-in converters
-#   field :pages, &convert_to(:integer)
-#   field :price, &convert_to(:decimal)
-#   field :published_on, &convert_to(:date, format: "%Y-%m-%d")
+# ## :boolean
+# Converts to true/false. Accepts: true, false, 1, 0, "true", "false", "yes", "no".
+# Returns nil for nil/empty, raises ArgumentError for other values.
+#
+#     field :active, &convert_to(:boolean)
+#
+# ## :date
+# Parses date strings. Uses Date.parse by default, or Date.strptime with format option.
+#
+#     field :published, &convert_to(:date)
+#     field :published, &convert_to(:date, format: "%Y-%m-%d")
+#
+# ## :datetime
+# Parses datetime strings to Time (UTC). Uses DateTime.parse or strptime with format.
+#
+#     field :created_at, &convert_to(:datetime)
+#     field :created_at, &convert_to(:datetime, format: "%Y-%m-%d %H:%M:%S")
+#
+# ## :decimal
+# Converts to BigDecimal. Accepts numeric strings like "123.45".
+# Returns nil for nil/empty, raises ArgumentError for invalid format.
+#
+#     field :price, &convert_to(:decimal)
+#
+# ## :float
+# Converts to Float using Kernel#Float.
+#
+#     field :rating, &convert_to(:float)
+#
+# ## :integer
+# Converts to Integer (base 10). Accepts integers or numeric strings.
+#
+#     field :pages, &convert_to(:integer)
+#
+# ## :string
+# Converts to String. Trims whitespace, returns nil for empty strings.
+#
+#     field :name, &convert_to(:string)
+#
+# ## :trimmed (default)
+# Strips whitespace from strings, returns nil for empty. Non-strings pass through.
+# This is the default converter when none is specified.
+#
+#     field :title  # uses :trimmed by default
 #
 # @see Importu::ConfigDSL#converter
+# @see Importu::ConfigDSL#convert_to
 # @api semipublic
 module Importu::Converters
   # Defines built-in converters when included in a class.
