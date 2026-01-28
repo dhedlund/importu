@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module Importu; end
 
+require "importu/importer"
+
 require "importu/sources/csv"
 require "importu/sources/json"
 require "importu/sources/xml"
