@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
+require "importu/exceptions"
 require "importu/summary"
 
 RSpec.describe Importu::Summary do
@@ -136,6 +137,21 @@ RSpec.describe Importu::Summary do
         summary.record(:invalid, errors: ["lost parrot (polly)"])
         summary.record(:invalid, errors: ["lost parrot (cracker)"])
         expect(summary.validation_errors["lost parrot"]).to eq 2
+      end
+    end
+
+    context "when error has a normalized_message" do
+      it "uses normalized_message for aggregation" do
+        error1 = Importu::InvalidRecord.new(
+          "isbn too short (was: abc)", nil, normalized_message: "isbn too short"
+        )
+        error2 = Importu::InvalidRecord.new(
+          "isbn too short (was: xyz)", nil, normalized_message: "isbn too short"
+        )
+
+        summary.record(:invalid, errors: [error1])
+        summary.record(:invalid, errors: [error2])
+        expect(summary.validation_errors["isbn too short"]).to eq 2
       end
     end
   end

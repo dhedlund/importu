@@ -14,9 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace multi_json with stdlib json (JSON::ParserError instead of MultiJson::DecodeError)
 - Drop Rails 4.x and 5.x support; minimum is now Rails 7.2
 
+### Changed
+
+- Extract AR-specific error normalization from Summary into ActiveRecord backend
+- InvalidRecord now accepts normalized_message for aggregation-friendly error messages
+
 ### Fixed
 
 - Fix datetime converter to avoid Rails deprecation warning
+- Fix validation_errors not being passed to InvalidRecord in ActiveRecord backend
 - Remove phantom require for nonexistent backends/ruby file
 - Add explicit require for delegate stdlib
 - Add explicit require for date stdlib

@@ -32,6 +32,30 @@ RSpec.describe Importu::ImportuException do
     it "#name should return 'InvalidRecord'" do
       expect(exception.name).to eq "InvalidRecord"
     end
+
+    describe "#normalized_message" do
+      context "when not provided" do
+        it "returns nil" do
+          expect(exception.normalized_message).to be_nil
+        end
+      end
+
+      context "when provided" do
+        subject(:exception) do
+          Importu::InvalidRecord.new(
+            "isbn too short (was: abc)", nil, normalized_message: "isbn too short"
+          )
+        end
+
+        it "returns the normalized message" do
+          expect(exception.normalized_message).to eq "isbn too short"
+        end
+
+        it "preserves the full message" do
+          expect(exception.message).to eq "isbn too short (was: abc)"
+        end
+      end
+    end
   end
 
   describe Importu::FieldParseError do

@@ -227,24 +227,18 @@ class Importu::Summary
 
   # Updates error attributes to include the newly encountered errors.
   #
-  # @todo This method contains code that is meant to scrub/normalize some
-  #   ActiveRecord-based error messages. If the error messages are not
-  #   scrubbed then they can not be aggregated and will produce a very long
-  #   list of errors if there are a large number of invalid records.
-  #
-  #   The logic should be extracted into the ActiveRecord backend, with the
-  #   Importu::InvalidRecord exception storing both a full error message and
-  #   a normalized version that can be passed in during initialization.
-  #
   # @return [void]
   #
   # @api private
   private def record_errors(errors, index: nil)
     errors.each do |error|
-      # Strip parts of error that might be specific to record. Values within
-      # parens is assumed to be data, e.g. "Dupe record found (sysnum 5489x)".
-      # Originally done due to being an ActiveRecord convention.
-      normalized_error = error.to_s.gsub(/ *\([^)]+\) *$/, "")
+      # Use normalized_message if available (set by backends like ActiveRecord),
+      # otherwise fall back to stripping trailing parenthesized data for aggregation.
+      has_normalized = error.respond_to?(:normalized_message) && error.normalized_message
+      normalized_error = has_normalized \
+        ? error.normalized_message
+        : error.to_s.gsub(/ *\([^)]+\) *$/, "")
+
       @validation_errors[normalized_error] += 1
     end
 

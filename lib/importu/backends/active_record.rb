@@ -61,9 +61,17 @@ class Importu::Backends::ActiveRecord
     rescue ActiveRecord::RecordInvalid
       error_msgs = object.errors.map do |error|
         error.attribute == :base ? error.message : "#{error.attribute} #{error.message}"
-      end.join(", ")
+      end
 
-      raise Importu::InvalidRecord, error_msgs, object.errors.full_messages
+      # Normalize messages by stripping trailing parenthesized data (e.g., "(value: foo)")
+      # This allows similar errors to be aggregated in the Summary.
+      normalized_msgs = error_msgs.map { |msg| msg.gsub(/ *\([^)]+\) *$/, "") }
+
+      raise Importu::InvalidRecord.new(
+        error_msgs.join(", "),
+        object.errors.full_messages,
+        normalized_message: normalized_msgs.join(", ")
+      )
     end
 
     [(new_record ? :created : :updated), object]

@@ -13,10 +13,11 @@ module Importu
   class UnassignableFields < ImportuException; end
 
   class InvalidRecord < ImportuException
-    attr_reader :validation_errors
+    attr_reader :validation_errors, :normalized_message
 
-    def initialize(message = nil, validation_errors = nil)
+    def initialize(message = nil, validation_errors = nil, normalized_message: nil)
       @validation_errors = validation_errors
+      @normalized_message = normalized_message
       super(message)
     end
   end
