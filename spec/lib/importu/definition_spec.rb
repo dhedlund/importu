@@ -26,25 +26,6 @@ RSpec.describe Importu::Definition do
     end
   end
 
-  describe "#allow_sources" do
-    it "updates the :allowed_sources config" do
-      expect { definition.allow_sources(:json, :xml) }
-        .to change { definition.config[:allowed_sources] }
-        .to([:json, :xml])
-    end
-
-    it "inherits config from ancestor" do
-      ancestor.allow_sources(:csv, :json)
-      expect(definition.config[:allowed_sources]).to eq [:csv, :json]
-    end
-
-    it "does not affect ancestor config" do
-      ancestor.allow_sources(:csv, :json)
-      expect { definition.allow_sources(:json, :xml) }
-        .to_not change { ancestor.config }
-    end
-  end
-
   describe "#before_save" do
     let(:foo_block) { Proc.new {} }
 
@@ -73,10 +54,6 @@ RSpec.describe Importu::Definition do
 
     it "[:backend][:allowed_actions] defaults to only allow :create" do
       expect(definition.config[:backend][:allowed_actions]).to eq [:create]
-    end
-
-    it "[:allowed_sources] defaults to only allow :csv" do
-      expect(definition.config[:allowed_sources]).to eq [:csv]
     end
 
     it "[:backend][:finder_fields] defaults to no fields" do

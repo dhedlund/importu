@@ -19,7 +19,6 @@
 #
 # ## Source Configuration
 # - {#source} - Configure source-specific options
-# - {#allow_sources} - Restrict allowed source types
 #
 # @example Complete importer definition
 #   class BookImporter < Importu::Importer
@@ -68,22 +67,6 @@ module Importu::ConfigDSL
     @config = { **config,
       backend: { **config[:backend], allowed_actions: actions.compact }
     }
-  end
-
-  # Specifies which source types are allowed for this importer.
-  #
-  # @param sources [Array<Symbol>] the source types to allow (:csv, :json, :xml, :ruby)
-  # @return [void]
-  #
-  # @example Allow only CSV (default)
-  #   allow_sources :csv
-  #
-  # @example Allow multiple source types
-  #   allow_sources :csv, :json, :xml
-  #
-  # @api public
-  def allow_sources(*sources)
-    @config = { **config, allowed_sources: sources }
   end
 
   # Creates a converter reference for use with field definitions.
@@ -313,7 +296,6 @@ module Importu::ConfigDSL
     raw_converter = ->(n) { raw_value(n) }
 
     {
-      allowed_sources: [:csv],
       backend: {
         name: nil,
         model: nil,
