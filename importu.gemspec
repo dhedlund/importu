@@ -34,12 +34,12 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "appraisal"
   s.add_development_dependency "bundler",      ">= 2.0"
-  s.add_development_dependency "rspec",        "~> 3.12"
+  s.add_development_dependency "rspec",        "~> 3.13"
   s.add_development_dependency "simplecov",    "~> 0.22"
 
   # Code Quality
-  s.add_development_dependency "rubocop", "~> 1.60"
-  s.add_development_dependency "rubocop-performance", "~> 1.20"
+  s.add_development_dependency "rubocop", "~> 1.70"
+  s.add_development_dependency "rubocop-performance", "~> 1.24"
 
   # YARD Documentation
   s.add_development_dependency "redcarpet" # For README.md
