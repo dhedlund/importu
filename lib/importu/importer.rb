@@ -6,9 +6,48 @@ require "importu/exceptions"
 require "importu/record"
 require "importu/summary"
 
-# An importer provides a public interface for performing an import. It is
-# where different Importu components are put together to get data from a
-# source into the backend.
+# The main class for defining and running imports.
+#
+# Subclass Importer to define your import specification, then instantiate
+# with a data source to process records.
+#
+# @example Define an importer
+#   class BookImporter < Importu::Importer
+#     # Define fields to extract from source data
+#     fields :title, :author
+#     field :isbn, label: "ISBN-10"
+#     field :pages, required: false, &convert_to(:integer)
+#
+#     # Connect to a model for persistence (optional)
+#     model "Book"
+#     allow_actions :create, :update
+#     find_by :isbn
+#   end
+#
+# @example Process records without persistence
+#   source = Importu::Sources::CSV.new("books.csv")
+#   importer = BookImporter.new(source)
+#
+#   importer.records.each do |record|
+#     puts "#{record[:title]} by #{record[:author]}"
+#   end
+#
+# @example Import with persistence
+#   source = Importu::Sources::CSV.new("books.csv")
+#   importer = BookImporter.new(source)
+#   summary = importer.import!
+#
+#   puts summary.result_msg
+#   # Total:     100
+#   # Created:   95
+#   # Updated:   3
+#   # Invalid:   2
+#   # Unchanged: 0
+#
+# @see Importu::ConfigDSL for all DSL methods
+# @see Importu::Summary for import results
+# @see Importu::Record for accessing record data
+# @api public
 class Importu::Importer
 
   extend Importu::ConfigDSL
