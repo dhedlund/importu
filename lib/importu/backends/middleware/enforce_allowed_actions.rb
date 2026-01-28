@@ -1,3 +1,5 @@
+require "delegate"
+
 require "importu/backends/middleware"
 require "importu/exceptions"
 

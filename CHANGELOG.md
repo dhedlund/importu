@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Remove phantom require for nonexistent backends/ruby file
+- Add explicit require for delegate stdlib
 
 ## [0.1.0] - 2017-09-25
 
