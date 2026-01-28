@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.name        = "importu"
   s.version     = Importu::VERSION
   s.platform    = Gem::Platform::RUBY
+  s.required_ruby_version = ">= 3.1"
   s.authors     = ["Daniel Hedlund"]
   s.email       = ["daniel@digitree.org"]
   s.homepage    = "https://github.com/dhedlund/importu"
@@ -15,18 +16,24 @@ Gem::Specification.new do |s|
                   "to be importable into your application."
 
   s.files            = `git ls-files`.split("\n")
-  s.test_files       = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths    = ["lib"]
 
   s.licenses = ["MIT"]
-  
+
+  s.metadata = {
+    "homepage_uri"    => s.homepage,
+    "source_code_uri" => s.homepage,
+    "changelog_uri"   => "#{s.homepage}/blob/master/CHANGELOG.md",
+    "bug_tracker_uri" => "#{s.homepage}/issues",
+  }
+
   s.add_dependency "bigdecimal"
   s.add_dependency "csv"
-  s.add_dependency "nokogiri"
+  s.add_dependency "nokogiri", ">= 1.13"
 
-  s.add_development_dependency "bundler",      [">= 1.0.0"]
-  s.add_development_dependency "rspec",        ["~> 3.6"]
-  s.add_development_dependency "simplecov",    ["~> 0.14"]
+  s.add_development_dependency "bundler",      ">= 2.0"
+  s.add_development_dependency "rspec",        "~> 3.12"
+  s.add_development_dependency "simplecov",    "~> 0.22"
   s.add_development_dependency "appraisal"
 
   # YARD Documentation

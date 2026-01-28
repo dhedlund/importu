@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+- Require Ruby >= 3.1
 - Add csv and bigdecimal as gem dependencies (no longer default gems in Ruby 3.4+)
 - Replace multi_json with stdlib json (JSON::ParserError instead of MultiJson::DecodeError)
 
