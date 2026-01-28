@@ -209,9 +209,8 @@ Lint/UnusedBlockArgument:
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
-# Allow useless assignment (sometimes intentional for documentation)
 Lint/UselessAssignment:
-  Enabled: false
+  Enabled: true
 
 # Allow 1.times for spec clarity
 Lint/UselessTimes:

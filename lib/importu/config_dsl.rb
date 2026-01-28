@@ -74,7 +74,7 @@ module Importu::ConfigDSL
   #
   # @api public
   def convert_to(type, **options)
-    converter = config[:converters].fetch(type)
+    config[:converters].fetch(type) # validate converter exists
     ConverterStub.for(type, **options)
   end
 

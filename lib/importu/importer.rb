@@ -143,7 +143,7 @@ class Importu::Importer
     begin
       object = backend.find(record)
 
-      result, object = object.nil? \
+      result, _object = object.nil? \
         ? backend.create(record)
         : backend.update(record, object)
 

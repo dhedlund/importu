@@ -56,7 +56,7 @@ task :preflight do
     begin
       Rake::Task[task_name].invoke
       puts "OK"
-    rescue SystemExit, RuntimeError => e
+    rescue SystemExit, RuntimeError
       puts "FAILED"
       failed << name
     end
